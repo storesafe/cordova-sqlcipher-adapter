@@ -1,10 +1,10 @@
 /*
- * PhoneGap is available under *either* the terms of the modified BSD license *or* the
- * MIT License (2008). See http://opensource.org/licenses/alphabetical for full text.
- *
+ * Copyright (c) 2012-2014, Chris Brody
  * Copyright (c) 2005-2010, Nitobi Software Inc.
  * Copyright (c) 2010, IBM Corporation
  */
+
+// XXX (TODO) move out of com.phonegap package:
 package com.phonegap.plugin.sqlitePlugin;
 
 import org.json.JSONArray;
@@ -13,8 +13,8 @@ import org.json.JSONObject;
 
 import java.lang.Number;
 
-import org.apache.cordova.api.Plugin;
-import org.apache.cordova.api.PluginResult;
+import org.apache.cordova.api.CordovaPlugin;
+import org.apache.cordova.api.CallbackContext;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -22,38 +22,35 @@ import android.database.sqlite.*;
 
 import android.util.Log;
 
-public class SQLitePlugin extends Plugin {
-
-	// Data Definition Language
+public class SQLitePlugin extends CordovaPlugin
+{
+	// XXX (TODO) support multiple databases:
 	SQLiteDatabase myDb = null; // Database object
 
 	/**
-	 * Constructor.
+	 * NOTE: Using default constructor (no explicit constructor is required).
 	 */
-	public SQLitePlugin() {
-	}
 
 	/**
 	 * Executes the request and returns PluginResult.
 	 *
 	 * @param action
 	 *            The action to execute.
+	 *
 	 * @param args
 	 *            JSONArry of arguments for the plugin.
-	 * @param callbackId
-	 *            The callback id used when calling back into JavaScript.
-	 * @return A PluginResult object with a status and message.
+	 *
+	 * @param cbc
+	 *            Callback context from Cordova API (not used [yet])
+	 *
 	 */
-	public PluginResult execute(String action, JSONArray args, String callbackId) {
-		PluginResult.Status status = PluginResult.Status.OK;
-		String result = "";
-
+	@Override
+	public boolean execute(String action, JSONArray args, CallbackContext cbc)
+	{
 		try {
 			if (action.equals("open")) {
 				this.openDatabase(args.getString(0), "1",
 						"database", 5000000);
-				//this.openDatabase(args.getString(0), args.getString(1),
-				//		args.getString(2), args.getLong(3));
 			} 
 			else if (action.equals("executeSqlBatch")) 
 			{
@@ -73,7 +70,7 @@ public class SQLitePlugin extends Plugin {
 					queryIDs = new String[len];
 					jsonparams = new JSONArray[len];
 
-					for (int i = 0; i < len; i++) 
+					for (int i = 0; i < len; i++)
 					{
 						a 			= args.getJSONObject(i);
 						queries[i] 	= a.getString("query");
@@ -89,22 +86,10 @@ public class SQLitePlugin extends Plugin {
 				else
 					Log.v("error", "null trans_id");
 			}
-			return new PluginResult(status, result);
+			return true;
 		} catch (JSONException e) {
-			return new PluginResult(PluginResult.Status.JSON_EXCEPTION);
+			return false;
 		}
-	}
-
-	/**
-	 * Identifies if action to be executed returns a value and should be run
-	 * synchronously.
-	 *
-	 * @param action
-	 *            The action to execute
-	 * @return T=returns value
-	 */
-	public boolean isSynch(String action) {
-		return true;
 	}
 
 	/**
@@ -112,6 +97,7 @@ public class SQLitePlugin extends Plugin {
 	 */
 	@Override
 	public void onDestroy() {
+		// XXX (TODO) support multiple databases:
 		if (this.myDb != null) {
 			this.myDb.close();
 			this.myDb = null;
@@ -123,7 +109,7 @@ public class SQLitePlugin extends Plugin {
 	// --------------------------------------------------------------------------
 
 	/**
-	 * Open database.
+	 * Open a database.
 	 *
 	 * @param db
 	 *            The name of the database including its extension.
@@ -168,7 +154,7 @@ public class SQLitePlugin extends Plugin {
 					long insertId = myStatement.executeInsert();
 
 					String result = "{'insertId':'" + insertId + "'}";
-					this.sendJavascript("SQLitePluginTransaction.queryCompleteCallback('" + tx_id + "','" + query_id + "', " + result + ");");
+					this.webView.sendJavascript("SQLitePluginTransaction.queryCompleteCallback('" + tx_id + "','" + query_id + "', " + result + ");");
 				} else {
 					String[] params = null;
 
@@ -177,7 +163,7 @@ public class SQLitePlugin extends Plugin {
 
 						for (int j = 0; j < jsonparams[i].length(); j++) {
 							params[j] = jsonparams[i].getString(j);
-							if(params[j] == "null") // XXX better check
+							if(params[j] == "null") // XXX (TODO) better check
 								params[j] = "";
 						}
 					}
@@ -193,16 +179,16 @@ public class SQLitePlugin extends Plugin {
 		catch (SQLiteException ex) {
 			ex.printStackTrace();
 			Log.v("executeSqlBatch", "SQLitePlugin.executeSql(): Error=" +  ex.getMessage());
-			this.sendJavascript("SQLitePluginTransaction.txErrorCallback('" + tx_id + "', '"+ex.getMessage()+"');");
+			this.webView.sendJavascript("SQLitePluginTransaction.txErrorCallback('" + tx_id + "', '"+ex.getMessage()+"');");
 		} catch (JSONException ex) {
 			ex.printStackTrace();
 			Log.v("executeSqlBatch", "SQLitePlugin.executeSql(): Error=" +  ex.getMessage());
-			this.sendJavascript("SQLitePluginTransaction.txErrorCallback('" + tx_id + "', '"+ex.getMessage()+"');");
+			this.webView.sendJavascript("SQLitePluginTransaction.txErrorCallback('" + tx_id + "', '"+ex.getMessage()+"');");
 		}
 		finally {
 			this.myDb.endTransaction();
 			Log.v("executeSqlBatch", tx_id);
-			this.sendJavascript("SQLitePluginTransaction.txCompleteCallback('" + tx_id + "');");
+			this.webView.sendJavascript("SQLitePluginTransaction.txCompleteCallback('" + tx_id + "');");
 		}
 	}
 
@@ -248,6 +234,7 @@ public class SQLitePlugin extends Plugin {
 									row.put(key, cur.getString(i));
 									break;
 								case Cursor.FIELD_TYPE_BLOB:
+									// XXX (TODO) Base64 encode blob fields:
 									row.put(key, cur.getBlob(i));
 									break;
 							}
@@ -268,7 +255,7 @@ public class SQLitePlugin extends Plugin {
 			result = fullresult.toString();
 		}
 		if(query_id.length() > 0)
-			this.sendJavascript(" SQLitePluginTransaction.queryCompleteCallback('" + tx_id + "','" + query_id + "', " + result + ");");
+			this.webView.sendJavascript("SQLitePluginTransaction.queryCompleteCallback('" + tx_id + "','" + query_id + "', " + result + ");");
 
 	}
 }
