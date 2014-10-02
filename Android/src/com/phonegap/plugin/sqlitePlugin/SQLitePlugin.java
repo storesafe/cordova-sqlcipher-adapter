@@ -260,23 +260,49 @@ public class SQLitePlugin extends CordovaPlugin
 
 					myCursor.close();
 				}
-
-				// XXX TBD will be replaced:
-				if (queryResult != null) {
-					this.webView.sendJavascript("window.SQLiteQueryCB.queryCompleteCallback('" +
-						tx_id + "','" + query_id + "', " + queryResult.toString() + ");");
-				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				errorMessage = ex.getMessage();
 				Log.v("executeSqlBatch", "SQLitePlugin.executeSql[Batch](): Error=" +  errorMessage);
-				// XXX TBD will be replaced:
-				this.webView.sendJavascript("window.SQLiteQueryCB.txErrorCallback('" + tx_id + "', '"+ex.getMessage()+"');");
+			}
+
+			try {
+				if (queryResult != null) {
+					JSONObject r = new JSONObject();
+					r.put("qid", query_id);
+
+					r.put("type", "success");
+					r.put("result", queryResult);
+
+					batchResults.put(r);
+				} else if (errorMessage != null) {
+					JSONObject r = new JSONObject();
+					r.put("qid", query_id);
+
+					r.put("type", "error");
+					r.put("result", errorMessage);
+
+					batchResults.put(r);
+				}
+			} catch (JSONException ex) {
+				ex.printStackTrace();
+				Log.v("executeSqlBatch", "SQLitePlugin.executeSql[Batch](): Error=" +  ex.getMessage());
+				// TODO what to do?
 			}
 		}
 
-		// XXX TBD will be replaced:
-		this.webView.sendJavascript("window.SQLiteQueryCB.txCompleteCallback('" + tx_id + "');");
+		JSONObject cbr = new JSONObject();
+
+		try {
+			cbr.put("trid", tx_id);
+			cbr.put("result", batchResults);
+		} catch (JSONException ex) {
+			ex.printStackTrace();
+			Log.v("executeSqlBatch", "SQLitePlugin.executeSql[Batch](): Error=" +  ex.getMessage());
+			// TODO what to do?
+		}
+
+		this.webView.sendJavascript("window.SQLiteTransactionCB.batchCompleteCallback(" + cbr.toString() + ");");
 	}
 
 	/**

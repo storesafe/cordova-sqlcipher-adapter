@@ -59,12 +59,14 @@ do ->
   #  ..
   #  return
 
+  # TBD old mechanism (going away):
   get_unique_id = ->
     id = new Date().getTime()
     id2 = new Date().getTime()
     id2 = new Date().getTime()  while id is id2
     id2 + "000"
 
+  # TBD old mechanism (going away):
   queryQ = []
   queryCBQ = {}
 
@@ -85,6 +87,7 @@ do ->
     queryCBQ[@trans_id] = new Object()
     return
 
+  # TBD old mechanism (going away):
   SQLiteQueryCB = {}
 
   SQLiteQueryCB.queryCompleteCallback = (transId, queryId, result) ->
@@ -131,6 +134,16 @@ do ->
     else
       console.log "SQLiteBatchTransaction.txErrorCallback---transId = NULL"
     return
+
+  SQLiteBatchTransactionCB = {}
+
+  SQLiteBatchTransactionCB.batchCompleteCallback = (cbr) ->
+    transId = cbr.trid
+    for qresult in cbr.result
+      if qresult.type is "success"
+        SQLiteQueryCB.queryCompleteCallback transId, qresult.qid, qresult.result
+      else
+        SQLiteQueryCB.queryErrorCallback transId, qresult.qid, qresult.result
 
   SQLiteBatchTransaction::add_to_transaction = (trans_id, query, params, callback, err_callback) ->
     new_query = new Object()
@@ -261,7 +274,8 @@ do ->
       new SQLitePlugin openargs, okcb, errorcb
 
   # required for callbacks:
-  root.SQLiteQueryCB = SQLiteQueryCB
+  # TBD old mechanism (going away):
+  root.SQLiteTransactionCB = SQLiteBatchTransactionCB
 
   root.sqlitePlugin =
     sqliteFeatures:

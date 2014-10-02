@@ -1,5 +1,5 @@
 (function() {
-  var SQLiteBatchTransaction, SQLiteFactory, SQLitePlugin, SQLiteQueryCB, get_unique_id, queryCBQ, queryQ, root;
+  var SQLiteBatchTransaction, SQLiteBatchTransactionCB, SQLiteFactory, SQLitePlugin, SQLiteQueryCB, get_unique_id, queryCBQ, queryQ, root;
   root = this;
   SQLitePlugin = function(openargs, openSuccess, openError) {
     var dbname;
@@ -118,6 +118,22 @@
     } else {
       console.log("SQLiteBatchTransaction.txErrorCallback---transId = NULL");
     }
+  };
+  SQLiteBatchTransactionCB = {};
+  SQLiteBatchTransactionCB.batchCompleteCallback = function(cbr) {
+    var qresult, transId, _i, _len, _ref, _results;
+    transId = cbr.trid;
+    _ref = cbr.result;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      qresult = _ref[_i];
+      if (qresult.type === "success") {
+        _results.push(SQLiteQueryCB.queryCompleteCallback(transId, qresult.qid, qresult.result));
+      } else {
+        _results.push(SQLiteQueryCB.queryErrorCallback(transId, qresult.qid, qresult.result));
+      }
+    }
+    return _results;
   };
   SQLiteBatchTransaction.prototype.add_to_transaction = function(trans_id, query, params, callback, err_callback) {
     var new_query;
@@ -265,7 +281,7 @@
       return new SQLitePlugin(openargs, okcb, errorcb);
     }
   };
-  root.SQLiteQueryCB = SQLiteQueryCB;
+  root.SQLiteTransactionCB = SQLiteBatchTransactionCB;
   return root.sqlitePlugin = {
     sqliteFeatures: {
       isSQLitePlugin: true
