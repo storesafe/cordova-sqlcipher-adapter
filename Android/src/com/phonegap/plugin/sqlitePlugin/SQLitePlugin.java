@@ -36,7 +36,7 @@ public class SQLitePlugin extends CordovaPlugin
 	 */
 
 	/**
-	 * Executes the request and returns PluginResult.
+	 * Executes the request and returns boolean result.
 	 *
 	 * @param action
 	 *            The action to execute.
@@ -45,7 +45,7 @@ public class SQLitePlugin extends CordovaPlugin
 	 *            JSONArry of arguments for the plugin.
 	 *
 	 * @param cbc
-	 *            Callback context from Cordova API (not used [yet])
+	 *            Cordova callback context
 	 *
 	 */
 	@Override
@@ -58,13 +58,10 @@ public class SQLitePlugin extends CordovaPlugin
 
 				this.openDatabase(dbname);
 			}
-			else if (action.equals("executeBatchTransaction")) 
+			else if (action.equals("executeSqlBatch")) // TBD (TODO) support background (properly)
 			{
 				String[] 	queries 	= null;
 				String[] 	queryIDs 	= null;
-
-				// XXX TBD trans_id going away:
-				String 		trans_id 	= null;
 
 				JSONArray 	jsonArr 	= null;
 				int 		paramLen	= 0;
@@ -88,21 +85,13 @@ public class SQLitePlugin extends CordovaPlugin
 						JSONObject a	= txargs.getJSONObject(i);
 						queries[i] 	= a.getString("sql");
 						queryIDs[i] = a.getString("qid");
-						// XXX TBD trans_id going away:
-						trans_id 	= a.getString("trans_id");
 						jsonArr 	= a.getJSONArray("params");
 						paramLen	= jsonArr.length();
 						jsonparams[i] 	= jsonArr;
 					}
 				}
 
-				// XXX TBD trans_id going away:
-				if (trans_id == null) {
-					Log.v("error", "null trans_id");
-					return false;
-				}
-
-				this.executeSqlBatch(dbName, queries, jsonparams, queryIDs, trans_id, cbc);
+				this.executeSqlBatch(dbName, queries, jsonparams, queryIDs, cbc);
 			}
 			// XXX TODO else signal unrecognized action
 
@@ -143,6 +132,7 @@ public class SQLitePlugin extends CordovaPlugin
 	{
 		if (this.getDatabase(dbname) != null) this.closeDatabase(dbname);
 
+		// FUTURE TBD SQLITE_OPEN_CREATE should be optional:
 		SQLiteDatabase mydb = this.cordova.getActivity().getApplicationContext().openOrCreateDatabase(dbname, Context.MODE_PRIVATE, null);
 
 		dbmap.put(dbname, mydb);
@@ -179,7 +169,7 @@ public class SQLitePlugin extends CordovaPlugin
 	}
 
 	/**
-	 * Executes a batch request and sends the results via sendJavascriptCB().
+	 * Executes a batch request and sends the results via the Cordova callback context.
 	 *
 	 * @param dbname
 	 *            The name of the database.
@@ -193,14 +183,11 @@ public class SQLitePlugin extends CordovaPlugin
 	 * @param queryIDs
 	 *            Array of query ids
 	 *
-	 * @param tx_id
-	 *            Transaction id
-	 *
 	 * @param cbc
-	 *            Callback context from Cordova API (not used [yet])
+	 *            Cordova callback context
 	 *
 	 */
-	private void executeSqlBatch(String dbname, String[] queryarr, JSONArray[] jsonparams, String[] queryIDs, String tx_id, CallbackContext cbc)
+	private void executeSqlBatch(String dbname, String[] queryarr, JSONArray[] jsonparams, String[] queryIDs, CallbackContext cbc)
 	{
 		SQLiteDatabase mydb = this.getDatabase(dbname);
 
@@ -291,18 +278,7 @@ public class SQLitePlugin extends CordovaPlugin
 			}
 		}
 
-		JSONObject cbr = new JSONObject();
-
-		try {
-			cbr.put("trid", tx_id);
-			cbr.put("result", batchResults);
-		} catch (JSONException ex) {
-			ex.printStackTrace();
-			Log.v("executeSqlBatch", "SQLitePlugin.executeSql[Batch](): Error=" +  ex.getMessage());
-			// TODO what to do?
-		}
-
-		this.webView.sendJavascript("window.SQLiteTransactionCB.batchCompleteCallback(" + cbr.toString() + ");");
+		cbc.success(batchResults);
 	}
 
 	/**

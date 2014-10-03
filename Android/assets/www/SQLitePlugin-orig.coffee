@@ -64,15 +64,7 @@ do ->
   #  ..
   #  return
 
-  uid = 1000
-
-  get_unique_id = -> ++uid
-
-  trcbq = {}
-
   SQLitePluginTransaction = (db, fn, error, success) ->
-    @trid = get_unique_id()
-    trcbq[@trid] = {}
     if typeof(fn) != "function"
       # This is consistent with the implementation in Chrome -- it
       # throws if you pass anything other than a function. This also
@@ -88,32 +80,6 @@ do ->
       throw new Error("unable to begin transaction: " + err.message)
     return
 
-  SQLiteTransactionCB =
-    batchCompleteCallback: (cbResult) ->
-      console.log "SQLiteTransactionCB.batchCompleteCallback cbResult #{JSON.stringify cbResult}"
-
-      trid = cbResult.trid
-      result = cbResult.result
-
-      for r in result
-        type = r.type
-        qid = r.qid
-        res = r.result
-
-        t = trcbq[trid]
-
-        if t
-          q = t[qid]
-
-          if q
-            if q[type]
-              q[type] res
-
-            # ???:
-            delete trcbq[trid][qid]
-
-      return
-
   SQLitePluginTransaction::start = ->
     try
       return  unless @fn
@@ -128,17 +94,15 @@ do ->
     return
 
   SQLitePluginTransaction::executeSql = (sql, values, success, error) ->
-    #console.log "SQLitePluginTransaction::executeSql"
-    qid = get_unique_id()
+    qid = @executes.length
 
     @executes.push
-      #query: [sql].concat(values or [])
       success: success
       error: error
       qid: qid
 
       sql: sql
-      params: values
+      params: values || []
 
     return
 
@@ -169,7 +133,6 @@ do ->
     return
 
   SQLitePluginTransaction::run = ->
-    #console.log "SQLitePluginTransaction::run"
     txFailure = null
 
     tropts = []
@@ -177,9 +140,6 @@ do ->
     waiting = batchExecutes.length
     @executes = []
     tx = this
-
-    # TBD ???:
-    #batchid = get_unique_id()
 
     handlerFor = (index, didSucceed) ->
       (response) ->
@@ -203,12 +163,14 @@ do ->
 
     i = 0
 
+    mycbmap = {}
+
     while i < batchExecutes.length
       request = batchExecutes[i]
 
       qid = request.qid
 
-      trcbq[@trid][qid] =
+      mycbmap[qid] =
         success: handlerFor(i, true)
         error: handlerFor(i, false)
 
@@ -216,15 +178,34 @@ do ->
         qid: qid
         # for ios version:
         query: [request.sql].concat(request.params)
-        # XXX trans_id going away:
-        trans_id: @trid
         sql: request.sql
         params: request.params || []
 
       i++
 
-    # XXX TODO fix command Android/iOS/WP(8):
-    cordova.exec null, null, "SQLitePlugin", "executeBatchTransaction", [ {dbargs: {dbname: @db.dbname}, executes: tropts} ]
+    mycb = (result) ->
+      #console.log "mycb result #{JSON.stringify result}"
+
+      for r in result
+        type = r.type
+        qid = r.qid
+        res = r.result
+
+        q = mycbmap[qid]
+
+        if q
+          if q[type]
+            q[type] res
+
+      return
+
+    # background missing on Android version
+    mycommand =
+      if /Android/.test(navigator.userAgent)
+        "executeSqlBatch"
+      else
+        "backgroundExecuteSqlBatch"
+    cordova.exec mycb, null, "SQLitePlugin", mycommand, [ {dbargs: {dbname: @db.dbname}, executes: tropts} ]
     return
 
   SQLitePluginTransaction::rollBack = (txFailure) ->
@@ -232,12 +213,10 @@ do ->
     tx = @
 
     succeeded = ->
-      delete trcbq[@trid]
       tx.db.startNextTransaction()
       if tx.error then tx.error txFailure
 
     failed = (tx, err) ->
-      delete trcbq[@trid]
       tx.db.startNextTransaction()
       if tx.error then tx.error new Error("error while trying to roll back: " + err.message)
 
@@ -251,12 +230,10 @@ do ->
     tx = @
 
     succeeded = ->
-      delete trcbq[@trid]
       tx.db.startNextTransaction()
       if tx.success then tx.success()
 
     failed = (tx, err) ->
-      delete trcbq[@trid]
       tx.db.startNextTransaction()
       if tx.error then tx.error new Error("error while trying to commit: " + err.message)
 
@@ -293,9 +270,6 @@ do ->
           if arguments.length > 2 then errorcb = arguments[2]
 
       new SQLitePlugin openargs, okcb, errorcb
-
-  # required for callbacks (TBD going away):
-  root.SQLiteTransactionCB = SQLiteTransactionCB
 
   root.sqlitePlugin =
     sqliteFeatures:
