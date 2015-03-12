@@ -177,17 +177,17 @@ window.sqlitePlugin.deleteDatabase({name: "my.db", location: 1}, successcb, erro
 
 For Android:
 
-    plugman install --platform android --project path.to.my.project.folder --plugin https://github.com/brodybits/Cordova-sqlcipher-dev
+    plugman install --platform android --project path.to.my.project.folder --plugin https://github.com/brodysoft/Cordova-sqlcipher-adaptor
 
 For iOS:
 
-    plugman install --platform ios --project path.to.my.project.folder --plugin https://github.com/brodybits/Cordova-sqlcipher-dev
+    plugman install --platform ios --project path.to.my.project.folder --plugin https://github.com/brodysoft/Cordova-sqlcipher-adaptor
 
 ## Easy install with Cordova CLI tool
 
     npm install -g cordova # if you don't have cordova
     cordova create MyProjectFolder com.my.project MyProject && cd MyProjectFolder # if you are just starting
-    cordova plugin add https://github.com/brodybits/Cordova-sqlcipher-dev
+    cordova plugin add https://github.com/brodysoft/Cordova-sqlcipher-adaptor
 
 You can find more details at [this writeup](http://iphonedevlog.wordpress.com/2014/04/07/installing-chris-brodys-sqlite-database-with-cordova-cli-android/).
 
@@ -350,19 +350,21 @@ If you still cannot get something to work:
   - if the issue is with *adding* data to a table, that the test program includes the statements you used to open the database and create the table;
   - if the issue is with *retrieving* data from a table, that the test program includes the statements you used to open the database, create the table, and enter the data you are trying to retrieve.
 
-Then you can [raise the new issue](https://github.com/brodybits/Cordova-sqlcipher-dev/issues/new).
+Then you can [raise the new issue](https://github.com/brodysoft/Cordova-sqlcipher-adaptor/issues/new).
 
 ## Community forum
 
 If you have any questions about the plugin please post it to the [Cordova-SQLitePlugin forum](http://groups.google.com/group/Cordova-SQLitePlugin).
 
-**NOTE:** Please report all bugs at [brodybits / Cordova-sqlcipher-dev / issues](https://github.com/brodybits/Cordova-sqlcipher-dev/issues) so they can be tracked properly.
+**NOTE:** Please report all bugs at [brodysoft / Cordova-sqlcipher-adaptor / issues](https://github.com/brodysoft/Cordova-sqlcipher-adaptor/issues) so they can be tracked properly.
 
 # Unit tests
 
-Unit testing is done in `test-www/`.
+Unit testing is done in `test-www`.
 
 ## running tests from shell
+
+**TBD** `test.sh` not tested with sqlcipher version of this plugin:
 
 To run the tests from \*nix shell, simply do either:
  
@@ -421,7 +423,7 @@ The adapter is now part of [PouchDB](http://pouchdb.com/) thanks to [@nolanlawso
 **IMPORTANT NOTE:** It is better to push your change(s) from a separate branch. Sometimes they need to be reworked before acceptance. Otherwise your `master` branch could become a real mess if rework is needed.
 
 - Testimonials of apps that are using this plugin would be especially helpful.
-- Reporting issues at [brodybits / Cordova-sqlcipher-dev / issues](https://github.com/brodybits/Cordova-sqlcipher-dev/issues) can help improve the quality of this plugin.
+- Reporting issues at [brodysoft / Cordova-sqlcipher-adaptor / issues](https://github.com/brodysoft/Cordova-sqlcipher-adaptor/issues) can help improve the quality of this plugin.
 - Patches with bug fixes are helpful, especially when submitted with test code.
 - Other enhancements welcome for consideration, when submitted with test code and will work for all supported platforms. Increase of complexity should be avoided.
 - All contributions may be reused by [@brodybits (Chris Brody)](https://github.com/brodybits) under another license in the future. Efforts will be taken to give credit for major contributions but it will not be guaranteed.
