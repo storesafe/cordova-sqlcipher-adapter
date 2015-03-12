@@ -53,9 +53,12 @@
           });
         });
 
-        // Only test ICU-UNICODE with Android 5.0(+):
-        if (/Android [5-9]/.test(navigator.userAgent)) test(suiteName +
-            "ICU-UNICODE string manipulation test", function() {
+        // SQLCipher for Android supports ICU-UNICODE string manipulation;
+        // only test Web SQL with ICU-UNICODE for Android 5.0(+):
+        if (isWebSql ?
+            /Android [5-9]/.test(navigator.userAgent) :
+            /Android/.test(navigator.userAgent)) test(suiteName +
+              "ICU-UNICODE string manipulation test", function() {
 
           var db = openDatabase("UNICODE-string-test.db", "1.0", "Demo", DEFAULT_SIZE);
 
@@ -1607,10 +1610,9 @@
         });
 
         if (!isWebSql ) test(suiteName + ' close then re-open allows subsequent queries to run', function () {
-
           // asynch test coming up
           stop(1);
-        
+
           var dbName = "Database-Close-and-Reopen";
           openDatabase(dbName, "1.0", "Demo", DEFAULT_SIZE, function (db) {
             db.close(function () {
@@ -1782,6 +1784,140 @@
           }, function (error) {
             ok(false, 'expected delete 1/5 error callback not to be called for an open database' + error);
             start(5);
+          });
+        });
+
+        // Tests with SQLCipher encryption:
+
+        if (!isWebSql) test(suiteName +
+            "nested transaction test with encryption", function() {
+
+          var dbName = "cipher-nested-transaction-test.db";
+          var db = openDatabase({name: dbName, key: "test-password"});
+
+          ok(!!db, "db object");
+
+          stop(3);
+
+          db.transaction(function(tx) {
+
+            start(1);
+            ok(!!tx, "tx object");
+
+            tx.executeSql('DROP TABLE IF EXISTS test_table');
+            tx.executeSql('CREATE TABLE IF NOT EXISTS test_table (id integer primary key, data text, data_num integer)');
+
+            tx.executeSql("INSERT INTO test_table (data, data_num) VALUES (?,?)", ["test", 100], function(tx, res) {
+              start(1);
+
+              console.log("insertId: " + res.insertId + " -- probably 1");
+              console.log("rowsAffected: " + res.rowsAffected + " -- should be 1");
+
+              ok(!!res.insertId, "Valid res.insertId");
+              equal(res.rowsAffected, 1, "res rows affected");
+
+              tx.executeSql("select count(id) as cnt from test_table;", [], function(tx, res) {
+                start(1);
+
+                console.log("res.rows.length: " + res.rows.length + " -- should be 1");
+                console.log("res.rows.item(0).cnt: " + res.rows.item(0).cnt + " -- should be 1");
+
+                equal(res.rows.length, 1, "res rows length");
+                equal(res.rows.item(0).cnt, 1, "select count");
+
+              });
+
+            });
+
+          });
+
+        });
+
+        if (!isWebSql) test(suiteName +
+            ' Open & read encrypted DB with same password', function () {
+
+          var dbName = "Open-read-encrypted-DB-with-same-password.db";
+          var test_data = "Test string to be stored with encryption";
+
+          // async test:
+          stop(2);
+
+          openDatabase({name: dbName, key: "test-password"}, function (db) {
+            db.transaction(function(tx) {
+              tx.executeSql("DROP TABLE IF EXISTS tt");
+              tx.executeSql("CREATE TABLE IF NOT EXISTS tt (test_data)");
+              tx.executeSql("INSERT INTO tt (test_data) VALUES (?)", [test_data]);
+            }, function(error) {
+              console.log("ERROR: " + error.message);
+              ok(false, error.message);
+            }, function() {
+              ok(true, 'DB populated OK');
+              db.close(function () {
+                openDatabase({name: dbName, key: "test-password"}, function (db) {
+                  ok(!!db, 'reopen DB same test-password');
+                  start(1);
+
+                  db.executeSql("SELECT * FROM tt", null, function(result) {
+                    ok(!!result, 'result from encrypted DB');
+                    ok(!!result.rows.item(0).test_data, 'got the test data from encrypted DB');
+                    strictEqual(result.rows.item(0).test_data, test_data, 'correct test data from encrypted DB');
+                    start(1);
+                  }, function (error) {
+                    ok(false, error.message);
+                    start(1);
+                  });
+
+                }, function (error) {
+                  ok(false, error.message);
+                  start(1);
+                });
+              }, function (error) {
+                ok(false, error.message);
+                start(1);
+              });
+            });
+          }, function (error) {
+            ok(false, error.message);
+            start(1);
+          });
+        });
+
+        if (!isWebSql) test(suiteName +
+            ' Open encrypted DB with another password - should fail', function () {
+
+          // async test coming up
+          stop(1);
+        
+          var dbName = "Encrypted-DB-reopen-with-another-password.db";
+          openDatabase({name: dbName, key: "test-password"}, function (db) {
+            // CREATE TABLE to put some contents into the DB:
+            // XXX cannot close within db.executeSql() callback due to BUG
+            //db.executeSql("CREATE TABLE IF NOT EXISTS tt (test_data)", [], function() {
+            db.transaction(function(tx) {
+              tx.executeSql("DROP TABLE IF EXISTS tt");
+              tx.executeSql("CREATE TABLE IF NOT EXISTS tt (test_data)");
+            }, function(error) {
+              console.log("ERROR: " + error.message);
+              ok(false, error.message);
+            }, function() {
+              db.close(function () {
+                openDatabase({name: dbName, key: "another-password"}, function (db) {
+                  ok(false, 'Open DB with another-password should not have succeeded');
+                  start(1);
+                }, function (error) {
+                  // Expected/desired result:
+                  ok(true, 'DB was succesfully encrypted with test-password');
+                  start(1);
+                });
+              }, function (error) {
+                ok(false, error.message);
+                start(1);
+              });
+            });
+            //});
+          }, function (error) {
+            ok(false, error.message);
+            start(1);
           });
         });
 
