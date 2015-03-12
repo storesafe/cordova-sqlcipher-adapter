@@ -35,7 +35,8 @@
         </config-file>
 
         <source-file src="src/android/org/pgsqlite/SQLitePlugin.java" target-dir="src/org/pgsqlite"/>
-        <!-- sqlcipher distribution for Android:
+
+        <!-- SQLCipher distribution for Android: -->
         <source-file src="src/android/sqlcipher/assets/icudt46l.zip" target-dir="assets"/>
         <source-file src="src/android/sqlcipher/libs/sqlcipher.jar" target-dir="libs"/>
         <source-file src="src/android/sqlcipher/libs/sqlcipher-javadoc.jar" target-dir="libs"/>
@@ -48,7 +49,6 @@
         <source-file src="src/android/sqlcipher/libs/x86/libdatabase_sqlcipher.so" target-dir="libs/x86"/>
         <source-file src="src/android/sqlcipher/libs/x86/libsqlcipher_android.so" target-dir="libs/x86"/>
         <source-file src="src/android/sqlcipher/libs/x86/libstlport_shared.so" target-dir="libs/x86"/>
-          -->
     </platform>
 
     <!-- ios -->
@@ -61,11 +61,11 @@
 
         <header-file src="src/ios/SQLitePlugin.h" />
         <source-file src="src/ios/SQLitePlugin.m" />
-        <!-- sqlcipher source distribution and framework dependency for iOS:
+
+        <!-- SQLCipher source distribution and Security.framework dependency for iOS: -->
         <header-file src="src/ios/sqlcipher/sqlite3.h" />
         <source-file src="src/ios/sqlcipher/sqlite3.c" />
         <framework src="Security.framework" />
-          -->
     </platform>
 
 </plugin> <!-- vim: set expandtab : -->

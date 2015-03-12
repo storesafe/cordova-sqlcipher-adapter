@@ -8,7 +8,7 @@ License for iOS version: MIT only
 
 ## Status
 
-- Initial version (source distribution)
+- Initial version with SQLCipher v3.2.0
 - Pre-populatd DB is NOT supported by this version.
 - Lawnchair & PouchDB have NOT been tested with this version.
 
@@ -195,7 +195,7 @@ You can find more details at [this writeup](http://iphonedevlog.wordpress.com/20
 
 - `SQLitePlugin.coffee.md`: platform-independent (Literate coffee-script, can be read by recent coffee-script compiler)
 - `www`: `SQLitePlugin.js` platform-independent
-- `src`: Java plugin code for Android; Objective-C plugin code for iOS
+- `src`: Java plugin code for Android; Objective-C plugin code for iOS *with sqlcipher subdirectories*
 - `test-www`: simple testing in `index.html` using qunit 1.5.0
 - `Lawnchair-adapter`: Lawnchair adaptor, based on the version from the Lawnchair repository, with the basic Lawnchair test suite in `test-www` subdirectory
 
@@ -206,7 +206,7 @@ These installation instructions are based on the Android example project from Co
  - Install www/SQLitePlugin.js from this repository into assets/www subdirectory
  - Install src/android/org/pgsqlite/SQLitePlugin.java from this repository into src/org/pgsqlite subdirectory
  - Add the plugin element `<plugin name="SQLitePlugin" value="org.pgsqlite.SQLitePlugin"/>` to res/xml/config.xml
- - Install the SQLCipher for Android binary components (*TBD better description*)
+ - Install the SQLCipher for Android binary components from `src/android/sqlcipher` (*TBD better description*)
 
 Sample change to res/xml/config.xml for Cordova/PhoneGap 2.x:
 
@@ -256,15 +256,15 @@ In the Project "Build Phases" tab, select the _first_ "Link Binary with Librarie
 
 ### SQLite Plugin
 
-Obtain sqlcipher version of sqlite3.h & sqlite3.c.
+Copy `SQLitePlugin.h` & `SQLitePlugin.m` into your project's Plugins subdirectory in the file system.
 
-Drag .h and .m files into your project's Plugins folder (in xcode) -- I always
-just have "Create references" as the option selected.
+Copy `sqlite3.h` & `sqlite3.c` from `src/ios/sqlcipher` into your project's Plugins subdirectory in the file system.
 
-Take the precompiled javascript file from build/, or compile the coffeescript
-file in src/ to javascript WITH the top-level function wrapper option (default).
+Include the .h and .m files into your project's Plugins folder in Xcode (I always have "Create references" as the option selected).
 
-Use the resulting javascript file in your HTML.
+Install the precompiled Javascript file from `www`, or compile the coffeescript in SQLitePlugin.coffee.md WITH the top-level function wrapper option (default).
+
+Use the resulting javascript file in your HTML -- not needed for Cordova/PhoneGap 3.0(+).
 
 Enable the SQLitePlugin in `config.xml` (Cordova/PhoneGap 2.x):
 
