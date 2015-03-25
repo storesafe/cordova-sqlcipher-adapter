@@ -604,17 +604,8 @@ public class SQLitePlugin extends CordovaPlugin {
                     for (int i = 0; i < colCount; ++i) {
                         key = cur.getColumnName(i);
 
-                        if (android.os.Build.VERSION.SDK_INT >= 11) {
-
-                            // Use try & catch just in case android.os.Build.VERSION.SDK_INT >= 11 is lying:
-                            try {
-                                bindPostHoneycomb(row, key, cur, i);
-                            } catch (Exception ex) {
-                                bindPreHoneycomb(row, key, cur, i);
-                            }
-                        } else {
-                            bindPreHoneycomb(row, key, cur, i);
-                        }
+                        // Always valid for SQLCipher for Android:
+                        bindPostHoneycomb(row, key, cur, i);
                     }
 
                     rowsArrayResult.put(row);
@@ -638,7 +629,10 @@ public class SQLitePlugin extends CordovaPlugin {
         return rowsResult;
     }
 
-    @SuppressLint("NewApi")
+    /**
+     * bindPostHoneycomb - always valid for SQLCipher for Android
+     *
+     */
     private void bindPostHoneycomb(JSONObject row, String key, Cursor cur, int i) throws JSONException {
         int curType = cur.getType(i);
 
@@ -659,26 +653,6 @@ public class SQLitePlugin extends CordovaPlugin {
             default: /* (not expected) */
                 row.put(key, cur.getString(i));
                 break;
-        }
-    }
-
-    private void bindPreHoneycomb(JSONObject row, String key, Cursor cursor, int i) throws JSONException {
-        // Since cursor.getType() is not available pre-honeycomb, this is
-        // a workaround so we don't have to bind everything as a string
-        // Details here: http://stackoverflow.com/q/11658239
-        SQLiteCursor sqLiteCursor = (SQLiteCursor) cursor;
-        CursorWindow cursorWindow = sqLiteCursor.getWindow();
-        int pos = cursor.getPosition();
-        if (cursorWindow.isNull(pos, i)) {
-            row.put(key, JSONObject.NULL);
-        } else if (cursorWindow.isLong(pos, i)) {
-            row.put(key, cursor.getLong(i));
-        } else if (cursorWindow.isFloat(pos, i)) {
-            row.put(key, cursor.getDouble(i));
-        } else if (cursorWindow.isBlob(pos, i)) {
-            row.put(key, new String(Base64.encode(cursor.getBlob(i), Base64.DEFAULT)));
-        } else { // string
-            row.put(key, cursor.getString(i));
         }
     }
 
