@@ -2173,78 +2173,68 @@
 
       function doCipherTests() {
         var suiteName = "cipher: ";
-        var isWebSql = false;
         var openDatabase = window.sqlitePlugin.openDatabase;
 
-        if (!isWebSql) test(suiteName +
-            "nested transaction test with encryption", function() {
-
+        test(suiteName + "nested transaction test with encryption", function() {
           var dbName = "cipher-nested-transaction-test.db";
-          var db = openDatabase({name: dbName, key: "test-password"});
+          var db = openDatabase({name: dbName, key: 'test-password'});
 
-          ok(!!db, "db object");
+          ok(!!db, 'valid db handle object');
 
           stop(3);
 
           db.transaction(function(tx) {
-
             start(1);
-            ok(!!tx, "tx object");
+            ok(!!tx, 'valid tx object');
 
             tx.executeSql('DROP TABLE IF EXISTS test_table');
             tx.executeSql('CREATE TABLE IF NOT EXISTS test_table (id integer primary key, data text, data_num integer)');
 
-            tx.executeSql("INSERT INTO test_table (data, data_num) VALUES (?,?)", ["test", 100], function(tx, res) {
+            tx.executeSql('INSERT INTO test_table (data, data_num) VALUES (?,?)', ['test', 100], function(tx, res) {
               start(1);
 
-              console.log("insertId: " + res.insertId + " -- probably 1");
-              console.log("rowsAffected: " + res.rowsAffected + " -- should be 1");
+              console.log('insertId: ' + res.insertId + ' -- probably 1');
+              console.log('rowsAffected: ' + res.rowsAffected + ' -- should be 1');
 
-              ok(!!res.insertId, "Valid res.insertId");
-              equal(res.rowsAffected, 1, "res rows affected");
+              ok(!!res.insertId, 'Valid res.insertId');
+              equal(res.rowsAffected, 1, 'res rows affected');
 
-              tx.executeSql("select count(id) as cnt from test_table;", [], function(tx, res) {
+              tx.executeSql('select count(id) as cnt from test_table;', [], function(tx, res) {
                 start(1);
 
-                console.log("res.rows.length: " + res.rows.length + " -- should be 1");
-                console.log("res.rows.item(0).cnt: " + res.rows.item(0).cnt + " -- should be 1");
+                console.log('res.rows.length: ' + res.rows.length + ' -- should be 1');
+                console.log('res.rows.item(0).cnt: ' + res.rows.item(0).cnt + ' -- should be 1');
 
-                equal(res.rows.length, 1, "res rows length");
-                equal(res.rows.item(0).cnt, 1, "select count");
-
+                equal(res.rows.length, 1, 'res rows length');
+                equal(res.rows.item(0).cnt, 1, 'select count');
               });
-
             });
-
           });
-
         });
 
-        if (!isWebSql) test(suiteName +
-            ' Open & read encrypted DB with same password', function () {
-
+        test(suiteName + ' Open & read encrypted DB with same password', function () {
           var dbName = "Open-read-encrypted-DB-with-same-password.db";
           var test_data = "Test string to be stored with encryption";
 
           // async test:
           stop(2);
 
-          openDatabase({name: dbName, key: "test-password"}, function (db) {
+          openDatabase({name: dbName, key: 'test-password'}, function (db) {
             db.transaction(function(tx) {
-              tx.executeSql("DROP TABLE IF EXISTS tt");
-              tx.executeSql("CREATE TABLE IF NOT EXISTS tt (test_data)");
-              tx.executeSql("INSERT INTO tt (test_data) VALUES (?)", [test_data]);
+              tx.executeSql('DROP TABLE IF EXISTS tt');
+              tx.executeSql('CREATE TABLE IF NOT EXISTS tt (test_data)');
+              tx.executeSql('INSERT INTO tt (test_data) VALUES (?)', [test_data]);
             }, function(error) {
-              console.log("ERROR: " + error.message);
+              console.log('ERROR: ' + error.message);
               ok(false, error.message);
             }, function() {
               ok(true, 'DB populated OK');
               db.close(function () {
-                openDatabase({name: dbName, key: "test-password"}, function (db) {
+                openDatabase({name: dbName, key: 'test-password'}, function (db) {
                   ok(!!db, 'reopen DB same test-password');
                   start(1);
 
-                  db.executeSql("SELECT * FROM tt", null, function(result) {
+                  db.executeSql('SELECT * FROM tt', null, function(result) {
                     ok(!!result, 'result from encrypted DB');
                     ok(!!result.rows.item(0).test_data, 'got the test data from encrypted DB');
                     strictEqual(result.rows.item(0).test_data, test_data, 'correct test data from encrypted DB');
@@ -2269,14 +2259,12 @@
           });
         });
 
-        if (!isWebSql) test(suiteName +
-            ' Open encrypted DB with another password - should fail', function () {
-
-          // async test coming up
-          stop(1);
-        
+        test(suiteName + ' Open encrypted DB with another password - should fail', function () {
           var dbName = "Encrypted-DB-reopen-with-another-password.db";
-          openDatabase({name: dbName, key: "test-password"}, function (db) {
+
+          stop();
+        
+          openDatabase({name: dbName, key: 'test-password'}, function (db) {
             // CREATE TABLE to put some contents into the DB:
             // XXX cannot close within db.executeSql() callback due to BUG
             //db.executeSql("CREATE TABLE IF NOT EXISTS tt (test_data)", [], function() {
@@ -2290,29 +2278,28 @@
               db.close(function () {
                 openDatabase({name: dbName, key: "another-password"}, function (db) {
                   ok(false, 'Open DB with another-password should not have succeeded');
-                  start(1);
+                  start();
                 }, function (error) {
                   // Expected/desired result:
                   ok(true, 'DB was succesfully encrypted with test-password');
                   ok(!!error, 'valid error object');
                   // XXX BROKEN:
                   //ok(!!error.message, 'should report a valid error message');
-                  start(1);
+                  start();
                 });
               }, function (error) {
                 ok(false, error.message);
-                start(1);
+                start();
               });
             });
             //});
           }, function (error) {
             ok(false, error.message);
-            start(1);
+            start();
           });
         });
 
         test(suiteName + 'Attempt to open and read unencrypted DB with password key', function () {
-
           var dbName = 'Open-and-read-unencrypted-DB-with-password.db';
 
           stop();
