@@ -1,6 +1,6 @@
 # Cordova/PhoneGap SQLCipher adaptor plugin
 
-Native interface to sqlcipher in a Cordova/PhoneGap plugin for Android & iOS, with HTML5 Web SQL API.
+Native interface to sqlcipher in a Cordova/PhoneGap plugin for Android & iOS, with API similar to HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/).
 
 License for Android version: MIT or Apache 2.0
 
@@ -14,7 +14,7 @@ License for iOS version: MIT only
 
 ## Announcements
 
-- Fixes to work with PouchDB were made by [@nolanlawson](https://github.com/nolanlawson)
+- Fixes to work with PouchDB by [@nolanlawson](https://github.com/nolanlawson)
 
 ## Highlights
 
@@ -52,11 +52,11 @@ TBD *YOUR APP HERE*
 
 - [brodysoft / Cordova-SQLitePlugin](https://github.com/brodysoft/Cordova-SQLitePlugin) - Cordova sqlite plugin without sqlcipher, supported for more platforms.
 - [MetaMemoryT / websql-client](https://github.com/MetaMemoryT/websql-client) - provides the same API and connects to [websql-server](https://github.com/MetaMemoryT/websql-server) through WebSockets (without sqlcipher).
-- Original version for iOS without sqlcipher (with a different API): https://github.com/davibe/Phonegap-SQLitePlugin
+- Original version for iOS without sqlcipher (with a different API): [davibe / Phonegap-SQLitePlugin](https://github.com/davibe/Phonegap-SQLitePlugin)
 
 # Usage
 
-The idea is to emulate the [HTML5/Web SQL API](http://www.w3.org/TR/webdatabase/) as closely as possible. The only major change is to use `window.sqlitePlugin.openDatabase()` (or `sqlitePlugin.openDatabase()`) instead of `window.openDatabase()` *with parameters as described below*. If you see any other major change please report it, it is probably a bug.
+The idea is to emulate the HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/) as closely as possible. The only major change is to use `window.sqlitePlugin.openDatabase()` (or `sqlitePlugin.openDatabase()`) instead of `window.openDatabase()`. If you see any other major change please report it, it is probably a bug.
 
 ## Opening a database
 
@@ -87,8 +87,8 @@ function onDeviceReady() {
 ## Background processing
 
 The threading model depends on which version is used:
-- For Android, one background thread per db (always);
-- for iOS, background processing using a thread pool (always).
+- For Android, one background thread per db;
+- for iOS, background processing using a thread pool.
 
 # Sample with PRAGMA feature
 
@@ -190,6 +190,13 @@ For iOS:
     cordova plugin add https://github.com/brodysoft/Cordova-sqlcipher-adaptor
 
 You can find more details at [this writeup](http://iphonedevlog.wordpress.com/2014/04/07/installing-chris-brodys-sqlite-database-with-cordova-cli-android/).
+
+**IMPORTANT:** sometimes you have to update the version for a platform before you can build, like: `cordova prepare ios`
+
+**NOTE:** If you cannot build for a platform after `cordova prepare`, you may have to remove the platform and add it again, such as:
+
+    cordova platform rm ios
+    cordova platform add ios
 
 ## Source tree
 
@@ -420,7 +427,7 @@ The adapter is now part of [PouchDB](http://pouchdb.com/) thanks to [@nolanlawso
 
 # Contributing
 
-**IMPORTANT NOTE:** It is better to push your change(s) from a separate branch. Sometimes they need to be reworked before acceptance. Otherwise your `master` branch could become a real mess if rework is needed.
+**WARNING:** Please do NOT propose changes from your `master` branch. In general changes will be rebased using `git rebase` or `git cherry-pick` and not merged.
 
 - Testimonials of apps that are using this plugin would be especially helpful.
 - Reporting issues at [brodysoft / Cordova-sqlcipher-adaptor / issues](https://github.com/brodysoft/Cordova-sqlcipher-adaptor/issues) can help improve the quality of this plugin.
