@@ -9,7 +9,7 @@
     <license>MIT</license>
 
     <description>SQLCipher database adaptor plugin for PhoneGap/Cordova, based on the Cordova-SQLitePlugin. Allows you to use more storage and provides more flexibility than the standard Web SQL database (window.openDatabase).</description>
-    <author>Chris Brody</author>
+    <author>Various</author>
 
     <engines>
         <engine name="cordova" version=">=3.3.0" />

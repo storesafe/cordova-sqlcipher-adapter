@@ -1,10 +1,10 @@
-# SQLitePlugin in Markdown (litcoffee)
+# SQLite plugin in Markdown (litcoffee)
 
 #### Use coffee compiler to compile this directly into Javascript
 
 #### License for common script: MIT or Apache
 
-# Top-level SQLitePlugin objects
+# Top-level SQLite plugin objects
 
 ## root window object:
 
@@ -14,8 +14,19 @@
 
     READ_ONLY_REGEX = /^\s*(?:drop|delete|insert|update|create)\s/i
 
+    # per-db state
+    DB_STATE_INIT = "INIT"
+    DB_STATE_OPEN = "OPEN"
+
 ## global(s):
 
+    # per-db map of locking and queueing
+    # XXX NOTE: This is NOT cleaned up when a db is closed and/or deleted.
+    # If the record is simply removed when a db is closed or deleted,
+    # it will cause some test failures and may break large-scale
+    # applications that repeatedly open and close the database.
+    # [BUG #210] TODO: better to abort and clean up the pending transaction state.
+    # XXX TBD this will be renamed and include some more per-db state.
     txLocks = {}
 
 ## utility functions:
@@ -63,12 +74,14 @@
         else
           return fun.call this, []
 
-## SQLitePlugin db-connection
+## SQLite plugin db-connection handle
 
-#### SQLitePlugin object is defined by a constructor function and prototype member functions:
+#### NOTE: there can be multipe SQLitePlugin db-connection handles per open db.
+
+#### SQLite plugin db connection handle object is defined by a constructor function and prototype member functions:
 
     SQLitePlugin = (openargs, openSuccess, openError) ->
-      console.log "SQLitePlugin openargs: #{JSON.stringify openargs}"
+      # console.log "SQLitePlugin openargs: #{JSON.stringify openargs}"
 
       if !(openargs and openargs['name'])
         throw newSQLError "Cannot create a SQLitePlugin db instance without a db name"
@@ -95,17 +108,29 @@
       return
 
     SQLitePlugin::databaseFeatures = isSQLitePluginDatabase: true
+
+    # Keep track of state of open db connections
+    # XXX TBD this will be moved and renamed or
+    # combined with txLocks.
     SQLitePlugin::openDBs = {}
 
     SQLitePlugin::addTransaction = (t) ->
-
       if !txLocks[@dbname]
         txLocks[@dbname] = {
           queue: []
           inProgress: false
         }
       txLocks[@dbname].queue.push t
-      @startNextTransaction()
+      if @dbname of @openDBs && @openDBs[@dbname] isnt DB_STATE_INIT
+        # XXX TODO: only when queue has length of 1 [and test it!!]
+        @startNextTransaction()
+
+      else
+        if @dbname of @openDBs
+          console.log 'new transaction is waiting for open operation'
+        else
+          # XXX TBD TODO: in this case (which should not happen), should abort and discard the transaction.
+          console.log 'database is closed, new transaction is [stuck] waiting until db is opened again!'
       return
 
     SQLitePlugin::transaction = (fn, error, success) ->
@@ -127,45 +152,125 @@
     SQLitePlugin::startNextTransaction = ->
       self = @
 
-      nextTick () ->
+      nextTick =>
+        if !(@dbname of @openDBs) || @openDBs[@dbname] isnt DB_STATE_OPEN
+          console.log 'cannot start next transaction: database not open'
+          return
+
         txLock = txLocks[self.dbname]
-        if txLock.queue.length > 0 && !txLock.inProgress
+        if !txLock
+          console.log 'cannot start next transaction: database connection is lost'
+          # XXX TBD TODO (BUG #210/??): abort all pending transactions with error cb [and test!!]
+          # @abortAllPendingTransactions()
+          return
+
+        else if txLock.queue.length > 0 && !txLock.inProgress
+          # start next transaction in q
           txLock.inProgress = true
           txLock.queue.shift().start()
         return
+
+      return
+
+    SQLitePlugin::abortAllPendingTransactions = ->
+      # extra debug info:
+      # if txLocks[@dbname] then console.log 'abortAllPendingTransactions with transaction queue length: ' + txLocks[@dbname].queue.length
+      # else console.log 'abortAllPendingTransactions with no transaction lock state'
+
+      txLock = txLocks[@dbname]
+      if !!txLock && txLock.queue.length > 0
+        # XXX TODO: what to do in case there is a (stray) transaction in progress?
+        #console.log 'abortAllPendingTransactions - cleanup old transaction(s)'
+        for tx in txLock.queue
+          tx.abortFromQ newSQLError 'Invalid database handle'
+
+        # XXX TODO: consider cleaning up (delete) txLocks[@dbname] resource,
+        # in case it is known there are no more pending transactions
+        txLock.queue = []
+        txLock.inProgress = false
+
       return
 
     SQLitePlugin::open = (success, error) ->
-      onSuccess = () => success this
-
       if @dbname of @openDBs
-        ###
-        for a re-open run onSuccess async so that the openDatabase return value
-        can be used in the success handler as an alternative to the handler's
-        db argument
-        ###
-        nextTick () -> onSuccess()
+        console.log 'database already open: ' + @dbname
+
+        # for a re-open run the success cb async so that the openDatabase return value
+        # can be used in the success handler as an alternative to the handler's
+        # db argument
+        nextTick =>
+          success @
+          return
+
       else
-        @openDBs[@dbname] = true
-        cordova.exec onSuccess, error, "SQLitePlugin", "open", [ @openargs ]
+        console.log 'OPEN database: ' + @dbname
+
+        opensuccesscb = =>
+          # NOTE: the db state is NOT stored (in @openDBs) if the db was closed or deleted.
+          # console.log 'OPEN database: ' + @dbname + ' succeeded'
+
+          #if !@openDBs[@dbname] then call open error cb, and abort pending tx if any
+          if !@openDBs[@dbname]
+            console.log 'database was closed during open operation'
+            # XXX TODO [BUG #210] (and test!!):
+            # if !!error then error newSQLError 'database closed during open operation'
+            # @abortAllPendingTransactions()
+
+          if @dbname of @openDBs
+            @openDBs[@dbname] = DB_STATE_OPEN
+
+          if !!success then success @
+
+          txLock = txLocks[@dbname]
+          if !!txLock && txLock.queue.length > 0 && !txLock.inProgress
+            @startNextTransaction()
+          return
+
+        openerrorcb = =>
+          console.log 'OPEN database: ' + @dbname + ' failed, aborting any pending transactions'
+          # XXX TODO: newSQLError missing the message part!
+          if !!error then error newSQLError 'Could not open database'
+          delete @openDBs[@dbname]
+          @abortAllPendingTransactions()
+          return
+
+        # store initial DB state:
+        @openDBs[@dbname] = DB_STATE_INIT
+
+        cordova.exec opensuccesscb, openerrorcb, "SQLitePlugin", "open", [ @openargs ]
 
       return
 
     SQLitePlugin::close = (success, error) ->
-      #console.log "SQLitePlugin.prototype.close"
-
       if @dbname of @openDBs
         if txLocks[@dbname] && txLocks[@dbname].inProgress
+          # XXX TBD: wait for current tx then close (??)
+          console.log 'cannot close: transaction is in progress'
           error newSQLError 'database cannot be closed while a transaction is in progress'
           return
 
+        console.log 'CLOSE database: ' + @dbname
+
+        # XXX [BUG #209] closing one db handle disables other handles to same db
         delete @openDBs[@dbname]
 
+        if txLocks[@dbname] then console.log 'closing db with transaction queue length: ' + txLocks[@dbname].queue.length
+        else console.log 'closing db with no transaction lock state'
+
+        # XXX [BUG #210] TODO: when closing or deleting a db, abort any pending transactions [and test it!!]
+
         cordova.exec success, error, "SQLitePlugin", "close", [ { path: @dbname } ]
+
+      else
+        console.log 'cannot close: database is not open'
+        if error then nextTick -> error()
 
       return
 
     SQLitePlugin::executeSql = (statement, params, success, error) ->
+      # XXX TODO: better to capture the result, and report it once
+      # the transaction has completely finished.
+      # This would fix BUG #204 (cannot close db in db.executeSql() callback).
       mysuccess = (t, r) -> if !!success then success r
       myerror = (t, e) -> if !!error then error e
 
@@ -176,11 +281,8 @@
       @addTransaction new SQLitePluginTransaction(this, myfn, null, null, false, false)
       return
 
-## SQLitePluginTransaction object for batching:
+## SQLite plugin transaction object for batching:
 
-    ###
-    Transaction batching object:
-    ###
     SQLitePluginTransaction = (db, fn, error, success, txlock, readOnly) ->
       if typeof(fn) != "function"
         ###
@@ -210,9 +312,7 @@
         @fn this
         @run()
       catch err
-        ###
-        If "fn" throws, we must report the whole transaction as failed.
-        ###
+        # If "fn" throws, we must report the whole transaction as failed.
         txLocks[@db.dbname].inProgress = false
         @db.startNextTransaction()
         if @error
@@ -254,7 +354,6 @@
         qid: qid
 
         sql: sql
-        #params: values || []
         params: params
 
       return
@@ -309,10 +408,8 @@
             if txFailure
               tx.abort txFailure
             else if tx.executes.length > 0
-              ###
-              new requests have been issued by the callback
-              handlers, so run another batch.
-              ###
+              # new requests have been issued by the callback
+              # handlers, so run another batch.
               tx.run()
             else
               tx.finish()
@@ -411,6 +508,15 @@
 
       return
 
+    SQLitePluginTransaction::abortFromQ = (sqlerror) ->
+      # NOTE: since the transaction is waiting in the queue,
+      # the transaction function containing the SQL statements
+      # would not be run yet. Simply report the transaction error.
+      if @error
+        @error sqlerror
+
+      return
+
 ## SQLite plugin object factory:
 
     dblocations = [ "docs", "libs", "nosync" ]
@@ -470,6 +576,7 @@
           dblocation = if !!first.location then dblocations[first.location] else null
           args.dblocation = dblocation || dblocations[0]
 
+        # XXX [BUG #210] TODO: when closing or deleting a db, abort any pending transactions (with error callback)
         delete SQLitePlugin::openDBs[args.path]
         cordova.exec success, error, "SQLitePlugin", "delete", [ args ]
 
