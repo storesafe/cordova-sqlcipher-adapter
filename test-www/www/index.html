@@ -26,6 +26,7 @@
         QUnit.config.testTimeout = 25000; // 25 sec.
         doTest(false, 'Plugin: ', window.sqlitePlugin.openDatabase);
         doTest(true, 'HTML5: ', window.openDatabase);
+        doCipherTests();
       }
 
       function doTest(isWebSql, suiteName, openDatabase) {
@@ -767,7 +768,8 @@
         // a non-standard parameter type. Blob becomes an empty dictionary on iOS, for example,
         // and so this verifies the type is converted to a string and continues. Web SQL does
         // the same but on the JavaScript side and converts to a string like `[object Blob]`.
-        test(suiteName + "INSERT Blob from ArrayBuffer (non-standard parameter type)", function() {
+        if (!/Android [1-4]/.test(navigator.userAgent)) test(suiteName +
+            'INSERT Blob from ArrayBuffer (non-standard parameter type)', function() {
 
           ok(typeof ArrayBuffer !== "undefined", "ArrayBuffer type exists");
 
@@ -1787,7 +1789,12 @@
           });
         });
 
-        // Tests with SQLCipher encryption:
+      }
+
+      function doCipherTests() {
+        var suiteName = "cipher: ";
+        var isWebSql = false;
+        var openDatabase = window.sqlitePlugin.openDatabase;
 
         if (!isWebSql) test(suiteName +
             "nested transaction test with encryption", function() {
@@ -1907,6 +1914,9 @@
                 }, function (error) {
                   // Expected/desired result:
                   ok(true, 'DB was succesfully encrypted with test-password');
+                  ok(!!error, 'valid error object');
+                  // XXX BROKEN:
+                  //ok(!!error.message, 'should report a valid error message');
                   start(1);
                 });
               }, function (error) {
@@ -1918,6 +1928,53 @@
           }, function (error) {
             ok(false, error.message);
             start(1);
+          });
+        });
+
+        test(suiteName + 'Attempt to open and read unencrypted DB with password key', function () {
+
+          var dbName = 'Open-and-read-unencrypted-DB-with-password.db';
+
+          stop();
+
+          openDatabase({name: dbName}, function (db) {
+            ok(!!db, 'valid db handle object');
+            db.transaction(function(tx) {
+              ok(!!tx, 'valid tx object');
+              tx.executeSql('DROP TABLE IF EXISTS tt');
+              tx.executeSql('CREATE TABLE IF NOT EXISTS tt (test_data)');
+              tx.executeSql('INSERT INTO tt (test_data) VALUES (?)', ['test data']);
+            }, function(error) {
+              console.log('ERROR: ' + error.message);
+              ok(false, 'tx error: ' + error.message);
+              start();
+            }, function() {
+              ok(true, 'ready to close db');
+              db.close(function () {
+                ok(true, 'db is closed');
+
+                var db1 = openDatabase({name: dbName, key: 'test-password'});
+                db1.transaction(function(tx) {
+                  // not expected (ignored):
+                  tx.executeSql('SELECT 1');
+                }, function(error) {
+                  console.log('ERROR: ' + error.message);
+                  ok(true, 'Attempted transaction on invalid db should fail');
+                  ok(!!error, 'valid error object');
+                  ok(!!error.message, 'should report a valid error message');
+                  start();
+                }, function() {
+                  ok(false, 'Attempted transaction on invalid db should not succeed');
+                  start();
+                });
+              }, function (error) {
+                ok(false, 'error closing: ' + error.message);
+                start();
+              });
+            });
+          }, function (error) {
+            ok(false, 'open error: ' + error.message);
+            start();
           });
         });
 
