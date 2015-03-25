@@ -444,5 +444,5 @@ The adapter is now part of [PouchDB](http://pouchdb.com/) thanks to [@nolanlawso
 - `common-src` - source for Android & iOS versions without sqlcipher
 - `cipher-src` - source for Android & iOS versions with sqlcipher
 - `cipher-rc` - pre-release version, including sqlcipher dependencies
-- `master` - version for release, *may* be included in PhoneGap build in the future.
+- `cipher-master` - version for release, *may* be included in PhoneGap build in the future.
 
