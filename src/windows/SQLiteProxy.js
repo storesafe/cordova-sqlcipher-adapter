@@ -30,6 +30,13 @@ module.exports = {
 			console.log("db name: " + dbname + " at full path: " + opendbname);
 
 			db = new SQLite3JS.Database(opendbname);
+			if (!!options.key && options.key.length !== 0) {
+				// XXX TODO close db if this fails:
+				// XXX TODO problem with single and/or double quote marks:
+				db.run("PRAGMA key='"+options.key+"'");
+				// ignore result if next statement does not throw:
+				db.all("SELECT count(*) FROM sqlite_master", []);
+			}
 			dbmap[dbname] = db;
 			nextTick(function() {
 				win();
@@ -46,6 +53,12 @@ module.exports = {
 	close: function(win, fail, args) {
 	    var options = args[0];
 	    var res;
+
+		// pretend [XXX TODO]:
+			nextTick(function() {
+				win();
+			});
+			return;
 		try {
 		    //res = SQLitePluginRT.SQLitePlugin.closeAsync(JSON.stringify(options));
         } catch (ex) {
