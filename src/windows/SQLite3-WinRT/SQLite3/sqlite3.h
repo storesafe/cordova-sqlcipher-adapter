@@ -41,6 +41,8 @@
 extern "C" {
 #endif
 
+// for manual installation:
+#define SQLITE_HAS_CODEC 1
 
 /*
 ** Add the ability to override 'extern'
