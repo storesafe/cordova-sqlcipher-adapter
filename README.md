@@ -1,6 +1,6 @@
-# Cordova/PhoneGap SQLitePlugin
+# Cordova/PhoneGap SQLCipher adaptor plugin
 
-Native interface to sqlite in a Cordova/PhoneGap plugin for Android, iOS, and Windows (8.1), with API similar to HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/).
+Native interface to sqlcipher in a Cordova/PhoneGap plugin for Android, iOS, and Windows (8.1), with API similar to HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/).
 
 License for Android and Windows (8.1) versions: MIT or Apache 2.0
 
@@ -18,13 +18,13 @@ License for iOS version: MIT only
 ## Announcements
 
 - Windows (8.1) version is added, using the C++ SQLite-WinRT library
-- [SQLCipher](https://www.zetetic.net/sqlcipher/) for Android & iOS is now supported by [brodysoft / Cordova-sqlcipher-adaptor](https://github.com/brodysoft/Cordova-sqlcipher-adaptor)
-- New `openDatabase` and `deleteDatabase` `location` option to select database location (iOS *only*) and disable iCloud backup
-- Pre-populated databases support for Android & iOS is now integrated, usage described below
+- Pre-populatd DB is NOT supported by this version.
+- Lawnchair & PouchDB have NOT been tested with this version.
 - Fixes to work with PouchDB by [@nolanlawson](https://github.com/nolanlawson)
 
 ## Highlights
 
+- This version connects to [sqlcipher](https://www.zetetic.net/sqlcipher/).
 - Works with Cordova 3.x tooling
 - Drop-in replacement for HTML5 SQL API, the only change should be `window.openDatabase()` --> `sqlitePlugin.openDatabase()`
 - Failure-safe nested transactions with batch processing optimizations
@@ -32,14 +32,10 @@ License for iOS version: MIT only
   - Keeps sqlite database in a user data location that is known, can be reconfigured, and iOS will be backed up by iCloud.
   - No 5MB maximum, more information at: http://www.sqlite.org/limits.html
 - Android is supported back to SDK 10 (a.k.a. Gingerbread, Android 2.3.3); Support for older versions is available upon request.
-- Pre-populated database option (usage described below)
 
-## Some apps using Cordova/PhoneGap SQLitePlugin
+## Some apps using Cordova SQLCipher adaptor
 
-- [Get It Done app](http://getitdoneapp.com/) by [marcucio.com](http://marcucio.com/)
-- [KAAHE Health Encyclopedia](http://www.kaahe.org/en/index.php?option=com_content&view=article&id=817): Official health app of the Kingdom of Saudi Arabia.
-- [Larkwire](http://www.larkwire.com/) (iOS version): Learn bird songs the fun way
-- [Tangorin](https://play.google.com/store/apps/details?id=com.tangorin.app) (Android) Japanese Dictionary at [tangorin.com](http://tangorin.com/)
+TBD *YOUR APP HERE*
 
 ## Known issues
 
@@ -62,17 +58,8 @@ License for iOS version: MIT only
 
 ## Other versions
 
-- [pull request #157](https://github.com/brodysoft/Cordova-SQLitePlugin/pull/157) - contribution of a Windows version in C# with proper transaction support (manual installation required)
-- [brodysoft / Cordova-sqlcipher-adaptor](https://github.com/brodysoft/Cordova-sqlcipher-adaptor) - supports [SQLCipher](https://www.zetetic.net/sqlcipher/) for Android & iOS
-- Original version for iOS (with a different API): [davibe / Phonegap-SQLitePlugin](https://github.com/davibe/Phonegap-SQLitePlugin)
-
-## Other SQLite adapter projects
-
-- [EionRobb / phonegap-win8-sqlite](https://github.com/EionRobb/phonegap-win8-sqlite) - WebSQL add-on for Win8/Metro apps (perhaps with a different API), using an old version of the C++ library from [SQLite3-WinRT Component](https://github.com/doo/SQLite3-WinRT) (as referenced by [01org / cordova-win8](https://github.com/01org/cordova-win8))
-- [SQLite3-WinRT Component](https://github.com/doo/SQLite3-WinRT) - C++ component that provides a nice SQLite API with promises for WinJS
-- [01org / cordova-win8](https://github.com/01org/cordova-win8) - old, unofficial version of Cordova API support for Windows 8 Metro that includes an old version of the C++ [SQLite3-WinRT Component](https://github.com/doo/SQLite3-WinRT)
-- [MSOpenTech / cordova-plugin-websql](https://github.com/MSOpenTech/cordova-plugin-websql) - Windows 8(+) and Windows Phone 8(+) WebSQL plugin versions in C#
-- [MetaMemoryT / websql-client](https://github.com/MetaMemoryT/websql-client) - provides the same API and connects to [websql-server](https://github.com/MetaMemoryT/websql-server) through WebSockets.
+- [brodysoft / Cordova-SQLitePlugin](https://github.com/brodysoft/Cordova-SQLitePlugin) - Cordova sqlite plugin without sqlcipher, supported for more platforms.
+- Original version for iOS without sqlcipher (with a different API): [davibe / Phonegap-SQLitePlugin](https://github.com/davibe/Phonegap-SQLitePlugin)
 
 # Usage
 
@@ -80,14 +67,14 @@ The idea is to emulate the HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/
 
 ## Opening a database
 
-There are two options to open a database:
-- Recommended: `var db = window.sqlitePlugin.openDatabase({name: "my.db", location: 1});`
-- Classical: `var db = window.sqlitePlugin.openDatabase("myDatabase.db", "1.0", "Demo", -1);`
+**Supported way:** `var db = window.sqlitePlugin.openDatabase({name: "my.db", key: "your-password-here", location: 1});`
 
-The new `location` option is used to select the database subdirectory location (iOS *only*) with the following choices:
+The `location` option is used to select the database subdirectory location (iOS *only*) with the following choices:
 - `0` (default): `Documents` - will be visible to iTunes and backed up by iCloud
 - `1`: `Library` - backed up by iCloud, *NOT* visible to iTunes
 - `2`: `Library/LocalDatabase` - *NOT* visible to iTunes and *NOT* backed up by iCloud
+
+Classical way - unsupported and *WILL BE REMOVED*: `var db = window.sqlitePlugin.openDatabase("myDatabase.db", "1.0", "Demo", -1);`
 
 **IMPORTANT:** Please wait for the "deviceready" event, as in the following example:
 
@@ -97,50 +84,12 @@ document.addEventListener("deviceready", onDeviceReady, false);
 
 // Cordova is ready
 function onDeviceReady() {
-  var db = window.sqlitePlugin.openDatabase({name: "my.db"});
+  var db = window.sqlitePlugin.openDatabase({name: "my.db", key: "your-password-here"});
   // ...
 }
 ```
 
 **NOTE:** The database file name should include the extension, if desired.
-
-### Workaround for Android db locking issue
-
-An [issue was reported](https://github.com/brodysoft/Cordova-SQLitePlugin/issues/193), as observed by several people that on some newer versions of the Android, if the app is stopped or aborted without closing the db then:
-- (sometimes) there is an unexpected db lock
-- the data that was inserted before is lost.
-
-It is suspected that this issue is caused by [this Android sqlite commit](https://github.com/android/platform_external_sqlite/commit/d4f30d0d1544f8967ee5763c4a1680cb0553039f), which references and includes the sqlite commit at: http://www.sqlite.org/src/info/6c4c2b7dba
-
-There is an optional workaround that simply closes and reopens the database file at the end of every transaction that is committed. The workaround is enabled by opening the database like:
-
-```js
-var db = window.sqlitePlugin.openDatabase({name: "my.db", androidLockWorkaround: 1});
-```
-
-**NOTE:** This workaround is *only* applied when using `db.transaction()` or `db.readTransaction()`, *not* applied when running `executeSql()` on the database object.
-
-### Pre-populated database
-
-For Android & iOS (*only*): put the database file in the `www` directory and open the database like:
-
-```js
-var db = window.sqlitePlugin.openDatabase({name: "my.db", createFromLocation: 1});
-```
-
-or to disable iCloud backup:
-
-```js
-db = sqlitePlugin.openDatabase({name: "my.db", location: 2, createFromLocation: 1});
-```
-
-**IMPORTANT NOTES:**
-
-- Put the pre-populated database file in the `www` subdirectory. This should work well with using the Cordova CLI to support both Android & iOS versions.
-- The pre-populated database file name must match **exactly** the file name given in `openDatabase`. The automatic extension has been completely eliminated.
-- The pre-populated database file is ignored if the database file with the same name already exists in your database file location.
-
-**TIP:** If you don't see the data from the pre-populated database file, completely remove your app and try it again!
 
 ## Background processing
 
@@ -198,7 +147,7 @@ document.addEventListener("deviceready", onDeviceReady, false);
 
 // Cordova is ready
 function onDeviceReady() {
-  var db = window.sqlitePlugin.openDatabase("Database", "1.0", "Demo", -1);
+  var db = window.sqlitePlugin.openDatabase({name: "my.db", key: "your-password-here"});
 
   db.transaction(function(tx) {
     tx.executeSql('DROP TABLE IF EXISTS test_table');
@@ -279,7 +228,7 @@ A posting how to get started developing on Windows host without the Cordova CLI 
 
     npm install -g cordova # if you don't have cordova
     cordova create MyProjectFolder com.my.project MyProject && cd MyProjectFolder # if you are just starting
-    cordova plugin add https://github.com/brodysoft/Cordova-SQLitePlugin
+    cordova plugin add https://github.com/brodysoft/Cordova-sqlcipher-adaptor
 
 You can find more details at [this writeup](http://iphonedevlog.wordpress.com/2014/04/07/installing-chris-brodys-sqlite-database-with-cordova-cli-android/).
 
@@ -307,6 +256,7 @@ These installation instructions are based on the Android example project from Co
  - Install www/SQLitePlugin.js from this repository into assets/www subdirectory
  - Install src/android/org/pgsqlite/SQLitePlugin.java from this repository into src/org/pgsqlite subdirectory
  - Add the plugin element `<plugin name="SQLitePlugin" value="org.pgsqlite.SQLitePlugin"/>` to res/xml/config.xml
+ - Install the SQLCipher for Android binary components (*TBD better description*)
 
 Sample change to res/xml/config.xml for Cordova/PhoneGap 2.x:
 
@@ -348,13 +298,15 @@ Before building for the first time, you have to update the project with the desi
 
 ## Manual installation - iOS version
 
-### SQLite library
+### Security framework library
 
-In the Project "Build Phases" tab, select the _first_ "Link Binary with Libraries" dropdown menu and add the library `libsqlite3.dylib` or `libsqlite3.0.dylib`.
+In the Project "Build Phases" tab, select the _first_ "Link Binary with Libraries" dropdown menu and add the `Security.framework`.
 
 **NOTE:** In the "Build Phases" there can be multiple "Link Binary with Libraries" dropdown menus. Please select the first one otherwise it will not work.
 
 ### SQLite Plugin
+
+Obtain sqlcipher version of sqlite3.h & sqlite3.c.
 
 Drag .h and .m files into your project's Plugins folder (in xcode) -- I always
 just have "Create references" as the option selected.
@@ -384,6 +336,8 @@ Enable the SQLitePlugin in `config.xml` (Cordova/PhoneGap 2.x):
 TODO
 
 ## Quick installation test
+
+**TBD will be replaced:**
 
 Make a change like this to index.html (or use the sample code) verify proper installation:
 
@@ -450,19 +404,21 @@ If you still cannot get something to work:
   - if the issue is with *adding* data to a table, that the test program includes the statements you used to open the database and create the table;
   - if the issue is with *retrieving* data from a table, that the test program includes the statements you used to open the database, create the table, and enter the data you are trying to retrieve.
 
-Then you can [raise the new issue](https://github.com/brodysoft/Cordova-SQLitePlugin/issues/new).
+Then you can [raise the new issue](https://github.com/brodysoft/Cordova-sqlcipher-adaptor/issues/new).
 
 ## Community forum
 
 If you have any questions about the plugin please post it to the [Cordova-SQLitePlugin forum](http://groups.google.com/group/Cordova-SQLitePlugin).
 
-**NOTE:** Please report all bugs at [brodysoft / Cordova-SQLitePlugin / issues](https://github.com/brodysoft/Cordova-SQLitePlugin/issues) so they can be tracked properly.
+**NOTE:** Please report all bugs at [brodysoft / Cordova-sqlcipher-adaptor / issues](https://github.com/brodysoft/Cordova-sqlcipher-adaptor/issues) so they can be tracked properly.
 
 # Unit tests
 
-Unit testing is done in `test-www/`.
+Unit testing is done in `test-www`.
 
 ## running tests from shell
+
+**TBD** `test.sh` not tested with sqlcipher version of this plugin:
 
 To run the tests from \*nix shell, simply do either:
  
@@ -527,7 +483,7 @@ The adapter is now part of [PouchDB](http://pouchdb.com/) thanks to [@nolanlawso
 **WARNING:** Please do NOT propose changes from your `master` branch. In general changes will be rebased using `git rebase` or `git cherry-pick` and not merged.
 
 - Testimonials of apps that are using this plugin would be especially helpful.
-- Reporting issues at [brodysoft / Cordova-SQLitePlugin / issues](https://github.com/brodysoft/Cordova-SQLitePlugin/issues) can help improve the quality of this plugin.
+- Reporting issues at [brodysoft / Cordova-sqlcipher-adaptor / issues](https://github.com/brodysoft/Cordova-sqlcipher-adaptor/issues) can help improve the quality of this plugin.
 - Patches with bug fixes are helpful, especially when submitted with test code.
 - Other enhancements welcome for consideration, when submitted with test code and will work for all supported platforms. Increase of complexity should be avoided.
 - All contributions may be reused by [@brodybits (Chris Brody)](https://github.com/brodybits) under another license in the future. Efforts will be taken to give credit for major contributions but it will not be guaranteed.
@@ -538,10 +494,10 @@ The adapter is now part of [PouchDB](http://pouchdb.com/) thanks to [@nolanlawso
 
 ## Major branches
 
-- `common-src` - source for Android & iOS versions
-- `new-src` - source for Android, iOS, and Windows (8.1) versions
-- `new-common-rc` - pre-release version for Windows (8.1), including source for SQLite-WinRT C++ library
-- `master-src` - source for Android, iOS, & WP(8) versions
-- `master-rc` - pre-release version, including source for CSharp-SQLite library classes
-- `master` - version for release, will be included in PhoneGap build.
+- `common-src` - source for Android & iOS versions without sqlcipher
+- `new-src` - source for Android, iOS, and Windows (8.1) versions without sqlcipher
+- `cipher-src` - source for Android & iOS versions with sqlcipher
+- `new-cipher-src` - source for Android, iOS, and Windows (8.1) versions with sqlcipher
+- `cipher-rc` - pre-release version, including sqlcipher dependencies
+- [FUTURE] ~~`cipher-master` - version for release, *may* be included in PhoneGap build in the future.~~
 
