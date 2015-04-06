@@ -50,7 +50,7 @@ try {
 
   # update the plugin, run the test app
   cordova platform add $platform
-  cordova plugin rm com.phonegap.plugins.sqlite
+  cordova plugin rm com.brodysoft.cordova.sqlcipher
   cordova plugin add ../.plugin
   cordova run $platform
 } finally {
