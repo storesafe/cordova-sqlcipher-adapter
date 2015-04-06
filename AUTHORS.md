@@ -22,3 +22,7 @@
 - Cordova 2.7+ port with background processing by @j3k0 (Jean-Christophe Hoelt <hoelt@fovea.cc>)
 - Maintained by @brodybits (Chris Brody)
 
+## Windows version
+
+- SQLiteProxy.js by @vldmrrr (Vladimir Avdonin) and @brodybits (Chris Brody)
+- Using SQLite-WinRT library (including SQLite3JS part) by @doo (doo GmbH) [build using - SQLite3-8.1.vcxproj by @EionRobb]
