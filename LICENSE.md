@@ -12,11 +12,13 @@ MIT or Apache 2.0
 
 MIT only
 
+based on Phonegap-SQLitePlugin by @davibe (Davide Bertola <dade@dadeb.it>) and @joenoon (Joe Noon <joenoon@gmail.com>)
+
 ## Windows (8.1) version
 
 MIT or Apache 2.0
 
-### SQLite-WinRT
+### SQLite3-WinRT
 
 by @doo (doo GmbH)
 
