@@ -1,6 +1,6 @@
 /* 'use strict'; */
 
-var MYTIMEOUT = 4000;
+var MYTIMEOUT = 20000;
 
 var DEFAULT_SIZE = 5000000; // max to avoid popup in safari/ios
 

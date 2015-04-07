@@ -1,6 +1,6 @@
 /* 'use strict'; */
 
-var MYTIMEOUT = 4000;
+var MYTIMEOUT = 20000;
 
 var DEFAULT_SIZE = 5000000; // max to avoid popup in safari/ios
 
@@ -177,8 +177,9 @@ describe('encryption test(s)', function() {
         });
     });
 
-    // XXX TODO:
-    xtest_it(suiteName + 'Attempt to open and read unencrypted DB with password key', function () {
+    test_it(suiteName + 'Attempt to open and read unencrypted DB with password key', function () {
+        if (isWindows) pending('BROKEN on Windows (8.1)'); // XXX TODO
+
         var dbName = 'Open-and-read-unencrypted-DB-with-password.db';
 
         stop();
