@@ -1,4 +1,4 @@
-# Cordova/PhoneGap SQLCipher adapter plugin
+# Cordova/PhoneGap SQLCipher adapter
 
 Native interface to sqlcipher in a Cordova/PhoneGap plugin for Android, iOS, and Windows (8.1), with API similar to HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/).
 
@@ -11,13 +11,13 @@ License for iOS version: MIT only
 - Initial version with SQLCipher v3.2.0/v3.3.0
 - Pre-populatd DB is NOT supported by this version.
 - Lawnchair & PouchDB have NOT been tested with this version.
-- API to open the database is expected to be changed slightly to be more streamlined. Transaction and single-statement query API will NOT be changed.
 - Windows (8.1) version is in experimental state:
   - No background processing
   - Database close and delete operations not yet implemented
   - insertId and rowsAffected are missing in the results for INSERT/UPDATE/DELETE statements
   - Visual C++ build file is provided for Windows 8.1 only. Visual C++ build support for Windows Phone 8.1 will be added later.
   - Not all Windows CPU targets are supported by automatic installation
+- API to open the database is expected to be changed somewhat to be more streamlined. Transaction and single-statement query API will NOT be changed.
 
 ## Announcements
 
@@ -100,7 +100,7 @@ function onDeviceReady() {
 The threading model depends on which version is used:
 - For Android, one background thread per db;
 - for iOS, background processing using a thread pool;
-- for Windows, no background processing (will be added).
+- for Windows (8.1), no background processing (to be added).
 
 # Sample with PRAGMA feature
 
@@ -187,7 +187,7 @@ window.sqlitePlugin.deleteDatabase({name: "my.db", location: 1}, successcb, erro
 
 # Installing
 
-## Windows target platform
+## Windows (8.1) target platform
 
 **WARNING:** This is still in experimental state. Please read and follow these items very carefully.
 - Please make sure your Cordova tooling is updated: `npm update -g cordova cordova-windows`
@@ -226,7 +226,7 @@ where MYPLATFORM is `android` or `ios`.
 
 A posting how to get started developing on Windows host without the Cordova CLI tool (for Android target only) is available [here](http://brodybits.blogspot.com/2015/03/trying-cordova-for-android-on-windows-without-cordova-cli.html).
 
-**NOTE:** Automatic installation for the Windows target platform is *not* properly supported by the `plugman` tool.
+**NOTE:** Automatic installation for the Windows (8.1) target platform is *not* properly supported by the `plugman` tool.
 
 ## Easy install with Cordova CLI tool
 
@@ -248,7 +248,7 @@ You can find more details at [this writeup](http://iphonedevlog.wordpress.com/20
 ## Source tree
 
 - `SQLitePlugin.coffee.md`: platform-independent (Literate coffee-script, can be read by recent coffee-script compiler)
-- `www`: `SQLitePlugin.js` platform-independent Javascript as generated from `SQLitePlugin.coffee.md` (and checked in!)
+- `www`: `SQLitePlugin.js` platform-independent Javascript as generated from `SQLitePlugin.coffee.md` (and comitted!)
 - `src`: Java plugin code for Android; Objective-C plugin code for iOS; Javascript proxy code for Windows (8.1)
 - `spec`: test suite using Jasmine (2.2.0), ported from QUnit `test-www` test suite, working on all platforms
 - `Lawnchair-adapter`: Lawnchair adaptor, based on the version from the Lawnchair repository, with the basic Lawnchair test suite in `test-www` subdirectory
