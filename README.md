@@ -13,14 +13,15 @@ License for iOS version: MIT only
   - using Security framework for iOS
   - with LibTomCrypt (1.17) embedded for Windows ~~Universal~~ (8.1)
   - for future consideration: embed OpenSSL libcrypto for all target platforms
+- Windows ~~Universal~~ (8.1) version is in experimental state:
+  - Database close and delete operations not yet implemented
+  - Does not work properly with Cordova CLI due to [CB-8866](https://issues.apache.org/jira/browse/CB-8866). Please install using [litehelpers / cordova-windows-nufix](https://github.com/litehelpers/cordova-windows-nufix) and `plugman` [TBD procedure to be merged].
+  - No background processing (for future consideration)
+  - TBD FIXES TO BE MERGED:
+    - insertId and rowsAffected are missing in the results for INSERT/UPDATE/DELETE statements [TBD fix to be merged]
+    - Visual C++ build file is provided for Windows 8.1 only. Visual C++ build support for Windows Phone 8.1 will be added later.
 - Pre-populatd DB is NOT supported by this version.
 - Lawnchair & PouchDB have NOT been tested with this version.
-- Windows (8.1) version is in experimental state:
-  - No background processing
-  - Database close and delete operations not yet implemented
-  - insertId and rowsAffected are missing in the results for INSERT/UPDATE/DELETE statements
-  - Visual C++ build file is provided for Windows 8.1 only. Visual C++ build support for Windows Phone 8.1 will be added later.
-  - Not all Windows CPU targets are supported by automatic installation
 - API to open the database is expected to be changed somewhat to be more streamlined. Transaction and single-statement query API will NOT be changed.
 
 ## Announcements
@@ -76,6 +77,8 @@ The idea is to emulate the HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/
 ## Opening a database
 
 **Supported way:** `var db = window.sqlitePlugin.openDatabase({name: "my.db", key: "your-password-here", location: 1});`
+
+**WARNING:** The `name:` parameter must be given a string otherwise the behavior is unpredictable.
 
 The `location` option is used to select the database subdirectory location (iOS *only*) with the following choices:
 - `0` (default): `Documents` - will be visible to iTunes and backed up by iCloud
@@ -192,6 +195,12 @@ window.sqlitePlugin.deleteDatabase({name: "my.db", location: 1}, successcb, erro
 # Installing
 
 ## Windows (8.1) target platform
+
+**IMPORTANT:** The Cordova CLI currently does not support all Windows target platforms due to [CB-8866](https://issues.apache.org/jira/browse/CB-8866). Please use `plugman` instead [TBD DESCRIPTION TO BE MERGED]
+
+### Using Cordova CLI
+
+TBD TO BE REMOVED
 
 **WARNING:** This is still in experimental state. Please read and follow these items very carefully.
 - Please make sure your Cordova tooling is updated: `npm update -g cordova cordova-windows`
@@ -314,17 +323,12 @@ In the Project "Build Phases" tab, select the _first_ "Link Binary with Librarie
 
 ### SQLite Plugin
 
-Copy `SQLitePlugin.h` & `SQLitePlugin.m` into your project's Plugins subdirectory in the file system.
+- Copy `SQLitePlugin.[hm]` and `sqlite3.[hc]` from `src/ios` into your project Plugins folder and add them in XCode (I always just have "Create references" as the option selected).
+- Copy `sqlite3.h` & `sqlite3.c` from `src/ios/sqlcipher` [TBD will be `src/common or src/common/sqlcipher`] into your project's Plugins subdirectory in the file system.
+- Copy `SQLitePlugin.js` from `www` into your project `www` folder
+- Enable the SQLitePlugin in `config.xml`
 
-Copy `sqlite3.h` & `sqlite3.c` from `src/ios/sqlcipher` into your project's Plugins subdirectory in the file system.
-
-Include the .h and .m files into your project's Plugins folder in Xcode (I always have "Create references" as the option selected).
-
-Install the precompiled Javascript file from `www`, or compile the coffeescript in SQLitePlugin.coffee.md WITH the top-level function wrapper option (default).
-
-Use the resulting javascript file in your HTML -- not needed for Cordova/PhoneGap 3.0(+).
-
-Enable the SQLitePlugin in `config.xml` (Cordova/PhoneGap 2.x):
+Sample change to `config.xml` (Cordova/PhoneGap 2.x):
 
 ```diff
 --- config.xml.old	2013-05-17 13:18:39.000000000 +0200

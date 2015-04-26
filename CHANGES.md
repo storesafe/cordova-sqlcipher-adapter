@@ -1,5 +1,9 @@
 # Changes
 
+## 0.1.2-dev
+
+- Update Android and iOS versions to use SQLCipher v3.3.0
+
 ## 0.1.1
 
 - Abort initially pending transactions for db handle if db cannot be opened (due to incorrect password key, for example)
