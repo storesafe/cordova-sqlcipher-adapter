@@ -177,11 +177,9 @@ describe('encryption test(s)', function() {
         });
     });
 
-    test_it(suiteName + 'Attempt to open and read unencrypted DB with password key', function () {
-        if (isWindows) pending('BROKEN on Windows (8.1)'); // XXX TODO
+      test_it(suiteName + 'Attempt to open and read unencrypted DB with password key', function () {
 
         var dbName = 'Open-and-read-unencrypted-DB-with-password.db';
-
         stop();
 
         openDatabase({name: dbName}, function (db) {

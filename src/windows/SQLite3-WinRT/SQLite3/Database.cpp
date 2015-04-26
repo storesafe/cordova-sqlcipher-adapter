@@ -3,6 +3,8 @@
 #include "Database.h"
 #include "Statement.h"
 
+#include <string>
+
 namespace SQLite3
 {
   Database::Database(Platform::String^ dbPath)
@@ -24,8 +26,25 @@ namespace SQLite3
     sqlite3_close(sqlite);
   }
 
+  int Database::Key(Platform::String^ key)
+  {
+    std::wstring wkey(key->Begin(), key->End());
+    std::string skey(wkey.begin(), wkey.end());
+    return sqlite3_key(sqlite, skey.c_str(), skey.length());
+  }
+
   Statement^ Database::Prepare(Platform::String^ sql)
   {
     return ref new Statement(this, sql);
+  }
+
+  int Database::LastInsertRowid()
+  {
+    return sqlite3_last_insert_rowid(sqlite);
+  }
+
+  int Database::TotalChanges()
+  {
+    return sqlite3_total_changes(sqlite);
   }
 }

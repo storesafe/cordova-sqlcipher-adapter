@@ -31,13 +31,15 @@ module.exports = {
 
 			db = new SQLite3JS.Database(opendbname);
 			if (!!options.key && options.key.length !== 0) {
-				// XXX TODO close db if this fails:
-				// XXX TODO problem with single and/or double quote marks:
-				db.run("PRAGMA key='"+options.key+"'");
-				// ignore result if next statement does not throw:
-				db.all("SELECT count(*) FROM sqlite_master", []);
+				db.key(options.key)
+				// ignore result if following access test does not throw.
 			}
+
+			// test if db can be accessed:
+			db.all("SELECT count(*) FROM sqlite_master", []);
+
 			dbmap[dbname] = db;
+
 			nextTick(function() {
 				win();
 			});
@@ -80,12 +82,19 @@ module.exports = {
 			var e = executes[i];
 			//console.log("execute sql: " + e.sql + " params: " + JSON.stringify(e.params));
 			try {
+				var oldTotalChanges = db.totalChanges();
 				var rows = db.all(e.sql, e.params);
 				//console.log("got rows: " + JSON.stringify(rows));
+				var rowsAffected = db.totalChanges() - oldTotalChanges;
+				var result = { rows: rows, rowsAffected: rowsAffected };
+				if (rowsAffected > 0) {
+					var lastInsertRowid = db.lastInsertRowid();
+					if (lastInsertRowid !== 0) result.insertId = lastInsertRowid;
+				}
 				results.push({
 					type: "success",
 					qid: e.qid,
-					result: { rows: rows }
+					result: result
 				});
 			} catch(ex) {
 				console.log("sql exception error: " + ex.message);
