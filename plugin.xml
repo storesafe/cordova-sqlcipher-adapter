@@ -39,7 +39,6 @@
         <!-- SQLCipher distribution for Android: -->
         <source-file src="src/android/sqlcipher/assets/icudt46l.zip" target-dir="assets"/>
         <source-file src="src/android/sqlcipher/libs/sqlcipher.jar" target-dir="libs"/>
-        <source-file src="src/android/sqlcipher/libs/sqlcipher-javadoc.jar" target-dir="libs"/>
         <source-file src="src/android/sqlcipher/libs/armeabi/libdatabase_sqlcipher.so" target-dir="libs/armeabi"/>
         <source-file src="src/android/sqlcipher/libs/armeabi/libsqlcipher_android.so" target-dir="libs/armeabi"/>
         <source-file src="src/android/sqlcipher/libs/armeabi/libstlport_shared.so" target-dir="libs/armeabi"/>
