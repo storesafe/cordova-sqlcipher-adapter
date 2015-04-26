@@ -8,7 +8,11 @@ License for iOS version: MIT only
 
 ## Status
 
-- Initial version with SQLCipher v3.2.0/v3.3.0
+- Pre-alpha version with SQLCipher
+  - v3.2.0 with OpenSSL libcrypto for Android 
+  - v3.3.0 using Security framework for iOS
+  - v3.3.0 with LibTomCrypt (1.17) embedded for Windows ~~Universal~~ (8.1)
+  - for future consideration: embed OpenSSL libcrypto for all target platforms
 - Pre-populatd DB is NOT supported by this version.
 - Lawnchair & PouchDB have NOT been tested with this version.
 - Windows (8.1) version is in experimental state:

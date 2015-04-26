@@ -2,7 +2,7 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="com.brodysoft.cordova.sqlcipher"
-    version="0.1.1">
+    version="0.1.2-dev">
 
     <name>SQLitePlugin</name>
 
@@ -63,8 +63,9 @@
         <source-file src="src/ios/SQLitePlugin.m" />
 
         <!-- SQLCipher source distribution and Security.framework dependency for iOS: -->
-        <header-file src="src/ios/sqlcipher/sqlite3.h" />
-        <source-file src="src/ios/sqlcipher/sqlite3.c" />
+        <!-- [TEMP TBD] using [latest version] from src/windows tree! -->
+        <header-file src="src/windows/SQLite3-WinRT/SQLite3/sqlite3.h" />
+        <source-file src="src/windows/SQLite3-WinRT/SQLite3/sqlite3.c" />
         <framework src="Security.framework" />
     </platform>
 
