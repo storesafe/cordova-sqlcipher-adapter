@@ -1,6 +1,6 @@
 # Cordova/PhoneGap SQLCipher adapter plugin
 
-Native interface to sqlcipher in a Cordova/PhoneGap plugin for Android, iOS, and Windows (8.1), with API similar to HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/).
+Native interface to sqlcipher in a Cordova/PhoneGap plugin for Android, iOS, and Windows Universal (8.1), with API similar to HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/).
 
 License for Android and Windows Universal (8.1) versions: MIT or Apache 2.0
 
@@ -8,15 +8,18 @@ License for iOS version: MIT only
 
 ## Status
 
-- Windows Universal (8.1) version is in pre-alpha state:
+- Windows Universal (8.1) version is in experimental state:
   - Database close and delete operations not yet implemented
   - Does not work properly with Cordova CLI due to [CB-8866](https://issues.apache.org/jira/browse/CB-8866). Please install using [litehelpers / cordova-windows-nufix](https://github.com/litehelpers/cordova-windows-nufix) and `plugman` as described below.
   - No background processing (for future consideration)
-- Android is supported back to SDK 10 (a.k.a. Gingerbread, Android 2.3.3); support for older versions is available upon request.
+- Android versions supported:
+  - ARM (v5/v6/v7/v7a) and x86 CPUs
+  - Minimum SDK 10 (a.k.a. Gingerbread, Android 2.3.3); support for older versions is available upon request.
+  - NOTE: 64-bit CPUs such as `x64_64`, ARM-64, and MIPS are currently not supported (for consideration in the near future).
 - API to open the database may be changed somewhat to be more streamlined. Transaction and single-statement query API will NOT be changed.
 - Pre-populatd DB is NOT supported by this version.
 - Lawnchair & PouchDB have NOT been tested with this version.
- 
+
 ## Announcements
 
 - Windows Universal version now supports both Windows 8.1 and Windows Phone 8.1
@@ -24,7 +27,6 @@ License for iOS version: MIT only
 - The test suite is completely ported to Jasmine (2.2.0) and was used to verify the functionality of the new Windows version
 - [SQLCipher](https://www.zetetic.net/sqlcipher/) for Windows (8.1) in addition to Android & iOS is now supported by [litehelpers / Cordova-sqlcipher-adapter](https://github.com/litehelpers/Cordova-sqlcipher-adapter)
 - New `openDatabase` and `deleteDatabase` `location` option to select database location (iOS *only*) and disable iCloud backup
-- Pre-populated databases support for Android, iOS, and Amazon Fire-OS is now integrated, usage described below
 - Fixes to work with PouchDB by [@nolanlawson](https://github.com/nolanlawson)
 
 ## Highlights
@@ -36,38 +38,38 @@ License for iOS version: MIT only
   - Keeps sqlite database in a user data location that is known; can be reconfigured (iOS version); and synchronized to iCloud by default (iOS version; can be disabled as described below).
   - No 5MB maximum, more information at: http://www.sqlite.org/limits.html
 
-## Some apps using Cordova SQLCipher adaptor
+## Some apps using Cordova SQLCipher adapter
 
 TBD *YOUR APP HERE*
 
 ## Known issues
 
-- Multi-page apps are not supported and known to be broken on Android and Amazon Fire-OS.
-- Using web workers is currently not supported and known to be broken on Android and Amazon Fire-OS.
-- Triggers have only been tested on iOS, known to be broken on Android (without [sqlite4java](https://code.google.com/p/sqlite4java/)) and Amazon Fire-OS.
-- INSERT statement that affects multiple rows (due to SELECT cause or using triggers, for example) does not report proper rowsAffected on Android (without [sqlite4java](https://code.google.com/p/sqlite4java/)) or Amazon Fire-OS.
+- Multi-page apps are not supported and known to be broken on Android.
+- Using web workers is currently not supported and known to be broken on Android.
+- Triggers have only been tested on iOS, known to be broken on Android.
+- INSERT statement that affects multiple rows (due to SELECT cause or using triggers, for example) does not report proper rowsAffected on Android.
 - On Windows Universal (8.1), rowsAffected can be wrong when there are multiple levels of nesting of INSERT statements.
-- Memory issue observed when adding a large number of records on Android and Amazon Fire-OS, due to JSON implementation
+- Memory issue observed when adding a large number of records on Android, due to JSON implementation
 - A stability issue was reported on the iOS version when in use together with [SockJS](http://sockjs.org/) client such as [pusher-js](https://github.com/pusher/pusher-js) at the same time. The workaround is to call sqlite functions and [SockJS](http://sockjs.org/) client functions in separate ticks (using setTimeout with 0 timeout).
 
 ## Other limitations
 
 - The db version, display name, and size parameter values are not supported and will be ignored.
 - This plugin will not work before the callback for the "deviceready" event has been fired, as described in **Usage**. (This is consistent with the other Cordova plugins.)
-- The Android and Amazon Fire-OS versions cannot work with more than 100 open db files (due to the threading model used).
+- The Android version cannot work with more than 100 open db files (due to the threading model used).
 - UNICODE line separator (`\u2028`) is currently not supported and known to be broken in iOS version.
 - Blob type is currently not supported and known to be broken on multiple platforms.
 - UNICODE `\u0000` (same as `\0`) character not working in Windows (8.1) (or Windows Phone XX) version(s)
 - iOS version uses a thread pool but with only one thread working at a time due to "synchronized" database access
 - Large query result can be slow, also due to JSON implementation
-- FTS4 is not supported for any of the target platforms.
 - ATTACH another database file is not supported (due to path specifications, which work differently depending on the target platform)
  
 ## Limited support (testing needed)
 
-- Database triggers as described above - known to be broken for Android (without [sqlite4java](https://code.google.com/p/sqlite4java/)) and Amazon Fire-OS
+- Not tested with Crosswalk (Android)
+- Database triggers as described above - known to be broken for Android
 - UNICODE characters not fully tested in the Windows Universal (8.1) version
-- FTS3 support needs to be tested, may be missing or incomplete on certain target platforms.
+- FTS3/FTS4 support needs to be tested, may be missing or incomplete on certain target platforms.
 - JOIN needs to be tested more.
  
 ## Other versions
@@ -118,7 +120,7 @@ function onDeviceReady() {
 ## Background processing
 
 The threading model depends on which version is used:
-- For For Android and Amazon Fire-OS, one background thread per db;
+- For Android, one background thread per db;
 - for iOS, background processing using a very limited thread pool (only one thread working at a time);
 - for Windows Universal (8.1), no background processing (for future consideration).
  
@@ -219,7 +221,7 @@ window.sqlitePlugin.deleteDatabase({name: "my.db", location: 1}, successcb, erro
 - Create your Windows Universal (8.1) project using [litehelpers / cordova-windows-nufix](https://github.com/litehelpers/cordova-windows-nufix):
   - `path.to.cordova-windows-nufix/bin/create.bat your_app_path your.app.id YourAppName`
 - `cd your_app_path` and install plugin using `plugman`:
-  - `plugman install --platform windows --project . --plugin https://github.com/litehelpers/cordova-sqlite-common`
+  - `plugman install --platform windows --project . --plugin https://github.com/litehelpers/Cordova-sqlcipher-adapter`
 - Put your sql program in your project `www` (don't forget to reference it from `www\index.html` and wait for `deviceready` event)
 
 Then your project in `CordovaApp.sln` should work with "Mixed Platforms" on both Windows 8.1 and Windows Phone 8.1.
@@ -256,13 +258,14 @@ You can find more details at [this writeup](http://iphonedevlog.wordpress.com/20
 - `SQLitePlugin.coffee.md`: platform-independent (Literate coffee-script, can be read by recent coffee-script compiler)
 - `www`: `SQLitePlugin.js` platform-independent Javascript as generated from `SQLitePlugin.coffee.md` (and checked in!)
 - `src`: platform-specific source code:
+   - ~~`common` - sqlcipher version of `sqlite3.[hc]` to be built for iOS and Windows Universal (8.1) platforms~~ [not in this version branch]
    - `external` - placeholder used to import `sqlite3.[hc]` in this version branch-needed to build Windows Universal (8.1) version
-   - `android` - Java plugin code for Android and Amazon Fire-OS
+   - `android` - Java plugin code for Android;
    - `ios` - Objective-C plugin code for iOS;
    - `windows` - Javascript proxy code and SQLite3-WinRT project for Windows Universal (8.1);
 - `spec`: test suite using Jasmine (2.2.0), ported from QUnit `test-www` test suite, working on all platforms
 - `tests`: very simple Jasmine test suite that is run on Circle CI (Android version) and Travis CI (iOS version)
-- `Lawnchair-adapter`: Lawnchair adaptor, based on the version from the Lawnchair repository, with the basic Lawnchair test suite in `test-www` subdirectory
+- `Lawnchair-adapter`: Lawnchair adapter, based on the version from the Lawnchair repository, with the basic Lawnchair test suite in `test-www` subdirectory
 
 ## Manual installation - Android version
 
@@ -512,15 +515,15 @@ The adapter is now part of [PouchDB](http://pouchdb.com/) thanks to [@nolanlawso
 - Other enhancements welcome for consideration, when submitted with test code and are working for all supported platforms. Increase of complexity should be avoided.
 - All contributions may be reused by [@brodybits (Chris Brody)](https://github.com/brodybits) under another license in the future. Efforts will be taken to give credit for major contributions but it will not be guaranteed.
 - Project restructuring, i.e. moving files and/or directories around, should be avoided if possible.
-- If you see a need for restructuring, it is better to first discuss it in the forum at [Ost.io / @litehelpers / Cordova-sqlite-storage](http://ost.io/@litehelpers/Cordova-sqlite-storage) (or in a [new issue](https://github.com/litehelpers/Cordova-sqlite-storage/issues/new) where alternatives can be discussed before reaching a conclusion. If you want to propose a change to the project structure:
+- If you see a need for restructuring, it is better to first discuss it in the forum at [Ost.io / @litehelpers / Cordova-sqlcipher-adapter](http://ost.io/@litehelpers/Cordova-sqlcipher-adapter) (or in a [new issue](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/new) where alternatives can be discussed before reaching a conclusion. If you want to propose a change to the project structure:
   - Remember to make (and use) a special branch within your fork from which you can send the proposed restructuring;
   - Always use `git mv` to move files & directories;
   - Never mix a move/rename operation with any other changes in the same commit.
 
 ## Major branches
 
-- `cordova-sqlite-common`~~/`common-src`~~ - source for Android, iOS, and Windows (8.1) versions without sqlcipher
-- `cipher-src` - source for Android, iOS, and Windows (8.1) versions with sqlcipher
+- `cordova-sqlite-common`~~/`common-src`~~ - source for Android, iOS, and Windows Universal (8.1) versions without sqlcipher
+- `cipher-src` - source for Android, iOS, and Windows Universal (8.1) versions with sqlcipher
 - `cipher-rc` - pre-release version, including sqlcipher dependencies
 - [FUTURE] ~~`cipher-master` - version for release, *may* be included in PhoneGap build in the future.~~
 
