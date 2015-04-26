@@ -4,7 +4,7 @@
  * Copyright (c) 2010, IBM Corporation
  */
 
-package org.pgsqlite;
+package io.liteglue;
 
 import android.annotation.SuppressLint;
 
@@ -659,7 +659,7 @@ public class SQLitePlugin extends CordovaPlugin {
     private class DBRunner implements Runnable {
         final String dbname;
         final String dbkey;
-        // NOTE: createFromAssets (pre-populated DB) and androidLockWorkaround
+        // NOTE: createFromAssets [pre-populated DB] (and androidLockWorkaround)
         // are not supported for SQLCipher.
 
         final BlockingQueue<DBQuery> q;
@@ -700,9 +700,6 @@ public class SQLitePlugin extends CordovaPlugin {
 
                 while (!dbq.stop) {
                     executeSqlBatch(dbname, dbq.queries, dbq.jsonparams, dbq.queryIDs, dbq.cbc);
-
-                    // NOTE: androidLockWorkaround is not necessary and not
-                    // supported for SQLCipher for Android.
 
                     dbq = q.take();
                 }
@@ -801,4 +798,6 @@ public class SQLitePlugin extends CordovaPlugin {
         rollback,
         other
     }
-} /* vim: set expandtab : */
+}
+
+/* vim: set expandtab : */

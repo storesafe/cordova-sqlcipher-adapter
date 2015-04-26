@@ -1,15 +1,15 @@
 /* 'use strict'; */
 
-var MYTIMEOUT = 4000;
+var MYTIMEOUT = 12000;
 
 var DEFAULT_SIZE = 5000000; // max to avoid popup in safari/ios
 
-// XXX TODO replace in test(s):
+// FUTURE TBD replace in test(s):
 function ok(test, desc) { expect(test).toBe(true); }
 function equal(a, b, desc) { expect(a).toEqual(b); } // '=='
 function strictEqual(a, b, desc) { expect(a).toBe(b); } // '==='
 
-// XXX TODO NEED TO BE FIXED:
+// XXX TODO REPLACE:
 var wait = 0;
 var test_it_done = null;
 function xtest_it(desc, fun) { xit(desc, fun); }
@@ -31,10 +31,12 @@ function start(n) {
 }
 
 var isAndroid = /Android/.test(navigator.userAgent);
-var isWindows = /Windows NT/.test(navigator.userAgent); // Windows [NT] (8.1)
-var isWP8 = /IEMobile/.test(navigator.userAgent); // WP(8)
-// FUTURE:
-//var isWindowsPhone = /Windows Phone 8.1/.test(navigator.userAgent); // Windows [NT] (8.1)
+var isWP8 = /IEMobile/.test(navigator.userAgent); // Matches WP(7/8/8.1)
+//var isWindows = /Windows NT/.test(navigator.userAgent); // Windows [NT] (8.1)
+var isWindows = /Windows /.test(navigator.userAgent); // Windows (8.1)
+//var isWindowsPC = /Windows NT/.test(navigator.userAgent); // Windows [NT] (8.1)
+//var isWindowsPhone_8_1 = /Windows Phone 8.1/.test(navigator.userAgent); // Windows Phone 8.1
+//var isIE = isWindows || isWP8 || isWindowsPhone_8_1;
 var isIE = isWindows || isWP8;
 var isWebKit = !isIE; // TBD [Android or iOS]
 
@@ -257,8 +259,6 @@ describe('legacy tests', function() {
       //});
 
         test_it(suiteName + 'transaction test: check rowsAffected [intermediate]', function () {
-          if (isWindows) pending('NOT IMPLEMENTED for Windows'); // XXX TODO
-
           var db = openDatabase("RowsAffected", "1.0", "Demo", DEFAULT_SIZE);
 
           stop();
@@ -332,7 +332,8 @@ describe('legacy tests', function() {
         });
 
         test_it(suiteName + 'test rowsAffected [advanced]', function () {
-          if (isWindows) pending('NOT IMPLEMENTED for Windows'); // XXX TODO
+          // XXX STILL BROKEN for WINDOWS (8.1):
+          if (isWindows) pending('BROKEN for Windows (8.1)'); // XXX TODO
 
           var db = openDatabase("RowsAffectedAdvanced", "1.0", "Demo", DEFAULT_SIZE);
 
@@ -345,10 +346,12 @@ describe('legacy tests', function() {
             tx.executeSql('CREATE TABLE IF NOT EXISTS companies (name unique, fav tinyint(1))');
             // INSERT or IGNORE with the real thing:
             tx.executeSql('INSERT or IGNORE INTO characters VALUES (?,?,?)', ['Sonic', 'Sega', 0], function (tx, res) {
-              equal(res.rowsAffected, 1);
+              expect(res.rowsAffected).toBe(1);
               tx.executeSql('INSERT INTO characters VALUES (?,?,?)', ['Tails', 'Sega', 0], function (tx, res) {
+                expect(res.rowsAffected).toBe(1);
                 tx.executeSql('INSERT INTO companies VALUES (?,?)', ['Sega', 1], function (tx, res) {
-                  equal(res.rowsAffected, 1);
+                  // XXX still fails on Windows (8.1):
+                  expect(res.rowsAffected).toBe(1);
                   // query with subquery
                   var sql = 'UPDATE characters ' +
                       ' SET fav=(SELECT fav FROM companies WHERE name=?)' +
@@ -403,10 +406,8 @@ describe('legacy tests', function() {
               console.log("rowsAffected: " + res.rowsAffected + " -- should be 1");
 
               expect(res).toBeDefined();
-              if (!isWindows) // XXX TODO
-                expect(res.insertId).toBeDefined();
-              if (!isWindows) // XXX TODO
-                expect(res.rowsAffected).toEqual(1);
+              expect(res.insertId).toBeDefined();
+              expect(res.rowsAffected).toBe(1);
 
               tx.executeSql("select count(id) as cnt from test_table;", [], function(tx, res) {
                 console.log("res.rows.length: " + res.rows.length + " -- should be 1");
@@ -478,50 +479,46 @@ describe('legacy tests', function() {
             db.transaction(function(tx) {
               throw new Error("boom");
             }, function(err) {
-              ok(!!err, "valid error object");
-              ok(err.hasOwnProperty('message'), "error.message exists");
+              expect(err).toBeDefined();
+              expect(err.hasOwnProperty('message')).toBe(true);
 
               if (!isWebSql) expect(err.message).toEqual('boom');
 
               start();
             }, function() {
-              ok(false, "not supposed to succeed");
+              // transaction success callback not expected
+              expect(false).toBe(true);
               start();
             });
             ok(true, "db.transaction() did not throw an error");
           } catch(err) {
-            //ok(true, "db.transaction() DID throw an error");
-            ok(false, 'exception not expected here');
+            // exception not expected here
+            expect(false).toBe(true);
+            start();
           }
         });
 
         test_it(suiteName + "error handler returning true causes rollback", function() {
           stop();
+
           withTestTable(function(db) {
-            //stop(2);
             db.transaction(function(tx) {
               tx.executeSql("insert into test_table (data, data_num) VALUES (?,?)", ['test', null], function(tx, res) {
-                //start();
                 expect(res).toBeDefined();
-                if (!isWindows) // XXX TODO
-                  expect(res.rowsAffected).toEqual(1);
-                //stop();
+                expect(res.rowsAffected).toBe(1);
+
                 tx.executeSql("select * from bogustable", [], function(tx, res) {
-                  //start();
-                  ok(false, "select statement not supposed to succeed");
+                  expect(false).toBe(true);
                 }, function(tx, err) {
-                  //start();
-                  ok(!!err.message, "should report a valid error message");
+                  expect(err.message).toBeDefined();
                   return true;
                 });
               });
             }, function(err) {
-              //start();
               ok(!!err.message, "should report error message");
-              //stop();
+
               db.transaction(function(tx) {
                 tx.executeSql("select count(*) as cnt from test_table", [], function(tx, res) {
-                  //start();
                   equal(res.rows.item(0).cnt, 0, "should have rolled back");
 
                   start();
@@ -534,15 +531,18 @@ describe('legacy tests', function() {
           });
         });
 
-        test_it(suiteName + "error handler returning non-true lets transaction continue", function() {
+        test_it(suiteName + "error handler returning false [non-true] lets transaction continue", function() {
+          // XXX TODO TEST [PLUGIN BROKEN]:
+          // - return undefined 
+          // - return "true" string
+          // etc.
           withTestTable(function(db) {
             stop(2);
             db.transaction(function(tx) {
               tx.executeSql("insert into test_table (data, data_num) VALUES (?,?)", ['test', null], function(tx, res) {
                 start();
                 expect(res).toBeDefined();
-                if (!isWindows) // XXX TODO
-                  expect(res.rowsAffected).toBe(1);
+                expect(res.rowsAffected).toBe(1);
                 stop();
                 tx.executeSql("select * from bogustable", [], function(tx, res) {
                   start();
@@ -574,7 +574,7 @@ describe('legacy tests', function() {
             db.transaction(function(tx) {
               tx.executeSql("insert into test_table (data, data_num) VALUES (?,?)", ['test', null], function(tx, res) {
                 expect(res).toBeDefined();
-                if (!isWindows) // XXX TODO
+                //if (!isWindows) // XXX TODO
                   expect(res.rowsAffected).toEqual(1);
                 tx.executeSql("select * from bogustable", [], function(tx, res) {
                   ok(false, "select statement not supposed to succeed");
@@ -608,7 +608,7 @@ describe('legacy tests', function() {
               txg = tx;
               tx.executeSql("insert into test_table (data, data_num) VALUES (?,?)", ['test', null], function(tx, res) {
                 expect(res).toBeDefined();
-                if (!isWindows) // XXX TODO
+                //if (!isWindows) // XXX TODO
                   expect(res.rowsAffected).toEqual(1);
               });
               start(1);
@@ -636,7 +636,7 @@ describe('legacy tests', function() {
             db.transaction(function(tx) {
               tx.executeSql("insert into test_table (data, data_num) VALUES (?,?)", ["test", null], function(tx, res) {
                 expect(res).toBeDefined();
-                if (!isWindows) // XXX TODO
+                //if (!isWindows) // XXX TODO
                   expect(res.rowsAffected).toEqual(1);
                 tx.executeSql("select * from test_table", [], function(tx, res) {
                   var row = res.rows.item(0);
@@ -666,7 +666,7 @@ describe('legacy tests', function() {
               // create columns with no type affinity
               tx.executeSql("insert into test_table (data_text1, data_text2, data_int, data_real) VALUES (?,?,?,?)", ["314159", "3.14159", 314159, 3.14159], function(tx, res) {
                 expect(res).toBeDefined();
-                if (!isWindows) // XXX TODO
+                //if (!isWindows) // XXX TODO
                   expect(res.rowsAffected).toBe(1);
 
                 tx.executeSql("select * from test_table", [], function(tx, res) {
@@ -734,7 +734,7 @@ describe('legacy tests', function() {
             db.transaction(function(tx) {
               tx.executeSql("insert into tt (tr) VALUES (?)", [123456.789], function(tx, res) {
                 expect(res).toBeDefined();
-                if (!isWindows) // XXX TODO
+                //if (!isWindows) // XXX TODO
                   expect(res.rowsAffected).toBe(1);
                 tx.executeSql("select * from tt", [], function(tx, res) {
                   var row = res.rows.item(0);
@@ -758,7 +758,7 @@ describe('legacy tests', function() {
               // create columns with no type affinity
               tx.executeSql("insert into test_table (data1, data2) VALUES (?,?)", ['abc', [1,2,3]], function(tx, res) {
                 expect(res).toBeDefined();
-                if (!isWindows) // XXX TODO
+                //if (!isWindows) // XXX TODO
                   expect(res.rowsAffected).toBe(1);
                 tx.executeSql("select * from test_table", [], function(tx, res) {
                   var row = res.rows.item(0);
@@ -772,14 +772,16 @@ describe('legacy tests', function() {
           });
         });
 
+        // XXX TBD skip for now:
         // This test shows that the plugin does not throw an error when trying to serialize
         // a non-standard parameter type. Blob becomes an empty dictionary on iOS, for example,
         // and so this verifies the type is converted to a string and continues. Web SQL does
         // the same but on the JavaScript side and converts to a string like `[object Blob]`.
-        test_it(suiteName + "INSERT Blob from ArrayBuffer (non-standard parameter type)", function() {
+        xtest_it(suiteName + "INSERT Blob from ArrayBuffer (non-standard parameter type)", function() {
           if (isWindows) pending('BROKEN for Windows'); // XXX (??)
           if (isWP8) pending('BROKEN for WP(8)'); // (???)
           if (typeof Blob === "undefined") pending('Blob type does not exist');
+          if (/Android [1-4]/.test(navigator.userAgent)) pending('BROKEN for Android [version 1.x-4.x]');
 
           // abort the test if ArrayBuffer is undefined
           // TODO: consider trying this for multiple non-standard parameter types instead
@@ -1253,6 +1255,7 @@ describe('legacy tests', function() {
 
         test_it(suiteName + "constraint violation", function() {
           if (isWindows) pending('BROKEN for Windows'); // XXX TODO
+          //if (isWindowsPhone_8_1) pending('BROKEN for Windows Phone 8.1'); // XXX TODO
 
           var db = openDatabase("Constraint-violation-test.db", "1.0", "Demo", DEFAULT_SIZE);
           ok(!!db, "db object");
