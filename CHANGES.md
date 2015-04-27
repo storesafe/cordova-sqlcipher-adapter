@@ -1,8 +1,11 @@
 # Changes
 
-## 0.1.2-dev
+## 0.1.2
 
 - Update Android and iOS versions to use SQLCipher v3.3.0
+- Windows Universal (8.1) including both Windows and Windows Phone 8.1 now supported
+- insertId and rowsAffected longer missing for Windows (Universal) 8.1
+- iOS and Windows Universal versions built with a close match to the sqlite4java sqlite compiler flags-for example: FTS3/FTS4 and R-TREE
 
 ## 0.1.1
 

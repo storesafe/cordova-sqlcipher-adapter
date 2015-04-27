@@ -27,11 +27,10 @@ License for iOS version: MIT only
 
 ## Announcements
 
+- FTS3/FTS4 and R-TREE are now supported for all platforms in this version
 - Windows Universal version now supports both Windows 8.1 and Windows Phone 8.1
 - iOS version is now fixed to override the correct pluginInitialize method and should work with recent versions of iOS
 - Discussion forum at [Ost.io / @litehelpers / Cordova-sqlcipher-adapter](http://ost.io/@litehelpers/Cordova-sqlcipher-adapter)
-- The test suite is completely ported to Jasmine (2.2.0) and was used to verify the functionality of the new Windows version
-- [SQLCipher](https://www.zetetic.net/sqlcipher/) for Windows (8.1) in addition to Android & iOS is now supported by [litehelpers / Cordova-sqlcipher-adapter](https://github.com/litehelpers/Cordova-sqlcipher-adapter)
 - New `openDatabase` and `deleteDatabase` `location` option to select database location (iOS *only*) and disable iCloud backup
 - Fixes to work with PouchDB by [@nolanlawson](https://github.com/nolanlawson)
 
@@ -75,7 +74,6 @@ TBD *YOUR APP HERE*
 - Not tested with Crosswalk (Android)
 - Database triggers as described above - known to be broken for Android
 - UNICODE characters not fully tested in the Windows Universal (8.1) version
-- FTS3/FTS4 support needs to be tested, may be missing or incomplete on certain target platforms.
 - JOIN needs to be tested more.
  
 ## Other versions
@@ -215,7 +213,7 @@ window.sqlitePlugin.deleteDatabase({name: "my.db", location: 1}, successcb, erro
 
 # Installing
 
-## Windows Universal (8,1)) target platform
+## Windows Universal (8.1) target platform
 
 **IMPORTANT:** The Cordova CLI currently does not support all Windows target platforms due to [CB-8866](https://issues.apache.org/jira/browse/CB-8866). Please use `plugman` instead, as described here.
 
@@ -469,6 +467,8 @@ or for Windows (8.1):
     .\bin\test.ps1 windows
 
 # Adapters
+
+**TBD:** Need a smoother way to make these adapters work with the database encryption/decryption functionality.
 
 ## Lawnchair Adapter
 
