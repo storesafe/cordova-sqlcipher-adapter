@@ -17,94 +17,94 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Constants.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Database.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Statement.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\sqlite3.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\aes_tab.c" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\sha224.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)sqlite3.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)aes_tab.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)sha224.c" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Constants.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Database.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Statement.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\sqlite3.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)sqlite3.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\cbc_encrypt.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)cbc_encrypt.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\cbc_decrypt.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)cbc_decrypt.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\cbc_start.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)cbc_start.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\cbc_done.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)cbc_done.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\crypt_find_cipher.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)crypt_find_cipher.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\crypt_find_hash.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)crypt_find_hash.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\crypt_register_hash.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)crypt_register_hash.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\crypt_register_cipher.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)crypt_register_cipher.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\crypt_register_prng.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)crypt_register_prng.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\crypt_argchk.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)crypt_argchk.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\crypt_cipher_is_valid.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)crypt_cipher_is_valid.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\crypt_cipher_descriptor.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)crypt_cipher_descriptor.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\crypt_prng_descriptor.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)crypt_prng_descriptor.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\crypt_hash_is_valid.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)crypt_hash_is_valid.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\crypt_hash_descriptor.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)crypt_hash_descriptor.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\hash_memory.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)hash_memory.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\zeromem.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)zeromem.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\pkcs_5_2.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)pkcs_5_2.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\aes.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)aes.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\sha1.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)sha1.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\hmac_init.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)hmac_init.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\hmac_memory.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)hmac_memory.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\hmac_process.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)hmac_process.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\hmac_done.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)hmac_done.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\fortuna.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)fortuna.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\sha256.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)sha256.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
