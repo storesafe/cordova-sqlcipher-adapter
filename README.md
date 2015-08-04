@@ -8,7 +8,7 @@ License for iOS version: MIT only
 
 ## Status
 
-- Pre-alpha version with SQLCipher v3.3.0 (Android)/v3.3.1 (iOS and Windows):
+- Pre-alpha version with SQLCipher v3.3.1
   - with OpenSSL libcrypto for Android 
   - using Security framework for iOS
   - with LibTomCrypt (1.17) embedded for Windows "Universal" (8.1)
