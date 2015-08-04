@@ -57,9 +57,8 @@
         <source-file src="src/ios/SQLitePlugin.m" />
 
         <!-- SQLCipher source distribution and Security.framework dependency for iOS: -->
-        <!-- [TEMP TBD] using [latest version] from src/windows tree! -->
-        <header-file src="src/windows/SQLite3-WinRT/SQLite3/sqlite3.h" />
-        <source-file src="src/windows/SQLite3-WinRT/SQLite3/sqlite3.c" />
+        <header-file src="src/common/sqlite3.h" />
+        <source-file src="src/common/sqlite3.c" />
         <framework src="Security.framework" />
 
     </platform>
