@@ -42,9 +42,10 @@ var isWebKit = !isIE; // TBD [Android or iOS]
 
 var scenarioList = [ 'Plugin', 'HTML5' ];
 
-var scenarioCount = isWebKit ? 2 : 1;
+var scenarioCount = (!!window.hasWebKitBrowser) ? 2 : 1;
 
-describe('legacy tests', function() {
+// legacy tests:
+var mytests = function() {
 
   for (var i=0; i<scenarioCount; ++i) {
 
@@ -531,11 +532,10 @@ describe('legacy tests', function() {
           });
         });
 
-        test_it(suiteName + "error handler returning false [non-true] lets transaction continue", function() {
-          // XXX TODO TEST [PLUGIN BROKEN]:
-          // - return undefined 
-          // - return "true" string
-          // etc.
+        // NOTE: conclusion reached with @aarononeal and @nolanlawson in litehelpers/Cordova-sqlite-storage#232
+        // that the according to the spec at http://www.w3.org/TR/webdatabase/ the transaction should be
+        // recovered *only* if the sql error handler returns false.
+        test_it(suiteName + "error handler returning false lets transaction continue", function() {
           withTestTable(function(db) {
             stop(2);
             db.transaction(function(tx) {
@@ -893,7 +893,7 @@ describe('legacy tests', function() {
 
           db.transaction(function(tx) {
             ok(!blocked, 'callback to the transaction shouldn\'t block (1)');
-            tx.executeSql('SELECT 1 from sqlite_master', [], function () {
+            tx.executeSql('SELECT 1', [], function () {
               ok(!blocked, 'callback to the transaction shouldn\'t block (2)');
             });
           }, function(err) { ok(false, err.message) }, function() {
@@ -957,11 +957,9 @@ describe('legacy tests', function() {
 
         });
 
-        // XXX [BUG #230] BROKEN for iOS, Windows, and WP(8) versions of the plugin
+        // NOTE [BUG #230]: this is now working if we do not depend on a valid sqlite_master table
+        // XXX TODO: test with and without transaction callbacks, also with empty db.readTransaction()
         test_it(suiteName + 'empty transaction (no sql statements) and then SELECT transaction', function () {
-          if (isWindows) pending('BROKEN for Windows');
-          if (isWP8) pending('BROKEN for WP(8)');
-          if (!(isWebSql || isAndroid || isIE)) pending('BROKEN for iOS version of plugin');
 
           stop(2);
 
@@ -976,10 +974,10 @@ describe('legacy tests', function() {
 
           // verify we can still continue
           db.transaction(function (tx) {
-            tx.executeSql('SELECT 1 FROM sqlite_master', [], function (tx, res) {
-              // same order as was found in test-www
-              start();
+            tx.executeSql('SELECT 1', [], function (tx, res) {
               equal(res.rows.item(0)['1'], 1);
+
+              start();
             });
           }, function (error) {
             // XXX [BUG #230] iOS, Windows, and WP(8) versions of the plugin fail here:
@@ -1079,7 +1077,7 @@ describe('legacy tests', function() {
 
                     // ensure this matches our expectation of that database's
                     // default encoding
-                    tx.executeSql('SELECT hex("foob") AS `hex` FROM sqlite_master', [], function (tx, res) {
+                    tx.executeSql('SELECT hex("foob") AS `hex`', [], function (tx, res) {
                       var otherHex = res.rows.item(0).hex;
                       equal(hex.length, otherHex.length,
                           'expect same length, i.e. same global db encoding');
@@ -1960,6 +1958,9 @@ describe('legacy tests', function() {
           });
         });
 
+      // skip these in CI testing (for now):
+      if (!!window.hasWebKitBrowser) {
+
         test_it(suiteName + ' repeatedly open and close database (4x)', function () {
           if (isWindows) pending('NOT IMPLEMENTED for Windows'); // XXX TODO
 
@@ -2200,8 +2201,13 @@ describe('legacy tests', function() {
           });
         });
 
+      }
+
   });
 
-});
+}
+
+if (window.hasBrowser) mytests();
+else exports.defineAutoTests = mytests;
 
 /* vim: set expandtab : */

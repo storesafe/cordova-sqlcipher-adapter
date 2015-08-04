@@ -1,36 +1,38 @@
 # Cordova/PhoneGap SQLCipher adapter plugin
 
-Native interface to sqlcipher in a Cordova/PhoneGap plugin for Android, iOS, and Windows Universal (8.1), with API similar to HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/).
+Native interface to sqlcipher in a Cordova/PhoneGap plugin for Android, iOS, and Windows "Universal" (8.1), with API similar to HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/).
 
-License for Android and Windows Universal (8.1) versions: MIT or Apache 2.0
+License for Android and Windows "Universal" (8.1) versions: MIT or Apache 2.0
 
 License for iOS version: MIT only
 
 ## Status
 
-- Pre-alpha version with SQLCipher v3.3.0:
+- Pre-alpha version with SQLCipher v3.3.0 (Android)/v3.3.1 (iOS and Windows):
   - with OpenSSL libcrypto for Android 
   - using Security framework for iOS
-  - with LibTomCrypt (1.17) embedded for Windows Universal (8.1)
+  - with LibTomCrypt (1.17) embedded for Windows "Universal" (8.1)
   - for future consideration: embed OpenSSL libcrypto for all target platforms
-- Windows Universal (8.1) version is in experimental state:
+- Windows "Universal" (8.1) version is in an experimental/pre-alpha state:
   - Database close and delete operations not yet implemented
-  - Does not work properly with Cordova CLI due to [CB-8866](https://issues.apache.org/jira/browse/CB-8866). Please install using [litehelpers / cordova-windows-nufix](https://github.com/litehelpers/cordova-windows-nufix) and `plugman` as described below.
   - No background processing (for future consideration)
+  - You *may* encounter issues with Cordova CLI due to [CB-8866](https://issues.apache.org/jira/browse/CB-8866); as a workaround you can install using [litehelpers / cordova-windows-nufix](https://github.com/litehelpers/cordova-windows-nufix) and `plugman` as described below.
+  - In addition, problems with the Windows "Universal" version have been reported in case of a Cordova project using a Visual Studio template/extension instead of Cordova/PhoneGap CLI or `plugman`
+  - Not tested with a Windows 10 (or Windows Phone 10) target; Windows 10 build is not expected to work with Windows Phone
 - Android versions supported:
   - ARM (v5/v6/v7/v7a) and x86 CPUs
   - Minimum SDK 10 (a.k.a. Gingerbread, Android 2.3.3); support for older versions is available upon request.
   - NOTE: 64-bit CPUs such as `x64_64`, ARM-64, and MIPS are currently not supported (for consideration in the near future).
+- FTS3, FTS4, and R-Tree support is ~~tested~~ _working_ OK in this version (for all target platforms Android/iOS/Windows "Universal")
 - Pre-populatd DB is NOT supported by this version.
 - Lawnchair & PouchDB have NOT been tested with this version.
 - API to open the database is expected to be changed somewhat to be more streamlined. Transaction and single-statement query API will NOT be changed.
 
 ## Announcements
 
-- FTS3/FTS4 and R-TREE are now supported for all platforms in this version
-- Windows Universal version now supports both Windows 8.1 and Windows Phone 8.1
+- Windows "Universal" version now supports both Windows 8.1 and Windows Phone 8.1
 - iOS version is now fixed to override the correct pluginInitialize method and should work with recent versions of iOS
-- Discussion forum at [Ost.io / @litehelpers / Cordova-sqlcipher-adapter](http://ost.io/@litehelpers/Cordova-sqlcipher-adapter)
+- ~~Discussion forum at [Ost.io / @litehelpers / Cordova-sqlcipher-adapter](http://ost.io/@litehelpers/Cordova-sqlcipher-adapter)~~
 - New `openDatabase` and `deleteDatabase` `location` option to select database location (iOS *only*) and disable iCloud backup
 - Fixes to work with PouchDB by [@nolanlawson](https://github.com/nolanlawson)
 
@@ -53,9 +55,10 @@ TBD *YOUR APP HERE*
 - Using web workers is currently not supported and known to be broken on Android.
 - Triggers have only been tested on iOS, known to be broken on Android.
 - INSERT statement that affects multiple rows (due to SELECT cause or using triggers, for example) does not report proper rowsAffected on Android.
-- On Windows Universal (8.1), rowsAffected can be wrong when there are multiple levels of nesting of INSERT statements.
+- On Windows "Universal" (8.1), rowsAffected can be wrong when there are multiple levels of nesting of INSERT statements.
 - Memory issue observed when adding a large number of records on Android, due to JSON implementation
 - A stability issue was reported on the iOS version when in use together with [SockJS](http://sockjs.org/) client such as [pusher-js](https://github.com/pusher/pusher-js) at the same time. The workaround is to call sqlite functions and [SockJS](http://sockjs.org/) client functions in separate ticks (using setTimeout with 0 timeout).
+- If a sql statement fails for which there is no error handler or the error handler does not return `false` to signal transaction recovery, the plugin fires the remaining sql callbacks before aborting the transaction.
 
 ## Other limitations
 
@@ -68,12 +71,13 @@ TBD *YOUR APP HERE*
 - iOS version uses a thread pool but with only one thread working at a time due to "synchronized" database access
 - Large query result can be slow, also due to JSON implementation
 - ATTACH another database file is not supported (due to path specifications, which work differently depending on the target platform)
- 
+- User-defined savepoints are not supported and not expected to be compatible with the transaction locking mechanism used by this plugin. In addition, the use of BEGIN/COMMIT/ROLLBACK statements is not supported.
+
 ## Limited support (testing needed)
 
 - Not tested with Crosswalk (Android)
 - Database triggers as described above - known to be broken for Android
-- UNICODE characters not fully tested in the Windows Universal (8.1) version
+- UNICODE characters not fully tested in the Windows "Universal" (8.1) version
 - JOIN needs to be tested more.
  
 ## Other versions
@@ -92,6 +96,8 @@ TBD *YOUR APP HERE*
 # Usage
 
 The idea is to emulate the HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/) as closely as possible. The only major change is to use `window.sqlitePlugin.openDatabase()` (or `sqlitePlugin.openDatabase()`) instead of `window.openDatabase()`. If you see any other major change please report it, it is probably a bug.
+
+**NOTE:** If a sqlite statement in a transaction fails with an error, the error handler *must* return `false` in order to recover the transaction. This is correct according to the HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/) standard. This is different from the WebKit implementation of Web SQL in Android and iOS which recovers the transaction if a sql error hander returns a non-`true` value.
 
 ## Opening a database
 
@@ -126,8 +132,8 @@ function onDeviceReady() {
 The threading model depends on which version is used:
 - For Android, one background thread per db;
 - for iOS, background processing using a very limited thread pool (only one thread working at a time);
-- for Windows Universal (8.1), no background processing (for future consideration).
-
+- for Windows "Universal" (8.1), no background processing (for future consideration).
+ 
 # Sample with PRAGMA feature
 
 This is a pretty strong test: first we create a table and add a single entry, then query the count to check if the item was inserted as expected. Note that a new transaction is created in the middle of the first callback.
@@ -166,6 +172,8 @@ function onDeviceReady() {
   });
 }
 ```
+
+**NOTE:** PRAGMA statements must be executed in `executeSql()` on the database object (i.e. `db.executeSql()`) and NOT within a transaction.
 
 ## Sample with transaction-level nesting
 
@@ -209,19 +217,19 @@ window.sqlitePlugin.deleteDatabase({name: "my.db", location: 1}, successcb, erro
 
 `location` as described above for `openDatabase` (iOS *only*)
 
-**NOTE:** not implemented for Windows Universal (8.1) version.
+**NOTE:** not implemented for Windows "Universal" (8.1) version.
 
 # Installing
 
 ## Windows Universal (8.1) target platform
 
-**IMPORTANT:** The Cordova CLI currently does not support all Windows target platforms due to [CB-8866](https://issues.apache.org/jira/browse/CB-8866). Please use `plugman` instead, as described here.
+**IMPORTANT:** The Cordova CLI currently does not support all Windows target platforms (such as ("Mixed Platforms") due to [CB-8866](https://issues.apache.org/jira/browse/CB-8866). As an alternative, you can use `plugman` instead with [litehelpers / cordova-windows-nufix](https://github.com/litehelpers/cordova-windows-nufix), as described here.
 
-### using plugman
+### Using plugman to support "Mixed Platforms"
 
 - make sure you have the latest version of `plugman` installed: `npm install -g plugman`
 - Download the [cordova-windows-nufix 3.9.0-nufixpre-01 zipball](https://github.com/litehelpers/cordova-windows-nufix/archive/3.9.0-nufixpre-01.zip) (or you can clone [litehelpers / cordova-windows-nufix](https://github.com/litehelpers/cordova-windows-nufix) instead)
-- Create your Windows Universal (8.1) project using [litehelpers / cordova-windows-nufix](https://github.com/litehelpers/cordova-windows-nufix):
+- Create your Windows "Universal" (8.1) project using [litehelpers / cordova-windows-nufix](https://github.com/litehelpers/cordova-windows-nufix):
   - `path.to.cordova-windows-nufix/bin/create.bat your_app_path your.app.id YourAppName`
 - `cd your_app_path` and install plugin using `plugman`:
   - `plugman install --platform windows --project . --plugin https://github.com/litehelpers/Cordova-sqlcipher-adapter`
@@ -265,7 +273,7 @@ You can find more details at [this writeup](http://iphonedevlog.wordpress.com/20
    - `external` - placeholder - *not used in this branch*
    - `android` - Java plugin code for Android;
    - `ios` - Objective-C plugin code for iOS;
-   - `windows` - Javascript proxy code and SQLite3-WinRT project for Windows Universal (8.1);
+   - `windows` - Javascript proxy code and SQLite3-WinRT project for Windows "Universal" (8.1);
 - `spec`: test suite using Jasmine (2.2.0), ported from QUnit `test-www` test suite, working on all platforms
 - `tests`: very simple Jasmine test suite that is run on Circle CI (Android version) and Travis CI (iOS version)
 - `Lawnchair-adapter`: Lawnchair adapter, based on the version from the Lawnchair repository, with the basic Lawnchair test suite in `test-www` subdirectory
@@ -349,7 +357,7 @@ Sample change to `config.xml` (Cordova/PhoneGap 2.x):
          <plugin name="Compass" value="CDVLocation" />
 ```
 
-## Manual installation - Windows Universal (8.1) version
+## Manual installation - Windows "Universal" (8.1) version
 
 Described above.
 
@@ -440,7 +448,7 @@ Then you can [raise the new issue](https://github.com/litehelpers/Cordova-sqlcip
 
 ## Community forum
 
-If you have any questions about this plugin please post them to the [Ost.io / @litehelpers / Cordova-sqlcipher-adapter](http://ost.io/@litehelpers/Cordova-sqlcipher-adapter).
+TBD
 
 # Unit tests
 
@@ -510,6 +518,8 @@ ingredients = new Lawnchair({db: "cookbook", name: "ingredients", ...}, myCallba
 
 The adapter is now part of [PouchDB](http://pouchdb.com/) thanks to [@nolanlawson](https://github.com/nolanlawson), see [PouchDB FAQ](http://pouchdb.com/faq.html).
 
+**NOTE:** For some reason, the PouchDB adapter does not pass all of its tests with this plugin.
+
 # Contributing
 
 **WARNING:** Please do NOT propose changes from your `master` branch. In general, contributions are rebased using `git rebase` or `git cherry-pick` and not merged.
@@ -520,7 +530,7 @@ The adapter is now part of [PouchDB](http://pouchdb.com/) thanks to [@nolanlawso
 - Other enhancements welcome for consideration, when submitted with test code and are working for all supported platforms. Increase of complexity should be avoided.
 - All contributions may be reused by [@brodybits (Chris Brody)](https://github.com/brodybits) under another license in the future. Efforts will be taken to give credit for major contributions but it will not be guaranteed.
 - Project restructuring, i.e. moving files and/or directories around, should be avoided if possible.
-- If you see a need for restructuring, it is better to first discuss it in the forum at [Ost.io / @litehelpers / Cordova-sqlcipher-adapter](http://ost.io/@litehelpers/Cordova-sqlcipher-adapter) (or in a [new issue](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/new) where alternatives can be discussed before reaching a conclusion. If you want to propose a change to the project structure:
+- If you see a need for restructuring, it is better to first discuss it ~~in the forum at [Ost.io / @litehelpers / Cordova-sqlcipher-adapter](http://ost.io/@litehelpers/Cordova-sqlcipher-adapter) (or~~ in a [new issue](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/new) where alternatives can be discussed before reaching a conclusion. If you want to propose a change to the project structure:
   - Remember to make (and use) a special branch within your fork from which you can send the proposed restructuring;
   - Always use `git mv` to move files & directories;
   - Never mix a move/rename operation with any other changes in the same commit.
