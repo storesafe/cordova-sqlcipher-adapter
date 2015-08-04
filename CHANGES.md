@@ -1,5 +1,10 @@
 # Changes
 
+## 0.1.3-dev
+
+- Update iOS and Windows "Universal" versions to use SQLCipher v3.3.1
+- Build ARM target of Windows "Universal" version with Function Level Linking ref: http://www.monkey-x.com/Community/posts.php?topic=7739
+
 ## 0.1.2
 
 - Update Android and iOS versions to use SQLCipher v3.3.0
