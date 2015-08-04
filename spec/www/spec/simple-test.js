@@ -219,8 +219,7 @@ var mytests = function() {
                 tx.executeSql("select * from test_table", [], function(tx, res) {
                   var row = res.rows.item(0);
                   strictEqual(row.data_text1, "314159", "data_text1 should have inserted data as text");
-                  if (!isWP8) // JSON issue in WP(8) version
-                    strictEqual(row.data_text2, "3.14159", "data_text2 should have inserted data as text");
+                  strictEqual(row.data_text2, "3.14159", "data_text2 should have inserted data as text");
                   strictEqual(row.data_int, 314159, "data_int should have inserted data as an integer");
                   ok(Math.abs(row.data_real - 3.14159) < 0.000001, "data_real should have inserted data as a real");
 
@@ -233,8 +232,6 @@ var mytests = function() {
 
         /* thanks to @calebeaires: */
         it(suiteName + 'create virtual table using FTS3', function(done) {
-          if (isWP8) pending('NOT IMPLEMENTED for WP(8)'); // NOT IMPLEMENTED in CSharp-SQLite
-
           var db = openDatabase('virtual-table-using-fts3.db', '1.0', "Demo", DEFAULT_SIZE);
           expect(db).toBeDefined();
 
@@ -265,8 +262,6 @@ var mytests = function() {
         // NOTE: looking at sqlite3.c, if FTS3 is enabled, FTS4 seems to be working as well!
         // (thanks again to @calebeaires for this scenario)
         it(suiteName + 'create virtual table using FTS4', function(done) {
-          if (isWP8) pending('NOT IMPLEMENTED for WP(8)'); // NOT IMPLEMENTED in CSharp-SQLite
-
           var db = openDatabase('virtual-table-using-fts4.db', '1.0', "Demo", DEFAULT_SIZE);
           expect(db).toBeDefined();
 
@@ -296,9 +291,6 @@ var mytests = function() {
 
       if (!isWebSql) {
         it(suiteName + 'create virtual table using R-Tree', function(done) {
-          if (isWP8) pending('NOT IMPLEMENTED for WP(8)'); // NOT IMPLEMENTED in CSharp-SQLite
-          if (isAndroid) pending('NOT IMPLEMENTED for all versions of Android'); // NOT IMPLEMENTED for all versions of Android database (failed in Circle CI)
-
           var db = openDatabase('virtual-table-using-r-tree.db', '1.0', "Demo", DEFAULT_SIZE);
           expect(db).toBeDefined();
 

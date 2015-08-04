@@ -158,8 +158,6 @@ var mytests = function() {
         // - UNICODE \u2028 line separator from Javascript to Objective-C is working ok
         // - UNICODE \u2028 line separator from Objective-C to Javascript is BROKEN
         test_it(suiteName + "UNICODE \\u2028 line separator string to hex", function() {
-          if (isWP8) pending('BROKEN for WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
-
           // NOTE: this test verifies that the UNICODE line separator (\u2028)
           // is seen by the sqlite implementation OK:
           var db = openDatabase("UNICODE-line-separator-string-1.db", "1.0", "Demo", DEFAULT_SIZE);
@@ -194,7 +192,6 @@ var mytests = function() {
 
         test_it(suiteName + ' handles UNICODE \\u2028 line separator correctly [string test]', function () {
 
-          if (isWP8) pending('BROKEN for WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
           if (!(isWebSql || isAndroid || isIE)) pending('BROKEN for iOS'); // XXX [BUG #147] (no callback received)
 
           // NOTE: since the above test shows the UNICODE line separator (\u2028)
@@ -1175,7 +1172,6 @@ var mytests = function() {
         // BUG #147 iOS version of plugin BROKEN:
         test_it(suiteName +
             ' handles UNICODE \\u2028 line separator correctly [in database]', function () {
-          if (isWP8) pending('BROKEN for WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
           if (!(isWebSql || isAndroid || isIE)) pending('BROKEN for iOS'); // XXX [BUG #147] (no callback received)
 
           var dbName = "Unicode-line-separator.db";
