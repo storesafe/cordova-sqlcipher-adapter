@@ -22,8 +22,8 @@ License for iOS version: MIT only
 - Android versions supported:
   - ARM (v5/v6/v7/v7a) and x86 CPUs
   - Minimum SDK 10 (a.k.a. Gingerbread, Android 2.3.3); support for older versions is available upon request.
-  - NOTE: 64-bit CPUs such as `x64_64`, ARM-64, and MIPS are currently not supported (for consideration in the near future).
-- FTS3, FTS4, and R-Tree support is ~~tested~~ _working_ OK in this version (for all target platforms Android/iOS/Windows "Universal")
+  - NOTE: 64-bit CPUs such as `x64_64`, ARM-64, and MIPS64 are currently not supported (for consideration in the near future).
+- FTS3, FTS4, and R-Tree support is tested working OK in this version (for all target platforms Android/iOS/Windows "Universal")
 - Pre-populatd DB is NOT supported by this version.
 - Lawnchair & PouchDB have NOT been tested with this version.
 - API to open the database is expected to be changed somewhat to be more streamlined. Transaction and single-statement query API will NOT be changed.
@@ -32,7 +32,6 @@ License for iOS version: MIT only
 
 - Windows "Universal" version now supports both Windows 8.1 and Windows Phone 8.1
 - iOS version is now fixed to override the correct pluginInitialize method and should work with recent versions of iOS
-- ~~Discussion forum at [Ost.io / @litehelpers / Cordova-sqlcipher-adapter](http://ost.io/@litehelpers/Cordova-sqlcipher-adapter)~~
 - New `openDatabase` and `deleteDatabase` `location` option to select database location (iOS *only*) and disable iCloud backup
 - Fixes to work with PouchDB by [@nolanlawson](https://github.com/nolanlawson)
 
@@ -65,9 +64,9 @@ TBD *YOUR APP HERE*
 - The db version, display name, and size parameter values are not supported and will be ignored.
 - This plugin will not work before the callback for the "deviceready" event has been fired, as described in **Usage**. (This is consistent with the other Cordova plugins.)
 - The Android version cannot work with more than 100 open db files (due to the threading model used).
-- UNICODE line separator (`\u2028`) is currently not supported and known to be broken in iOS version.
+- UNICODE line separator (`\u2028`) is and known to be broken in iOS version.
 - Blob type is currently not supported and known to be broken on multiple platforms.
-- UNICODE `\u0000` (same as `\0`) character not working in Windows (8.1) (or Windows Phone XX) version(s)
+- UNICODE `\u0000` (same as `\0`) character not working in Windows (8.1) (or Windows Phone 8.1) version(s)
 - iOS version uses a thread pool but with only one thread working at a time due to "synchronized" database access
 - Large query result can be slow, also due to JSON implementation
 - ATTACH another database file is not supported (due to path specifications, which work differently depending on the target platform)
@@ -102,8 +101,6 @@ The idea is to emulate the HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/
 ## Opening a database
 
 **Supported way:** `var db = window.sqlitePlugin.openDatabase({name: "my.db", key: "your-password-here", location: 1});`
-
-**WARNING:** The `name:` parameter must be given a string otherwise the behavior is unpredictable.
 
 The new `location` option is used to select the database subdirectory location (iOS *only*) with the following choices:
 - `0` (default): `Documents` - visible to iTunes and backed up by iCloud
@@ -207,7 +204,7 @@ function onDeviceReady() {
 }
 ```
 
-This case will also works with Safari (WebKit), assuming you replace `window.sqlitePlugin.openDatabase` with `window.openDatabase`.
+This case will also works with Safari (WebKit) (with no encryption), assuming you replace `window.sqlitePlugin.openDatabase` with `window.openDatabase`.
 
 ## Delete a database
 
@@ -530,7 +527,7 @@ The adapter is now part of [PouchDB](http://pouchdb.com/) thanks to [@nolanlawso
 - Other enhancements welcome for consideration, when submitted with test code and are working for all supported platforms. Increase of complexity should be avoided.
 - All contributions may be reused by [@brodybits (Chris Brody)](https://github.com/brodybits) under another license in the future. Efforts will be taken to give credit for major contributions but it will not be guaranteed.
 - Project restructuring, i.e. moving files and/or directories around, should be avoided if possible.
-- If you see a need for restructuring, it is better to first discuss it ~~in the forum at [Ost.io / @litehelpers / Cordova-sqlcipher-adapter](http://ost.io/@litehelpers/Cordova-sqlcipher-adapter) (or~~ in a [new issue](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/new) where alternatives can be discussed before reaching a conclusion. If you want to propose a change to the project structure:
+- If you see a need for restructuring, it is better to first discuss it in a [new issue](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/new) where alternatives can be discussed before reaching a conclusion. If you want to propose a change to the project structure:
   - Remember to make (and use) a special branch within your fork from which you can send the proposed restructuring;
   - Always use `git mv` to move files & directories;
   - Never mix a move/rename operation with any other changes in the same commit.
