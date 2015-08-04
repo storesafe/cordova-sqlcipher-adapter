@@ -1,7 +1,8 @@
 # Changes
 
-## 0.1.3-dev
+## 0.1.3-pre
 
+- Check that the database name is a string, and throw exception otherwise
 - Update iOS and Windows "Universal" versions to use SQLCipher v3.3.1
 - Build ARM target of Windows "Universal" version with Function Level Linking ref: http://www.monkey-x.com/Community/posts.php?topic=7739
 

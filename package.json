@@ -1,27 +1,26 @@
 {
-  "name": "cordova-sqlite-common",
-  "version": "0.7.0-dev",
-  "description": "Native interface to SQLite for PhoneGap/Cordova (common version-limited functionality)",
+  "name": "cordova-sqlcipher-adapter",
+  "version": "0.1.3-pre",
+  "description": "SQLCipher database adapter for PhoneGap/Cordova, based on cordova-sqlite-storage",
   "cordova": {
-    "id": "cordova-sqlite-common",
+    "id": "cordova-sqlcipher-adapter",
     "platforms": [
       "android",
       "ios",
-      "windows",
-      "amazon-fireos"
+      "windows"
     ]
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/litehelpers/cordova-sqlite-common.git"
+    "url": "https://github.com/litehelpers/Cordova-sqlcipher-adapter.git"
   },
   "keywords": [
     "sqlite",
+    "sqlcipher",
     "ecosystem:cordova",
     "cordova-android",
     "cordova-ios",
-    "cordova-windows",
-    "cordova-amazon-fireos"
+    "cordova-windows"
   ],
   "engines": [
     {
@@ -32,7 +31,7 @@
   "author": "various",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/litehelpers/cordova-sqlite-common/issues"
+    "url": "https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues"
   },
-  "homepage": "https://github.com/litehelpers/cordova-sqlite-common"
+  "homepage": "https://github.com/litehelpers/Cordova-sqlcipher-adapter"
 }
