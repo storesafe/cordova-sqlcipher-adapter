@@ -6,6 +6,8 @@ License for Android and Windows "Universal" (8.1) versions: MIT or Apache 2.0
 
 License for iOS version: MIT only
 
+**WARNING:** In case you lose the database password you have no way to recover the data.
+
 ## Status
 
 - Pre-alpha version with SQLCipher v3.3.1
