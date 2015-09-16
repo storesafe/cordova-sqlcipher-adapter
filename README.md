@@ -32,6 +32,7 @@ License for iOS version: MIT only
 
 ## Announcements
 
+- [MetaMemoryT / websql-promise](https://github.com/MetaMemoryT/websql-promise) now supports this plugin
 - Windows "Universal" version now supports both Windows 8.1 and Windows Phone 8.1
 - iOS version is now fixed to override the correct pluginInitialize method and should work with recent versions of iOS
 - New `openDatabase` and `deleteDatabase` `location` option to select database location (iOS *only*) and disable iCloud backup
