@@ -412,6 +412,8 @@ public class SQLitePlugin extends CordovaPlugin {
                         Log.v("executeSqlBatch", "SQLiteStatement.executeUpdateDelete(): Error=" + errorMessage);
                         // stop the query in case of error:
                         needRawQuery = false;
+                    } finally {
+                        myStatement.close();
                     }
 
                     if (rowsAffected != -1) {
@@ -447,6 +449,8 @@ public class SQLitePlugin extends CordovaPlugin {
                         ex.printStackTrace();
                         errorMessage = ex.getMessage();
                         Log.v("executeSqlBatch", "SQLiteDatabase.executeInsert(): Error=" + errorMessage);
+                    } finally {
+                        myStatement.close();
                     }
                 }
 
