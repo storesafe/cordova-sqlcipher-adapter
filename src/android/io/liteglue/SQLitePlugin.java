@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2015, Chris Brody
+ * Copyright (c) 2012-2015: Christopher J. Brody (aka Chris Brody)
  * Copyright (c) 2005-2010, Nitobi Software Inc.
  * Copyright (c) 2010, IBM Corporation
  */
@@ -412,8 +412,6 @@ public class SQLitePlugin extends CordovaPlugin {
                         Log.v("executeSqlBatch", "SQLiteStatement.executeUpdateDelete(): Error=" + errorMessage);
                         // stop the query in case of error:
                         needRawQuery = false;
-                    } finally {
-                        myStatement.close();
                     }
 
                     if (rowsAffected != -1) {
@@ -449,8 +447,6 @@ public class SQLitePlugin extends CordovaPlugin {
                         ex.printStackTrace();
                         errorMessage = ex.getMessage();
                         Log.v("executeSqlBatch", "SQLiteDatabase.executeInsert(): Error=" + errorMessage);
-                    } finally {
-                        myStatement.close();
                     }
                 }
 

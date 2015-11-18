@@ -23,7 +23,7 @@ namespace SQLite3
 
   Database::~Database()
   {
-    sqlite3_close(sqlite);
+    if (sqlite != nullptr) sqlite3_close(sqlite);
   }
 
   int Database::Key(Platform::String^ key)
@@ -36,6 +36,20 @@ namespace SQLite3
   Statement^ Database::Prepare(Platform::String^ sql)
   {
     return ref new Statement(this, sql);
+  }
+
+  int Database::closedb()
+  {
+    int rc = sqlite3_close(sqlite);
+	if (rc == SQLITE_OK) sqlite = nullptr;
+	return rc;
+  }
+
+  int Database::close_v2()
+  {
+    int rc = sqlite3_close_v2(sqlite);
+	if (rc == SQLITE_OK) sqlite = nullptr;
+	return rc;
   }
 
   int Database::LastInsertRowid()

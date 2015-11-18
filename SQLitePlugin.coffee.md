@@ -151,7 +151,7 @@
         error newSQLError 'database not open'
         return
 
-      @addTransaction new SQLitePluginTransaction(this, fn, error, success, true, true)
+      @addTransaction new SQLitePluginTransaction(this, fn, error, success, false, true)
       return
 
     SQLitePlugin::startNextTransaction = ->
@@ -559,8 +559,11 @@
         if !!openargs.createFromLocation and openargs.createFromLocation == 1
           openargs.createFromResource = "1"
 
-        #if !!openargs.androidLockWorkaround and openargs.androidLockWorkaround == 1
-        #  openargs.androidLockWorkaround = 1
+        if !!openargs.androidDatabaseImplementation and openargs.androidDatabaseImplementation == 2
+          openargs.androidOldDatabaseImplementation = 1
+
+        if !!openargs.androidLockWorkaround and openargs.androidLockWorkaround == 1
+          openargs.androidBugWorkaround = 1
 
         new SQLitePlugin openargs, okcb, errorcb
 

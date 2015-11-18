@@ -14,6 +14,9 @@ namespace SQLite3
 
     int Key(Platform::String^ key);
 
+    int closedb();
+    int close_v2();
+
     Statement^ Prepare(Platform::String^ sql);
 
     int LastInsertRowid();

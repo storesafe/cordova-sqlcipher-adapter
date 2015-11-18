@@ -4,12 +4,12 @@ var MYTIMEOUT = 20000;
 
 var DEFAULT_SIZE = 5000000; // max to avoid popup in safari/ios
 
-// FUTURE TBD replace in test(s):
+// FUTURE TODO replace in test(s):
 function ok(test, desc) { expect(test).toBe(true); }
 function equal(a, b, desc) { expect(a).toEqual(b); } // '=='
 function strictEqual(a, b, desc) { expect(a).toBe(b); } // '==='
 
-// XXX TODO REPLACE:
+// XXX TODO REFACTOR OUT OF OLD TESTS:
 var wait = 0;
 var test_it_done = null;
 function xtest_it(desc, fun) { xit(desc, fun); }
@@ -40,22 +40,27 @@ var isWindows = /Windows /.test(navigator.userAgent); // Windows (8.1)
 var isIE = isWindows || isWP8;
 var isWebKit = !isIE; // TBD [Android or iOS]
 
-var scenarioList = [ 'Plugin', 'HTML5' ];
+var scenarioList = [ isAndroid ? 'Plugin-xxx' : 'Plugin', 'HTML5', 'Plugin-xxx' ];
 
-var scenarioCount = (!!window.hasWebKitBrowser) ? 2 : 1;
+//var scenarioCount = isAndroid ? 3 : (isIE ? 1 : 2);
+var scenarioCount = 1; //(!!window.hasWebKitBrowser) ? 2 : 1;
 
 // legacy tests:
 var mytests = function() {
 
   for (var i=0; i<scenarioCount; ++i) {
 
-    describe(scenarioList[i] + ': legacy sql test(s)', function() {
+    describe(scenarioList[i] + ': LEGACY SQL test(s)', function() {
       var scenarioName = scenarioList[i];
       var suiteName = scenarioName + ': ';
-      var isWebSql = (i !== 0);
+      var isWebSql = (i === 1);
+      var isOldAndroidImpl = (i === 2);
 
       // NOTE: MUST be defined in function scope, NOT outer scope:
       var openDatabase = function(name, ignored1, ignored2, ignored3) {
+        if (isOldAndroidImpl) {
+          return window.sqlitePlugin.openDatabase({name: name, androidDatabaseImplementation: 2});
+        }
         if (isWebSql) {
           return window.openDatabase(name, "1.0", "Demo", DEFAULT_SIZE);
         } else {
@@ -91,6 +96,7 @@ var mytests = function() {
         test_it(suiteName + ' string encoding test with UNICODE \\u0000', function () {
           if (isWindows) pending('BROKEN for Windows'); // XXX
           if (isWP8) pending('BROKEN for WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
+          if (isAndroid && !(isWebSql || isOldAndroidImpl)) pending('BROKEN for Android (sqlite-connector version)'); // XXX
 
           stop();
 
@@ -330,9 +336,6 @@ var mytests = function() {
         });
 
         test_it(suiteName + 'test rowsAffected [advanced]', function () {
-          // XXX STILL BROKEN for WINDOWS (8.1):
-          if (isWindows) pending('BROKEN for Windows (8.1)'); // XXX TODO
-
           var db = openDatabase("RowsAffectedAdvanced", "1.0", "Demo", DEFAULT_SIZE);
 
           stop();
@@ -348,7 +351,6 @@ var mytests = function() {
               tx.executeSql('INSERT INTO characters VALUES (?,?,?)', ['Tails', 'Sega', 0], function (tx, res) {
                 expect(res.rowsAffected).toBe(1);
                 tx.executeSql('INSERT INTO companies VALUES (?,?)', ['Sega', 1], function (tx, res) {
-                  // XXX still fails on Windows (8.1):
                   expect(res.rowsAffected).toBe(1);
                   // query with subquery
                   var sql = 'UPDATE characters ' +
@@ -682,7 +684,6 @@ var mytests = function() {
         });
 
         test_it(suiteName + "Big [integer] value bindings", function() {
-          if (isWindows) pending('BROKEN for Windows'); // XXX [BUG #195]
           if (isWP8) pending('BROKEN for WP(8)'); // XXX [BUG #195]
 
           stop();
@@ -696,15 +697,10 @@ var mytests = function() {
               tx.executeSql("insert into tt (test_date, test_text) VALUES (?,?)",
                   [1424174959894, 1424174959894], function(tx, res) {
                 expect(res).toBeDefined();
-                if (!isWindows) // XXX TODO
-                  expect(res.rowsAffected).toBe(1);
+                expect(res.rowsAffected).toBe(1);
                 tx.executeSql("select * from tt", [], function(tx, res) {
                   var row = res.rows.item(0);
-                  // XXX BUG #195 in WP(8) and Windows (8.1) versions:
-                  //if (isIE)
-                  //  ok(row.test_date < 0, "Reproducing big number bug");
-                  //else
-                    strictEqual(row.test_date, 1424174959894, "Big integer number inserted properly");
+                  strictEqual(row.test_date, 1424174959894, "Big integer number inserted properly");
 
                   // NOTE: storing big integer in TEXT field WORKING OK with WP(8) version.
                   // It is now suspected that the issue lies with the results handling.
@@ -1047,6 +1043,7 @@ var mytests = function() {
         test_it(suiteName + ' stores [Unicode] string with \\u0000 correctly', function () {
           if (isWindows) pending('BROKEN on Windows'); // XXX
           if (isWP8) pending('BROKEN for WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
+          if (isAndroid && !(isWebSql || isOldAndroidImpl)) pending('BROKEN for Android (sqlite-connector version)'); // XXX
 
           stop();
 
@@ -1469,8 +1466,8 @@ var mytests = function() {
             });
 
             tx.executeSql('UPDATE Task SET subject="Task", id="511e3fb7-5aed-4c1a-b1b7-96bf9c5012e2" WHERE id = "511e3fb7-5aed-4c1a-b1b7-96bf9c5012e2"', [], function(tx, res) {
-              if (!isWindows) // XXX TODO
-                expect(res.rowsAffected).toEqual(1);
+              //if (!isWindows) // XXX TODO
+              expect(res.rowsAffected).toEqual(1);
             }, function (error) {
               ok(false, '2nd update failed ' + error);
             });
@@ -1486,13 +1483,41 @@ var mytests = function() {
     });
   }
 
-  describe('Plugin: plugin-specific test(s)', function() {
+  describe('Plugin: plugin-specific legacy test(s)', function() {
 
-    var suiteName = "plugin: ";
+    //var suiteName = "plugin: ";
+
+    var scenarioList = [ isAndroid ? 'plugin-xxx' : 'Plugin', 'plugin-xxx' ];
+
+    var scenarioCount = /* isAndroid ? 2 : */ 1;
+
+    for (var i=0; i<scenarioCount; ++i) {
+      var scenarioName = scenarioList[i];
+      var suiteName = scenarioName + ': ';
+      var isOldAndroidImpl = (i === 1);
+
+      describe(scenarioList[i] + ': legacy sql test(s)', function() {
 
         // NOTE: MUST be defined in function scope, NOT outer scope:
         var openDatabase = function(first, second, third, fourth, fifth, sixth) {
-          return window.sqlitePlugin.openDatabase(first, second, third, fourth, fifth, sixth);
+          if (!isOldAndroidImpl) {
+            return window.sqlitePlugin.openDatabase(first, second, third, fourth, fifth, sixth);
+          }
+
+          var dbname, okcb, errorcb;
+
+          if (first.constructor === String ) {
+            dbname = first;
+            okcb = fifth;
+            errorcb = sixth;
+          } else {
+            dbname = first.name;
+            okcb = second;
+            errorcb = third;
+          }
+
+          dbopts = { name: dbname, androidDatabaseImplementation: 2 };
+          return window.sqlitePlugin.openDatabase(dbopts, okcb, errorcb);
         }
 
         test_it(suiteName + "DB String result test", function() {
@@ -1577,8 +1602,6 @@ var mytests = function() {
         });
 
         test_it(suiteName + ' test sqlitePlugin.deleteDatabase()', function () {
-          if (isWindows) pending('NOT IMPLEMENTED for Windows'); // XXX TODO
-
           stop();
           var db = openDatabase("DB-Deletable", "1.0", "Demo", DEFAULT_SIZE);
 
@@ -1589,13 +1612,21 @@ var mytests = function() {
               tx.executeSql('CREATE TABLE IF NOT EXISTS test (name)', [], function () {
                 tx.executeSql('INSERT INTO test VALUES (?)', ['foo']);
               });
-            }, function (e) { ok(false, 'error: ' + e); }, function () {
+            }, function (err) {
+              ok(false, 'create and insert tx failed with ERROR: ' + JSON.stringify(err));
+              console.log('create and insert tx failed with ERROR: ' + JSON.stringify(err));
+              start();
+            }, function () {
               // check that we can read it
               db.transaction(function(tx) {
                 tx.executeSql('SELECT * FROM test', [], function (tx, res) {
                   equal(res.rows.item(0).name, 'foo');
                 });
-              }, function (e) { ok(false, 'error: ' + e); }, function () {
+              }, function (err) {
+                ok(false, 'SELECT tx failed with ERROR: ' + JSON.stringify(err));
+                console.log('SELECT tx failed with ERROR: ' + JSON.stringify(err));
+                start();
+              }, function () {
                 deleteAndConfirmDeleted();
               });
             });
@@ -1608,21 +1639,27 @@ var mytests = function() {
               // check that the data's gone
               db.transaction(function (tx) {
                 tx.executeSql('SELECT name FROM test', []);
-              }, function (e) {
+              }, function (err) {
                 ok(true, 'got an expected transaction error');
                 testDeleteError();
               }, function () {
+                console.log('UNEXPECTED SUCCESS: expected a transaction error');
                 ok(false, 'expected a transaction error');
+                start();
               });
-            }, function (e) {
-              ok(false, 'error: ' + e);
+            }, function (err) {
+              console.log("ERROR: " + JSON.stringify(err));
+              ok(false, 'error: ' + err);
+              start();
             });
           }
 
           function testDeleteError() {
             // should throw an error if the db doesn't exist
             window.sqlitePlugin.deleteDatabase("Foo-Doesnt-Exist", function () {
+              console.log('UNEXPECTED SUCCESS: expected a delete error');
               ok(false, 'expected error');
+              start();
             }, function (err) {
               ok(!!err, 'got error like we expected');
 
@@ -1648,8 +1685,6 @@ var mytests = function() {
         });
 
         test_it(suiteName + ' database.close calls its success callback', function () {
-          if (isWindows) pending('NOT IMPLEMENTED for Windows'); // XXX TODO
-
           // asynch test coming up
           stop(1);
 
@@ -1667,8 +1702,6 @@ var mytests = function() {
         });
 
         test_it(suiteName + ' database.close fails in transaction', function () {
-          if (isWindows) pending('NOT IMPLEMENTED for Windows'); // XXX TODO
-
           stop(2);
 
           var dbName = "Database-Close-fail";
@@ -1696,8 +1729,6 @@ var mytests = function() {
         });
 
         test_it(suiteName + ' attempt to close db twice', function () {
-          if (isWindows) pending('NOT IMPLEMENTED for Windows'); // XXX TODO
-
           var dbName = "close-db-twice.db";
 
           stop(1);
@@ -1822,12 +1853,11 @@ var mytests = function() {
 
         // Needed to support some large-scale applications:
         test_it(suiteName + ' close then re-open allows subsequent queries to run', function () {
-          if (isWindows) pending('NOT IMPLEMENTED for Windows'); // XXX TODO
-
           // asynch test coming up
           stop(1);
         
           var dbName = "Database-Close-and-Reopen";
+
           openDatabase(dbName, "1.0", "Demo", DEFAULT_SIZE, function (db) {
             db.close(function () {
               openDatabase(dbName, "1.0", "Demo", DEFAULT_SIZE, function (db) {
@@ -1873,8 +1903,6 @@ var mytests = function() {
 
         // Needed to support some large-scale applications:
         test_it(suiteName + ' delete then re-open allows subsequent queries to run', function () {
-          if (isWindows) pending('NOT IMPLEMENTED for Windows'); // XXX TODO
-
           var dbName = "Database-delete-and-Reopen.db";
           var dbLocation = 2;
 
@@ -1916,8 +1944,6 @@ var mytests = function() {
 
         // Needed to support some large-scale applications:
         test_it(suiteName + ' close, then delete then re-open allows subsequent queries to run', function () {
-          if (isWindows) pending('NOT IMPLEMENTED for Windows'); // XXX TODO
-
           var dbName = "Database-Close-delete-Reopen.db";
 
           // asynch test coming up
@@ -1958,8 +1984,6 @@ var mytests = function() {
       if (!!window.hasWebKitBrowser) {
 
         test_it(suiteName + ' repeatedly open and close database (4x)', function () {
-          if (isWindows) pending('NOT IMPLEMENTED for Windows'); // XXX TODO
-
           var dbName = "repeatedly-open-and-close-db-4x.db";
 
           // async test coming up
@@ -2021,8 +2045,6 @@ var mytests = function() {
         });
 
         test_it(suiteName + ' repeatedly open and close database faster (5x)', function () {
-          if (isWindows) pending('NOT IMPLEMENTED for Windows'); // XXX TODO
-
           var dbName = "repeatedly-open-and-close-faster-5x.db";
 
           // async test coming up
@@ -2078,8 +2100,6 @@ var mytests = function() {
 
         // Needed to support some large-scale applications:
         test_it(suiteName + ' repeatedly open and delete database (4x)', function () {
-          if (isWindows) pending('NOT IMPLEMENTED for Windows'); // XXX TODO
-
           var dbName = "repeatedly-open-and-delete-4x.db";
 
           // async test coming up
@@ -2142,8 +2162,6 @@ var mytests = function() {
 
         // Needed to support some large-scale applications:
         test_it(suiteName + ' repeatedly open and delete database faster (5x)', function () {
-          if (isWindows) pending('NOT IMPLEMENTED for Windows'); // XXX TODO
-
           var dbName = "repeatedly-open-and-delete-faster-5x.db";
 
           // async test coming up
@@ -2198,6 +2216,9 @@ var mytests = function() {
         });
 
       }
+
+      });
+    }
 
   });
 

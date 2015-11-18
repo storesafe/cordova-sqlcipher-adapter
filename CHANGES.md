@@ -1,5 +1,12 @@
 # Changes
 
+## 0.1.3-xxx
+
+- Implement database close and delete operations for Windows "Universal"
+- Fix conversion warnings in iOS version
+- Fix to Windows "Universal" version to support big integers
+- Fix readTransaction to skip BEGIN/COMMIT/ROLLBACK
+
 ## 0.1.3-pre
 
 - Update to SQLCipher v3.3.1 (all platforms)
@@ -18,4 +25,3 @@
 - Abort initially pending transactions for db handle if db cannot be opened (due to incorrect password key, for example)
 - Proper handling of transactions that may be requested before the database open operation is completed
 - Report an error upon attempt to close a database handle object multiple times.
-

@@ -122,7 +122,7 @@
       error(newSQLError('database not open'));
       return;
     }
-    this.addTransaction(new SQLitePluginTransaction(this, fn, error, success, true, true));
+    this.addTransaction(new SQLitePluginTransaction(this, fn, error, success, false, true));
   };
 
   SQLitePlugin.prototype.startNextTransaction = function() {
@@ -148,12 +148,12 @@
   };
 
   SQLitePlugin.prototype.abortAllPendingTransactions = function() {
-    var tx, txLock, _i, _len, _ref;
+    var j, len1, ref, tx, txLock;
     txLock = txLocks[this.dbname];
     if (!!txLock && txLock.queue.length > 0) {
-      _ref = txLock.queue;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        tx = _ref[_i];
+      ref = txLock.queue;
+      for (j = 0, len1 = ref.length; j < len1; j++) {
+        tx = ref[j];
         tx.abortFromQ(newSQLError('Invalid database handle'));
       }
       txLock.queue = [];
@@ -278,12 +278,12 @@
   };
 
   SQLitePluginTransaction.prototype.start = function() {
-    var err;
+    var err, error1;
     try {
       this.fn(this);
       this.run();
-    } catch (_error) {
-      err = _error;
+    } catch (error1) {
+      err = error1;
       txLocks[this.db.dbname].inProgress = false;
       this.db.startNextTransaction();
       if (this.error) {
@@ -310,11 +310,11 @@
   };
 
   SQLitePluginTransaction.prototype.addStatement = function(sql, values, success, error) {
-    var params, t, v, _i, _len;
+    var j, len1, params, t, v;
     params = [];
     if (!!values && values.constructor === Array) {
-      for (_i = 0, _len = values.length; _i < _len; _i++) {
-        v = values[_i];
+      for (j = 0, len1 = values.length; j < len1; j++) {
+        v = values[j];
         t = typeof v;
         params.push((v === null || v === void 0 || t === 'number' || t === 'string' ? v : v instanceof Blob ? v.valueOf() : v.toString()));
       }
@@ -365,15 +365,15 @@
     tx = this;
     handlerFor = function(index, didSucceed) {
       return function(response) {
-        var err;
+        var err, error1;
         try {
           if (didSucceed) {
             tx.handleStatementSuccess(batchExecutes[index].success, response);
           } else {
             tx.handleStatementFailure(batchExecutes[index].error, newSQLError(response));
           }
-        } catch (_error) {
-          err = _error;
+        } catch (error1) {
+          err = error1;
           if (!txFailure) {
             txFailure = newSQLError(err);
           }
@@ -405,9 +405,9 @@
       i++;
     }
     mycb = function(result) {
-      var last, q, r, res, type, _i;
+      var j, last, q, r, ref, res, type;
       last = result.length - 1;
-      for (i = _i = 0; 0 <= last ? _i <= last : _i >= last; i = 0 <= last ? ++_i : --_i) {
+      for (i = j = 0, ref = last; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
         r = result[i];
         type = r.type;
         res = r.result;
@@ -535,6 +535,12 @@
       openargs.dblocation = dblocation || dblocations[0];
       if (!!openargs.createFromLocation && openargs.createFromLocation === 1) {
         openargs.createFromResource = "1";
+      }
+      if (!!openargs.androidDatabaseImplementation && openargs.androidDatabaseImplementation === 2) {
+        openargs.androidOldDatabaseImplementation = 1;
+      }
+      if (!!openargs.androidLockWorkaround && openargs.androidLockWorkaround === 1) {
+        openargs.androidBugWorkaround = 1;
       }
       return new SQLitePlugin(openargs, okcb, errorcb);
     }),
