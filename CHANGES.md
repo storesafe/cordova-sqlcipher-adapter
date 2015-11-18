@@ -1,6 +1,6 @@
 # Changes
 
-## 0.1.3-xxx
+## 0.1.4-pre
 
 - Implement database close and delete operations for Windows "Universal"
 - Fix conversion warnings in iOS version

@@ -31,7 +31,7 @@ NOTE (TBD): no Circle CI or Travis CI working in this version branch.
 - Pre-populatd DB is NOT supported by this version.
 - Lawnchair & PouchDB have NOT been tested with this version.
 - API to open the database is expected to be changed somewhat to be more streamlined. Transaction and single-statement query API will NOT be changed.
-- In case of memory issues please use smaller transactions ~~or use the version (with a different licensing scheme) at: [litehelpers / Cordova-sqlite-enterprise-free](https://github.com/litehelpers/Cordova-sqlite-enterprise-free)~~
+- In case of memory issues please use smaller transactions or TBD not (yet) adapted for use with SQLCipher: use the version (with a different licensing scheme) at: [litehelpers / Cordova-sqlite-enterprise-free](https://github.com/litehelpers/Cordova-sqlite-enterprise-free)
 
 ## Announcements
 
@@ -88,7 +88,9 @@ TBD *YOUR APP HERE*
 - Problems have been reported when using this plugin with Crosswalk (for Android). A couple of things you can try:
   - Install Crosswalk as a plugin instead of using Crosswalk to create the project.
   - Use `androidDatabaseImplementation: 2` in the openDatabase options as described below.
-- Does not work with [axemclion / react-native-cordova-plugin](https://github.com/axemclion/react-native-cordova-plugin) since the `window.sqlitePlugin` object exported (ES5 feature). ~~It is recommended to use [andpor / react-native-sqlite-storage](https://github.com/andpor/react-native-sqlite-storage) for SQLite database access with React Native Android/iOS instead.~~
+- Does not work with [axemclion / react-native-cordova-plugin](https://github.com/axemclion/react-native-cordova-plugin) since the `window.sqlitePlugin` object exported (ES5 feature). Possible alternative solutions:
+  - Follow the solution given in [this comment to axemclion/react-native-cordova-plugin#4](https://github.com/axemclion/react-native-cordova-plugin/issues/4#issuecomment-156751197) or [litehelpers/Cordova-sqlite-storage#382](https://github.com/litehelpers/Cordova-sqlite-storage/issues/382)
+  - Adapt [andpor / react-native-sqlite-storage](https://github.com/andpor/react-native-sqlite-storage) to work with SQLCipher
 
 ## Further testing needed
 
