@@ -950,8 +950,7 @@ var mytests = function() {
 
         });
 
-        // NOTE [BUG #230]: this is now working if we do not depend on a valid sqlite_master table
-        // XXX TODO: test with and without transaction callbacks, also with empty db.readTransaction()
+        /* XXX MOVED:
         test_it(suiteName + 'empty transaction (no sql statements) and then SELECT transaction', function () {
 
           stop(2);
@@ -981,6 +980,7 @@ var mytests = function() {
             start();
           });
         });
+        ** */
 
         test_it(suiteName + ' test simultaneous transactions, different dbs', function () {
           stop();

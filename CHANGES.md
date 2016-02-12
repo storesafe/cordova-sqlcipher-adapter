@@ -1,5 +1,9 @@
 # Changes
 
+## 0.1.4-rc
+
+- Workaround fix for empty readTransaction issue
+
 ## 0.1.4-pre
 
 - Implement database close and delete operations for Windows "Universal"

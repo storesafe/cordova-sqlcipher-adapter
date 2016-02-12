@@ -311,6 +311,11 @@
         @addStatement "BEGIN", [], null, (tx, err) ->
           throw newSQLError "unable to begin transaction: " + err.message, err.code
 
+      # Workaround for litehelpers/Cordova-sqlite-storage#409
+      # extra statement in case user function does not add any SQL statements
+      else
+        @addStatement "SELECT 1", [], null, null
+
       return
 
     SQLitePluginTransaction::start = ->
