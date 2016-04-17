@@ -1,6 +1,10 @@
 # Changes
 
-## x.x.x-common-dev
+## cordova-sqlcipher-xxx 0.x.x-xxx-dev
+
+XXX TBD
+
+### x.x.x-common-dev
 
 - Support Windows 8.1/Windows Phone 8.1 along with Windows 10
 - Fix PCH issue with Debug Win32 UWP (Windows 10) build

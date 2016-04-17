@@ -3,6 +3,8 @@
 #include "Database.h"
 #include "Statement.h"
 
+#include <string>
+
 namespace SQLite3
 {
   Database::Database(Platform::String^ dbPath)
@@ -22,6 +24,13 @@ namespace SQLite3
   Database::~Database()
   {
     if (sqlite != nullptr) sqlite3_close(sqlite);
+  }
+
+  int Database::Key(Platform::String^ key)
+  {
+    std::wstring wkey(key->Begin(), key->End());
+    std::string skey(wkey.begin(), wkey.end());
+    return sqlite3_key(sqlite, skey.c_str(), skey.length());
   }
 
   Statement^ Database::Prepare(Platform::String^ sql)

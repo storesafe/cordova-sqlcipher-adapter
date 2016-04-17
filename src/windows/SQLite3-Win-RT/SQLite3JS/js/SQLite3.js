@@ -195,6 +195,9 @@
     },
     totalChanges: function () {
       return this.connection.totalChanges();
+    },
+    key: function (k) {
+      return this.connection.key(k);
     }
   });
 

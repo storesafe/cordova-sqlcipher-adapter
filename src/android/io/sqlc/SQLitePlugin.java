@@ -20,8 +20,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaPlugin;
+//import org.apache.cordova.CallbackContext;
+//import org.apache.cordova.CordovaPlugin;
+
+// NOTE: more than CordovaPlugin & CallbackContext needed to support
+// override of initialize() function.
+import org.apache.cordova.*;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,6 +48,21 @@ public class SQLitePlugin extends CordovaPlugin {
     /**
      * NOTE: Using default constructor, no explicit constructor.
      */
+
+    /**
+     * Override to load native lib(s).
+     * NOTE: cannot do this in static initializer since SQLiteDatabase.loadLibs()
+     * needs the app's activity, which seems to be available only from the cordova member
+     * (of the superclass). Also, newer versions of Cordova provide pluginInitialize()
+     * which can be overridden more easily.
+     */
+    @Override
+    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+        super.initialize(cordova, webView);
+        //SQLiteDatabase.loadLibs(this.cordova.getActivity());
+        SQLiteAndroidDatabase.initialize(cordova);
+    }
+
 
     /**
      * Executes the request and returns PluginResult.
@@ -209,7 +228,7 @@ public class SQLitePlugin extends CordovaPlugin {
      *
      * @param dbName   The name of the database file
      */
-    private SQLiteAndroidDatabase openDatabase(String dbname, CallbackContext cbc, boolean old_impl) throws Exception {
+    private SQLiteAndroidDatabase openDatabase(String dbname, String key, CallbackContext cbc, boolean old_impl) throws Exception {
         try {
             // ASSUMPTION: no db (connection/handle) is already stored in the map
             // [should be true according to the code in DBRunner.run()]
@@ -222,8 +241,9 @@ public class SQLitePlugin extends CordovaPlugin {
 
             Log.v("info", "Open sqlite db: " + dbfile.getAbsolutePath());
 
-            SQLiteAndroidDatabase mydb = old_impl ? new SQLiteAndroidDatabase() : new SQLiteConnectorDatabase();
-            mydb.open(dbfile);
+            //SQLiteAndroidDatabase mydb = old_impl ? new SQLiteAndroidDatabase() : new SQLiteConnectorDatabase();
+            SQLiteAndroidDatabase mydb = new SQLiteAndroidDatabase();
+            mydb.open(dbfile, key);
 
             if (cbc != null) // XXX Android locking/closing BUG workaround
                 cbc.success();
@@ -235,6 +255,9 @@ public class SQLitePlugin extends CordovaPlugin {
             throw e;
         }
     }
+
+    // NOTE: createFromAssets (pre-populated DB) feature is not
+    // supported for SQLCipher.
 
     /**
      * Close a database (in another thread).
@@ -316,8 +339,9 @@ public class SQLitePlugin extends CordovaPlugin {
 
     private class DBRunner implements Runnable {
         final String dbname;
-        private boolean oldImpl;
-        private boolean bugWorkaround;
+        final String dbkey;
+        //private boolean oldImpl;
+        //private boolean bugWorkaround;
 
         final BlockingQueue<DBQuery> q;
         final CallbackContext openCbc;
@@ -326,11 +350,22 @@ public class SQLitePlugin extends CordovaPlugin {
 
         DBRunner(final String dbname, JSONObject options, CallbackContext cbc) {
             this.dbname = dbname;
-            this.oldImpl = options.has("androidOldDatabaseImplementation");
-            Log.v(SQLitePlugin.class.getSimpleName(), "Android db implementation: built-in android.database.sqlite package");
-            this.bugWorkaround = this.oldImpl && options.has("androidBugWorkaround");
-            if (this.bugWorkaround)
-                Log.v(SQLitePlugin.class.getSimpleName(), "Android db closing/locking workaround applied");
+            //this.oldImpl = options.has("androidOldDatabaseImplementation");
+            //Log.v(SQLitePlugin.class.getSimpleName(), "Android db implementation: built-in android.database.sqlite package");
+            //this.bugWorkaround = this.oldImpl && options.has("androidBugWorkaround");
+            //if (this.bugWorkaround)
+            //    Log.v(SQLitePlugin.class.getSimpleName(), "Android db closing/locking workaround applied");
+
+            String key = ""; // (no encryption by default)
+            if (options.has("key")) {
+                try {
+                    key = options.getString("key");
+                } catch (JSONException e) {
+                    // NOTE: this should not happen!
+                    Log.e(SQLitePlugin.class.getSimpleName(), "unexpected JSON error getting password key, ignored", e);
+                }
+            }
+            this.dbkey = key;
 
             this.q = new LinkedBlockingQueue<DBQuery>();
             this.openCbc = cbc;
@@ -338,7 +373,8 @@ public class SQLitePlugin extends CordovaPlugin {
 
         public void run() {
             try {
-                this.mydb = openDatabase(dbname, this.openCbc, this.oldImpl);
+                //this.mydb = openDatabase(dbname, this.dbkey, this.openCbc, this.oldImpl);
+                this.mydb = openDatabase(dbname, this.dbkey, this.openCbc, false);
             } catch (Exception e) {
                 Log.e(SQLitePlugin.class.getSimpleName(), "unexpected error, stopping db thread", e);
                 dbrmap.remove(dbname);
@@ -353,8 +389,8 @@ public class SQLitePlugin extends CordovaPlugin {
                 while (!dbq.stop) {
                     mydb.executeSqlBatch(dbq.queries, dbq.jsonparams, dbq.queryIDs, dbq.cbc);
 
-                    if (this.bugWorkaround && dbq.queries.length == 1 && dbq.queries[0] == "COMMIT")
-                        mydb.bugWorkaround();
+                    //if (this.bugWorkaround && dbq.queries.length == 1 && dbq.queries[0] == "COMMIT")
+                    //    mydb.bugWorkaround();
 
                     dbq = q.take();
                 }

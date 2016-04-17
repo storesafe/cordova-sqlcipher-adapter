@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    id="cordova-sqlite-common"
-    version="x.x.x-common-dev">
+    id="cordova-sqlcipher-xxx"
+    version="0.x.x-xxx-dev">
 
-    <name>Cordova sqlite storage plugin (core version)</name>
+    <name>Cordova sqlcipher adapter (xxx-cipher-src)</name>
 
     <license>MIT</license>
 
     <keywords>sqlite</keywords>
 
-    <description>Native interface to SQLite for PhoneGap/Cordova. Allows you to use more storage and provides more flexibility than the standard Web SQL database (window.openDatabase).</description>
+    <description>SQLCipher database adapter plugin for PhoneGap/Cordova, based on the Cordova-SQLitePlugin. Allows you to use more storage and provides more flexibility than the standard Web SQL database (window.openDatabase).</description>
     <author>Litehelpers/Various</author>
 
     <engines>
@@ -32,16 +32,37 @@
 
         <source-file src="src/android/io/sqlc/SQLitePlugin.java" target-dir="src/io/sqlc"/>
         <source-file src="src/android/io/sqlc/SQLiteAndroidDatabase.java" target-dir="src/io/sqlc"/>
+        <!-- XXX TBD GONE in this version:
         <source-file src="src/android/io/sqlc/SQLiteConnectorDatabase.java" target-dir="src/io/liteglue"/>
+         -->
 
-        <!-- Android-sqlite-connector [jar]: -->
+        <!-- XXX GONE in this version: -->
+        <!-- Android-sqlite-connector [jar]:
         <source-file src="src/external/libs/sqlite-connector.jar" target-dir="libs"/>
-        <!-- Android-sqlite-connector native driver [native libs]: -->
+         -->
+        <!-- Android-sqlite-connector native driver [native libs]:
         <source-file src="src/external/libs/arm64-v8a/libsqlc-native-driver.so" target-dir="libs/arm64-v8a"/>
         <source-file src="src/external/libs/armeabi/libsqlc-native-driver.so" target-dir="libs/armeabi"/>
         <source-file src="src/external/libs/armeabi-v7a/libsqlc-native-driver.so" target-dir="libs/armeabi-v7a"/>
         <source-file src="src/external/libs/x86/libsqlc-native-driver.so" target-dir="libs/x86"/>
         <source-file src="src/external/libs/x86_64/libsqlc-native-driver.so" target-dir="libs/x86_64"/>
+         -->
+
+        <!-- sqlcipher distribution for Android: -->
+        <source-file src="src/external/sqlcipher/assets/icudt46l.zip" target-dir="assets"/>
+        <source-file src="src/external/sqlcipher/libs/sqlcipher.jar" target-dir="libs"/>
+        <!-- XXX GONE in this version:
+        <source-file src="src/external/sqlcipher/libs/sqlcipher-javadoc.jar" target-dir="libs"/>
+         -->
+        <source-file src="src/external/sqlcipher/libs/armeabi/libdatabase_sqlcipher.so" target-dir="libs/armeabi"/>
+        <source-file src="src/external/sqlcipher/libs/armeabi/libsqlcipher_android.so" target-dir="libs/armeabi"/>
+        <source-file src="src/external/sqlcipher/libs/armeabi/libstlport_shared.so" target-dir="libs/armeabi"/>
+        <source-file src="src/external/sqlcipher/libs/armeabi-v7a/libdatabase_sqlcipher.so" target-dir="libs/armeabi-v7a"/>
+        <source-file src="src/external/sqlcipher/libs/armeabi-v7a/libsqlcipher_android.so" target-dir="libs/armeabi-v7a"/>
+        <source-file src="src/external/sqlcipher/libs/armeabi-v7a/libstlport_shared.so" target-dir="libs/armeabi-v7a"/>
+        <source-file src="src/external/sqlcipher/libs/x86/libdatabase_sqlcipher.so" target-dir="libs/x86"/>
+        <source-file src="src/external/sqlcipher/libs/x86/libsqlcipher_android.so" target-dir="libs/x86"/>
+        <source-file src="src/external/sqlcipher/libs/x86/libstlport_shared.so" target-dir="libs/x86"/>
 
     </platform>
 
@@ -53,10 +74,12 @@
             </feature>
         </config-file>
 
-        <!-- Note: the ios src is based off src/ios implicitly -->
         <header-file src="src/ios/SQLitePlugin.h" />
         <source-file src="src/ios/SQLitePlugin.m" />
-        <framework src="libsqlite3.dylib" />
+        <!-- sqlcipher source distribution and framework dependency for iOS: -->
+        <header-file src="src/external/sqlite3.h" />
+        <source-file src="src/external/sqlite3.c" />
+        <framework src="Security.framework" />
 
     </platform>
 
@@ -73,8 +96,10 @@
 
         <!-- Thanks to AllJoyn-Cordova / cordova-plugin-alljoyn: -->
         <framework src="src/windows/SQLite3-Win-RT/SQLite3/SQLite3.UWP/SQLite3.UWP.vcxproj" custom="true" type="projectReference" versions="10.*" />
+        <!-- XXX TBD currently not tested/supported:
         <framework src="src/windows/SQLite3-Win-RT/SQLite3/SQLite3.Windows/SQLite3.Windows.vcxproj" custom="true" type="projectReference" target="windows" versions="8.1" />
         <framework src="src/windows/SQLite3-Win-RT/SQLite3/SQLite3.WindowsPhone/SQLite3.WindowsPhone.vcxproj" custom="true" type="projectReference" target="phone" versions="8.1" />
+         -->
 
     </platform>
 

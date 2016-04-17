@@ -131,22 +131,28 @@
 
             NSLog(@"open full db path: %@", dbname);
 
+            // NOTE: create DB from resource [pre-populated] NOT supported with sqlcipher.
+
             if (sqlite3_open(name, &db) != SQLITE_OK) {
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Unable to open DB"];
                 return;
             } else {
-                // for SQLCipher version:
-                // NSString *dbkey = [options objectForKey:@"key"];
-                // const char *key = NULL;
-                // if (dbkey != NULL) key = [dbkey UTF8String];
-                // if (key != NULL) sqlite3_key(db, key, strlen(key));
+                // SQLCipher key:
+                NSString *dbkey = [options objectForKey:@"key"];
+                const char *key = NULL;
+                if (dbkey != NULL && dbkey.length != 0) key = [dbkey UTF8String];
+                NSLog((key != NULL) ? @"Open DB with encryption" : @"Open DB with NO encryption");
+                if (key != NULL) sqlite3_key(db, key, strlen(key));
 
+                // XXX Brody TODO check this in Javascript instead.
                 // Attempt to read the SQLite master table [to support SQLCipher version]:
                 if(sqlite3_exec(db, (const char*)"SELECT count(*) FROM sqlite_master;", NULL, NULL, NULL) == SQLITE_OK) {
+                    NSLog(@"DB open, check sqlite master table OK");
                     dbPointer = [NSValue valueWithPointer:db];
                     [openDBs setObject: dbPointer forKey: dbfilename];
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Database opened"];
                 } else {
+                    NSLog(@"ERROR reading sqlite master table");
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Unable to open DB with key"];
                     // XXX TODO: close the db handle & [perhaps] remove from openDBs!!
                 }

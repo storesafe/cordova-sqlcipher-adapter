@@ -35,7 +35,16 @@ module.exports = {
 			console.log("open db name: " + dbname + " at full path: " + opendbname);
 
 			var db = new SQLite3JS.Database(opendbname);
+			if (!!options.key && options.key.length !== 0) {
+				db.key(options.key)
+				// ignore result if following access test does not throw.
+			}
+
+			// test if db can be accessed:
+			db.all("SELECT count(*) FROM sqlite_master", []);
+
 			dbmap[dbname] = db;
+
 			nextTick(function() {
 				win();
 			});
@@ -58,6 +67,7 @@ module.exports = {
 	close: function(win, fail, args) {
 	    var options = args[0];
 	    var res;
+
 		try {
 		    //res = SQLitePluginRT.SQLitePlugin.closeAsync(JSON.stringify(options));
 			var dbname = options.path;
