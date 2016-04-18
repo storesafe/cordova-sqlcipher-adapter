@@ -1,4 +1,4 @@
-Lawnchair.adapter('webkit-sqlite', (function () {
+Lawnchair.adapter('cordova-sqlite', (function () {
     // private methods 
     var fail = function (e, i) { console.log('error in sqlite adaptor!', e, i) }
     ,   now  = function () { return new Date() } // FIXME need to use better date fn
@@ -172,18 +172,21 @@ Lawnchair.adapter('webkit-sqlite', (function () {
 			return this
 		},
 
-		remove: function (keyOrObj, cb) {
-			var that = this
-			,   key  = typeof keyOrObj === 'string' ? keyOrObj : keyOrObj.key
-			,   del  = "DELETE FROM " + this.name + " WHERE id = ?"
-			,   win  = function () { if (cb) that.lambda(cb).call(that) }
-
-			this.db.transaction( function (t) {
-				t.executeSql(del, [key], win, fail);
-			});
-
-			return this;
-		},
+	       	remove: function (keyOrObj, cb) {
+	            	var that = this
+				, key = typeof keyOrObj === 'string' ? keyOrObj : (Array.isArray(keyOrObj) ? null : keyOrObj.key)
+				, del = "DELETE FROM " + this.name + (Array.isArray(keyOrObj) ? " WHERE id IN ('" + keyOrObj.join("','") + "')" : " WHERE id = ?")
+				, win = function () { if (cb) that.lambda(cb).call(that) }
+	
+	            	this.db.transaction(function (t) {
+	                	if (key == null)
+	                    	t.executeSql(del, [], win, fail);
+	                	else
+	                    	t.executeSql(del, [key], win, fail);
+	            	});
+	
+	            	return this;
+	        },
 
 		nuke: function (cb) {
 			var nuke = "DELETE FROM " + this.name

@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    id="io.litehelpers.cordova.sqlcipher"
-    version="0.1.4-rc">
+    id="cordova-sqlcipher-xx-adapter"
+    version="0.1.x-xx">
 
     <name>Cordova sqlcipher adapter</name>
 
     <license>MIT</license>
 
-    <keywords>sqlite</keywords>
+    <keywords>sqlcipher</keywords>
 
     <description>SQLCipher database adapter for PhoneGap/Cordova, based on Cordova-sqlite-storage. Allows you to use more storage and provides more flexibility than the standard Web SQL database (window.openDatabase).</description>
 
-    <author>Various</author>
+    <author>Litehelpers/Various</author>
 
     <engines>
-        <engine name="cordova" version=">=3.3.0" />
+        <engine name="cordova" version=">=6.0.0" />
+        <engine name="cordova-android" version=">=5.0.0" />
+        <engine name="cordova-ios" version=">=4.0.0" />
     </engines>
 
     <js-module src="www/SQLitePlugin.js" name="SQLitePlugin">
@@ -27,11 +29,12 @@
         <!-- Cordova >= 3.0.0 -->
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="SQLitePlugin">
-                <param name="android-package" value="io.liteglue.SQLitePlugin"/>
+                <param name="android-package" value="io.sqlc.SQLitePlugin"/>
             </feature>
         </config-file>
 
-        <source-file src="src/android/io/liteglue/SQLitePlugin.java" target-dir="src/io/liteglue"/>
+        <source-file src="src/android/io/sqlc/SQLitePlugin.java" target-dir="src/io/sqlc"/>
+        <source-file src="src/android/io/sqlc/SQLiteAndroidDatabase.java" target-dir="src/io/sqlc"/>
 
         <!-- SQLCipher distribution for Android: -->
         <source-file src="src/android/sqlcipher/assets/icudt46l.zip" target-dir="assets" />
@@ -57,29 +60,32 @@
         </config-file>
 
         <header-file src="src/ios/SQLitePlugin.h" />
-        <source-file src="src/ios/SQLitePlugin.m" />
+        <source-file src="src/ios/SQLitePlugin.m" compiler-flags="-DSQLITE_HAS_CODEC" />
 
         <!-- SQLCipher source distribution and Security.framework dependency for iOS: -->
         <header-file src="src/common/sqlite3.h" />
-        <source-file src="src/common/sqlite3.c" />
+        <source-file src="src/common/sqlite3.c" compiler-flags="-DSQLITE_HAS_CODEC -DSQLITE_THREADSAFE=2 -DSQLITE_TEMP_STORE=3 -DSQLCIPHER_CRYPTO_CC -DSQLITE_LOCKING_STYLE=1 -DSQLITE_OMIT_BUILTIN_TEST=1 -DSQLITE_OMIT_LOAD_EXTENSION=1 -DSQLITE_ENABLE_FTS3=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_RTREE=1" />
         <framework src="Security.framework" />
 
     </platform>
 
     <!-- windows -->
     <platform name="windows">
-        <js-module src="src/windows/SQLiteProxy.js" name="SQLiteProxy">
+        <js-module src="src/windows/sqlite-proxy.js" name="SQLiteProxy">
             <merges target="" />
         </js-module>
 
         <!-- SQLite3 JS module from SQLite3-WinRT/SQLite3JS: -->
-        <js-module src="src/windows/SQLite3-WinRT/SQLite3JS/js/SQLite3.js" name="SQLite3">
+        <js-module src="src/windows/SQLite3-Win-RT/SQLite3JS/js/SQLite3.js" name="SQLite3">
             <merges target="" />
         </js-module>
 
         <!-- Thanks to AllJoyn-Cordova / cordova-plugin-alljoyn: -->
-        <framework src="src/windows/SQLite3-WinRT/SQLite3/SQLite3.Windows/SQLite3.Windows.vcxproj" custom="true" type="projectReference" target="windows" />
-        <framework src="src/windows/SQLite3-WinRT/SQLite3/SQLite3.WindowsPhone/SQLite3.WindowsPhone.vcxproj" custom="true" type="projectReference" target="phone" />
+        <framework src="src/windows/SQLite3-Win-RT/SQLite3/SQLite3.UWP/SQLite3.UWP.vcxproj" custom="true" type="projectReference" versions="10.*" />
+        <!-- XXX TBD currently not tested/supported:
+        <framework src="src/windows/SQLite3-Win-RT/SQLite3/SQLite3.Windows/SQLite3.Windows.vcxproj" custom="true" type="projectReference" target="windows" versions="8.1" />
+        <framework src="src/windows/SQLite3-Win-RT/SQLite3/SQLite3.WindowsPhone/SQLite3.WindowsPhone.vcxproj" custom="true" type="projectReference" target="phone" versions="8.1" />
+         -->
 
     </platform>
 

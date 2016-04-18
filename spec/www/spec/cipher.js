@@ -1,6 +1,8 @@
 /* 'use strict'; */
 
-var MYTIMEOUT = 20000;
+// Extra-long timeout needed for Windows 10 mobile device (is this due to libTomCrypt?)
+//var MYTIMEOUT = 20000;
+var MYTIMEOUT = 120000;
 
 var DEFAULT_SIZE = 5000000; // max to avoid popup in safari/ios
 
@@ -45,9 +47,13 @@ var scenarioCount = isWebKit ? 2 : 1;
 describe('encryption test(s)', function() {
     var suiteName = "sqlcipher: ";
 
+    // XXX TODO fix tests instead.
     // NOTE: MUST be defined within [describe]function scope, NOT outer scope:
     var openDatabase = function(first, second, third, fourth, fifth, sixth) {
-      return window.sqlitePlugin.openDatabase(first, second, third, fourth, fifth, sixth);
+      //return window.sqlitePlugin.openDatabase(first, second, third, fourth, fifth, sixth);
+      return (typeof first === "string") ? window.sqlitePlugin.openDatabase({name: first, location: 'default'}) :
+        (!!first.key) ? window.sqlitePlugin.openDatabase({name: first.name, key: first.key, location: 'default'}, second, third) :
+          window.sqlitePlugin.openDatabase({name: first.name, location: 'default'}, second, third);
     }
 
     test_it(suiteName + "nested transaction test with encryption", function() {
@@ -69,9 +75,9 @@ describe('encryption test(s)', function() {
               console.log("rowsAffected: " + res.rowsAffected + " -- should be 1");
 
               expect(res).toBeDefined();
-              if (!isWindows) // XXX TODO
+              //if (!isWindows) // XXX TODO
                 expect(res.insertId).toBeDefined();
-              if (!isWindows) // XXX TODO
+              //if (!isWindows) // XXX TODO
                 expect(res.rowsAffected).toEqual(1);
 
               tx.executeSql("select count(id) as cnt from test_table;", [], function(tx, res) {

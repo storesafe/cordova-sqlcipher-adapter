@@ -20,6 +20,10 @@ function handle(p, win, fail) {
 }
 
 module.exports = {
+	echoStringValue: function(win, fail, args) {
+	    var options = args[0];
+		win(options.value);
+	},
 	open: function(win, fail, args) {
 	    var options = args[0];
 	    var res;
@@ -31,7 +35,6 @@ module.exports = {
 			console.log("open db name: " + dbname + " at full path: " + opendbname);
 
 			var db = new SQLite3JS.Database(opendbname);
-
 			if (!!options.key && options.key.length !== 0) {
 				db.key(options.key)
 				// ignore result if following access test does not throw.
@@ -65,11 +68,6 @@ module.exports = {
 	    var options = args[0];
 	    var res;
 
-		// pretend [XXX TODO]:
-			nextTick(function() {
-				win();
-			});
-			return;
 		try {
 		    //res = SQLitePluginRT.SQLitePlugin.closeAsync(JSON.stringify(options));
 			var dbname = options.path;
