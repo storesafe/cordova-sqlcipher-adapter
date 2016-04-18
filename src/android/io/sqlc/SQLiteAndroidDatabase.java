@@ -8,13 +8,6 @@ package io.sqlc;
 
 import android.annotation.SuppressLint;
 
-//import android.database.Cursor;
-//import android.database.CursorWindow;
-//import android.database.sqlite.SQLiteCursor;
-//import android.database.sqlite.SQLiteDatabase;
-//import android.database.sqlite.SQLiteException;
-//import android.database.sqlite.SQLiteStatement;
-
 // SQLCipher version of database classes:
 import net.sqlcipher.*;
 import net.sqlcipher.database.*;
@@ -27,8 +20,6 @@ import java.lang.IllegalArgumentException;
 import java.lang.Number;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-//import org.apache.cordova.CallbackContext;
 
 // NOTE: more than CordovaPlugin & CallbackContext needed to support
 // ...
@@ -69,8 +60,6 @@ class SQLiteAndroidDatabase
     //@Override
     static
     public void initialize(CordovaInterface cordova) {
-        //super.initialize(cordova, webView);
-        //SQLiteDatabase.loadLibs(this.cordova.getActivity());
         SQLiteDatabase.loadLibs(cordova.getActivity());
     }
 
@@ -81,8 +70,6 @@ class SQLiteAndroidDatabase
      * @param dbfile   The database File specification
      */
     void open(File dbfile, String key) throws Exception {
-        dbFile = dbfile; // for possible bug workaround (NOT NEEDED in this version)
-        //mydb = SQLiteDatabase.openOrCreateDatabase(dbfile, null);
         mydb = SQLiteDatabase.openOrCreateDatabase(dbfile, key, null);
     }
 
@@ -96,12 +83,7 @@ class SQLiteAndroidDatabase
         }
     }
 
-    /* NOT NEEDED in this version:
-    void bugWorkaround() throws Exception {
-        this.closeDatabaseNow();
-        this.open(dbFile);
-    }
-    */
+    /* NOTE: bug workaround NOT NEEDED in this version */
 
     /**
      * Executes a batch request and sends the results via cbc.

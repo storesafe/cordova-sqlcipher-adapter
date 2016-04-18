@@ -20,9 +20,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-//import org.apache.cordova.CallbackContext;
-//import org.apache.cordova.CordovaPlugin;
-
 // NOTE: more than CordovaPlugin & CallbackContext needed to support
 // override of initialize() function.
 import org.apache.cordova.*;
@@ -59,7 +56,6 @@ public class SQLitePlugin extends CordovaPlugin {
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
-        //SQLiteDatabase.loadLibs(this.cordova.getActivity());
         SQLiteAndroidDatabase.initialize(cordova);
     }
 
@@ -241,17 +237,16 @@ public class SQLitePlugin extends CordovaPlugin {
 
             Log.v("info", "Open sqlite db: " + dbfile.getAbsolutePath());
 
-            //SQLiteAndroidDatabase mydb = old_impl ? new SQLiteAndroidDatabase() : new SQLiteConnectorDatabase();
             SQLiteAndroidDatabase mydb = new SQLiteAndroidDatabase();
             mydb.open(dbfile, key);
 
-            if (cbc != null) // XXX Android locking/closing BUG workaround
-                cbc.success();
+            // NOTE: NO Android locking/closing BUG workaround needed here
+            cbc.success();
 
             return mydb;
         } catch (Exception e) {
-            if (cbc != null) // XXX Android locking/closing BUG workaround
-                cbc.error("can't open database " + e);
+            // NOTE: NO Android locking/closing BUG workaround needed here
+            cbc.error("can't open database " + e);
             throw e;
         }
     }
@@ -340,8 +335,6 @@ public class SQLitePlugin extends CordovaPlugin {
     private class DBRunner implements Runnable {
         final String dbname;
         final String dbkey;
-        //private boolean oldImpl;
-        //private boolean bugWorkaround;
 
         final BlockingQueue<DBQuery> q;
         final CallbackContext openCbc;
@@ -350,11 +343,6 @@ public class SQLitePlugin extends CordovaPlugin {
 
         DBRunner(final String dbname, JSONObject options, CallbackContext cbc) {
             this.dbname = dbname;
-            //this.oldImpl = options.has("androidOldDatabaseImplementation");
-            //Log.v(SQLitePlugin.class.getSimpleName(), "Android db implementation: built-in android.database.sqlite package");
-            //this.bugWorkaround = this.oldImpl && options.has("androidBugWorkaround");
-            //if (this.bugWorkaround)
-            //    Log.v(SQLitePlugin.class.getSimpleName(), "Android db closing/locking workaround applied");
 
             String key = ""; // (no encryption by default)
             if (options.has("key")) {
@@ -373,7 +361,6 @@ public class SQLitePlugin extends CordovaPlugin {
 
         public void run() {
             try {
-                //this.mydb = openDatabase(dbname, this.dbkey, this.openCbc, this.oldImpl);
                 this.mydb = openDatabase(dbname, this.dbkey, this.openCbc, false);
             } catch (Exception e) {
                 Log.e(SQLitePlugin.class.getSimpleName(), "unexpected error, stopping db thread", e);
@@ -388,9 +375,6 @@ public class SQLitePlugin extends CordovaPlugin {
 
                 while (!dbq.stop) {
                     mydb.executeSqlBatch(dbq.queries, dbq.jsonparams, dbq.queryIDs, dbq.cbc);
-
-                    //if (this.bugWorkaround && dbq.queries.length == 1 && dbq.queries[0] == "COMMIT")
-                    //    mydb.bugWorkaround();
 
                     dbq = q.take();
                 }

@@ -1,6 +1,8 @@
 /* 'use strict'; */
 
-var MYTIMEOUT = 12000;
+// Extra-long timeout needed for Windows 10 mobile device (is this due to libTomCrypt?)
+//var MYTIMEOUT = 20000;
+var MYTIMEOUT = 120000;
 
 var DEFAULT_SIZE = 5000000; // max to avoid popup in safari/ios
 

@@ -59,21 +59,21 @@ Some other projects by [@brodybits](https://github.com/brodybits):
 
 - A recent version of Cordova (such as `6.1.1`) is recommended. Cordova versions older than `6.0.0` are not supported by this project.
 - iOS database location is now mandatory, as documented below.
-- ~~This version supports the use of two (2) possible Android sqlite database implementations:~~
-  - ~~default: lightweight [Android-sqlite-connector](https://github.com/liteglue/Android-sqlite-connector)~~
-  - ~~optional: built-in Android database classes (usage described below)~~
 - Windows version is in an alpha state (using the performant [doo / SQLite3-WinRT](https://github.com/doo/SQLite3-WinRT) component):
-  - _Windows 8.1/Windows Phone 8.1 build currently not tested or supported_
-  - ~~Database _close_ and delete operations not yet implemented~~
+  - Windows 8.1/Windows Phone 8.1 build currently not tested or supported
   - Issue with UNICODE `\u0000` character (same as `\0`)
   - No background processing (for future consideration)
-- Android versions supported:
+  - Uses libTomCrypt for encryption which *may* be inferior to OpenSSL for encryption
+- Android version:
   - ARM (v5/v6/v7/v7a) and x86 CPUs
   - Minimum SDK 10 (a.k.a. Gingerbread, Android 2.3.3); support for older versions is available upon request.
-  - NOTE: 64-bit CPUs such as `x64_64`, ARM-64, and MIPS are currently not supported _by SQLCipher for Android_ (for _possible_ consideration in the ~~near~~ future).
-- FTS3, FTS4, and R-Tree support is tested working OK _for all target platforms in this version branch Android/iOS/Windows_
-- iOS versions supported: 7.x/8.x/9.x
-- In case of memory issues please use smaller transactions ~~or use the version (with a different licensing scheme) at: [litehelpers / Cordova-sqlite-enterprise-free](https://github.com/litehelpers/Cordova-sqlite-enterprise-free)~~
+  - SQLCipher for Android build uses the OpenSSL crypto library for encryption
+  - NOTE: 64-bit CPUs such as `x64_64`, ARM-64, and MIPS are currently not supported by the SQLCipher for Android build (support for these CPUs is for future consideration).
+- FTS3, FTS4, and R-Tree support is tested working OK for all target platforms in this version branch Android/iOS/Windows
+- iOS version:
+  - iOS versions supported: 7.x/8.x/9.x
+  - uses CommonCrypto framework library for encryption
+- In case of memory issues please use smaller transactions.
 - Pre-populatd DB is NOT supported by this version.
 - Lawnchair & PouchDB have NOT been tested with this version.
 
@@ -130,20 +130,20 @@ TBD *YOUR APP HERE*
 - ~~The db version, display name, and size parameter values are not supported and will be ignored.~~ (No longer supported by the API)
 - Absolute and relative subdirectory path(s) are not tested or supported.
 - This plugin will not work before the callback for the 'deviceready' event has been fired, as described in **Usage**. (This is consistent with the other Cordova plugins.)
-- This version will not work within a web worker (not properly supported by the Cordova framework). Use within a web worker is supported for Android and iOS _(without SQLCipher)_ in: [litehelpers / cordova-sqlite-workers-evfree](https://github.com/litehelpers/cordova-sqlite-workers-evfree) (available with a different licensing scheme)
+- This version will not work within a web worker (not properly supported by the Cordova framework). Use within a web worker is supported for Android and iOS (*without SQLCipher*) in: [litehelpers / cordova-sqlite-workers-evfree](https://github.com/litehelpers/cordova-sqlite-workers-evfree) (available with a different licensing scheme)
 - In-memory database `db=window.sqlitePlugin.openDatabase({name: ':memory:', ...})` is currently not supported.
 - The Android version cannot work with more than 100 open db files (due to the threading model used).
-- _REGEXP is not supported by this version branch_
-- UNICODE `\u2028` (line separator) and `\u2029` (paragraph separator) characters are currently not supported and known to be broken in iOS version due to [Cordova bug CB-9435](https://issues.apache.org/jira/browse/CB-9435). There *may* be a similar issue with certain other UNICODE characters in the iOS version (needs further investigation). This is fixed in: [litehelpers / Cordova-sqlite-enterprise-free](https://github.com/litehelpers/Cordova-sqlite-enterprise-free) (available with a different licensing scheme)
+- REGEXP is not supported by this version branch
+- UNICODE `\u2028` (line separator) and `\u2029` (paragraph separator) characters are currently not supported and known to be broken in iOS version due to [Cordova bug CB-9435](https://issues.apache.org/jira/browse/CB-9435). There *may* be a similar issue with certain other UNICODE characters in the iOS version (needs further investigation). This is fixed in: [litehelpers / Cordova-sqlite-enterprise-free](https://github.com/litehelpers/Cordova-sqlite-enterprise-free) (available with a different licensing scheme - *without SQLCipher*)
 - Blob type is currently not supported and known to be broken on multiple platforms.
 - UNICODE `\u0000` (same as `\0`) character not working in Android (default native database implementation) or Windows
 - Case-insensitive matching and other string manipulations on Unicode characters, which is provided by optional ICU integration in the sqlite source and working with recent versions of Android, is not supported for any target platforms.
 - iOS version uses a thread pool but with only one thread working at a time due to "synchronized" database access
 - Large query result can be slow, also due to JSON implementation
-- ATTACH to another database file is not supported by this version. Attach/detach is supported (along with the memory and iOS UNICODE `\u2028` line separator / `\u2029` paragraph separator fixes) in: [litehelpers / Cordova-sqlite-evfree-ext](https://github.com/litehelpers/Cordova-sqlite-evfree-ext) (available with a different licensing scheme)
+- ATTACH to another database file is not supported by this version. Attach/detach is supported (along with the memory and iOS UNICODE `\u2028` line separator / `\u2029` paragraph separator fixes) in: [litehelpers / Cordova-sqlite-evfree-ext](https://github.com/litehelpers/Cordova-sqlite-evfree-ext) (available with a different licensing scheme - *without SQLCipher*)
 - User-defined savepoints are not supported and not expected to be compatible with the transaction locking mechanism used by this plugin. In addition, the use of BEGIN/COMMIT/ROLLBACK statements is not supported.
 - Problems have been reported when using this plugin with Crosswalk (for Android). It may help to install Crosswalk as a plugin instead of using Crosswalk to create the project.
-- Does not work with [axemclion / react-native-cordova-plugin](https://github.com/axemclion/react-native-cordova-plugin) since the `window.sqlitePlugin` object *not* proprly exported (ES5 feature). It is recommended to use [andpor / react-native-sqlite-storage](https://github.com/andpor/react-native-sqlite-storage) for SQLite database access with React Native Android/iOS instead.
+- Does not work with [axemclion / react-native-cordova-plugin](https://github.com/axemclion/react-native-cordova-plugin) since the `window.sqlitePlugin` object *not* proprly exported (ES5 feature). It is recommended to use [andpor / react-native-sqlite-storage](https://github.com/andpor/react-native-sqlite-storage) for SQLite database access with React Native Android/iOS instead (*not yet integrated with SQLCipher*).
 
 ## Further testing needed
 
@@ -192,10 +192,11 @@ TBD *YOUR APP HERE*
 
 - Auto-vacuum option
 - Browser platform
+- Windows improvements: build with OpenSSL crypto; background threading
 
 ## Alternatives
 
-_(Without SQLCipher)_
+(*Without SQLCipher*)
 
 ### Other versions
 
@@ -206,7 +207,7 @@ _(Without SQLCipher)_
 - [litehelpers / Cordova-sqlite-evfree-ext](https://github.com/litehelpers/Cordova-sqlite-evfree-ext) - version with support for ATTACH, includes internal memory improvements to support larger transactions (Android/iOS) and fix to support all Unicode characters (with a different licensing scheme)
 - [litehelpers / cordova-sqlite-workers-evfree](https://github.com/litehelpers/cordova-sqlite-workers-evfree) - version with support for web workers, includes internal memory improvements to support larger transactions (Android/iOS) and fix to support all Unicode characters (iOS) (with a different licensing scheme)
 - Adaptation for React Native Android and iOS: [andpor / react-native-sqlite-storage](https://github.com/andpor/react-native-sqlite-storage)
-- Original version for iOS _(with a slightly different transaction API)_: [davibe / Phonegap-SQLitePlugin](https://github.com/davibe/Phonegap-SQLitePlugin)
+- Original version for iOS (with a slightly different transaction API): [davibe / Phonegap-SQLitePlugin](https://github.com/davibe/Phonegap-SQLitePlugin)
 
 ### Other SQLite adapter projects
 
@@ -254,7 +255,7 @@ The idea is to emulate the HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/
 **Supported way:** To open a database access handle object (in the **new** default location):
 
 ```js
-var db = window.sqlitePlugin.openDatabase({name: "my.db", key: "your-password-here", location: 'default'}, successcb, errorcb);
+var db = window.sqlitePlugin.openDatabase({name: 'my.db', key: 'your-password-here', location: 'default'}, successcb, errorcb);
 ```
 
 **WARNING:** The new "default" location value is *NOT* the same as the old default location and would break an upgrade for an app that was using the old default value (0) on iOS.
@@ -262,7 +263,7 @@ var db = window.sqlitePlugin.openDatabase({name: "my.db", key: "your-password-he
 To specify a different location (affects iOS *only*):
 
 ```js
-var db = window.sqlitePlugin.openDatabase({name: 'my.db', key: "your-password-here", iosDatabaseLocation: 'Library'}, successcb, errorcb);
+var db = window.sqlitePlugin.openDatabase({name: 'my.db', key: 'your-password-here', iosDatabaseLocation: 'Library'}, successcb, errorcb);
 ```
 
 where the `iosDatabaseLocation` option may be set to one of the following choices:
@@ -273,7 +274,7 @@ where the `iosDatabaseLocation` option may be set to one of the following choice
 **WARNING:** Again, the new "default" iosDatabaseLocation value is *NOT* the same as the old default location and would break an upgrade for an app using the old default value (0) on iOS.
 
 *ALTERNATIVE (deprecated):*
-- `var db = window.sqlitePlugin.openDatabase({name: "my.db", key: "your-password-here", location: 1}, successcb, errorcb);`
+- `var db = window.sqlitePlugin.openDatabase({name: 'my.db', key: 'your-password-here', location: 1}, successcb, errorcb);`
 
 with the `location` option set to one the following choices (affects iOS *only*):
 - `0` ~~(default)~~: `Documents` - visible to iTunes and backed up by iCloud
@@ -290,7 +291,7 @@ document.addEventListener('deviceready', onDeviceReady, false);
 
 // Cordova is ready
 function onDeviceReady() {
-  var db = window.sqlitePlugin.openDatabase({name: "my.db", key: "your-password-here", location: 'default'});
+  var db = window.sqlitePlugin.openDatabase({name: 'my.db', key: 'your-password-here', location: 'default'});
   // ...
 }
 ```
@@ -298,7 +299,7 @@ function onDeviceReady() {
 The successcb and errorcb callback parameters are optional but can be extremely helpful in case anything goes wrong. For example:
 
 ```js
-window.sqlitePlugin.openDatabase({name: "my.db", key: "your-password-here', location: 'default'}, function(db) {
+window.sqlitePlugin.openDatabase({name: 'my.db', key: 'your-password-here', location: 'default'}, function(db) {
   db.transaction(function(tx) {
     // ...
   }, function(err) {
