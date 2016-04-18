@@ -1,9 +1,9 @@
 {
-  "name": "cordova-sqlite-common",
-  "version": "x.x.x-common-dev",
-  "description": "Native interface to SQLite for PhoneGap/Cordova (common version)",
+  "name": "cordova-sqlcipher-xxx",
+  "version": "0.x.x-xxx-dev",
+  "description": "XXX TBD SQLCipher database adapter for PhoneGap/Cordova (xxx cipher-common-src version branch)",
   "cordova": {
-    "id": "cordova-sqlite-storage",
+    "id": "cordova-sqlcipher-xxx",
     "platforms": [
       "android",
       "ios",

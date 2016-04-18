@@ -165,6 +165,9 @@ class SQLiteAndroidDatabase
                         needRawQuery = false;
                     }
 
+                    // "finally" cleanup myStatement
+                    myStatement.close();
+
                     if (rowsAffected != -1) {
                         queryResult = new JSONObject();
                         queryResult.put("rowsAffected", rowsAffected);
@@ -199,6 +202,9 @@ class SQLiteAndroidDatabase
                         errorMessage = ex.getMessage();
                         Log.v("executeSqlBatch", "SQLiteDatabase.executeInsert(): Error=" + errorMessage);
                     }
+
+                    // "finally" cleanup myStatement
+                    myStatement.close();
                 }
 
                 if (queryType == QueryType.begin) {
