@@ -58,7 +58,7 @@ Some other projects by [@brodybits](https://github.com/brodybits):
 ## Status
 
 - iOS database location is now mandatory, as documented below.
-- ~~Pre-~~alpha version with SQLCipher v3.3.1
+- ~~Pre-alpha version with~~ SQLCipher `3.4.0`
   - with OpenSSL libcrypto for Android 
   - using ~~Security~~ _CommonCrypto_ framework for iOS
   - with LibTomCrypt (1.17) embedded for Windows ~~"Universal" (8.1)~~
@@ -84,7 +84,7 @@ Some other projects by [@brodybits](https://github.com/brodybits):
 
 ## Announcements
 
-- SQLCipher version `3.4.0` for Android
+- SQLCipher version `3.4.0` for Android/iOS/Windows
 - Windows 10 UWP is now supported by this version ~~- along with Windows 8.1 and Windows Phone 8.1~~
 - More explicit `openDatabase` and `deleteDatabase` `iosDatabaseLocation` option
 - Added simple sql batch query function
