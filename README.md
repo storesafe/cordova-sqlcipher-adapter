@@ -84,6 +84,7 @@ Some other projects by [@brodybits](https://github.com/brodybits):
 
 ## Announcements
 
+- SQLCipher version `3.4.0` for Android
 - Windows 10 UWP is now supported by this version ~~- along with Windows 8.1 and Windows Phone 8.1~~
 - More explicit `openDatabase` and `deleteDatabase` `iosDatabaseLocation` option
 - Added simple sql batch query function
