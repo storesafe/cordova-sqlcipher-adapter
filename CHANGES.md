@@ -2,6 +2,7 @@
 
 ## cordova-sqlcipher-xxx 0.x.x-xxx-dev
 
+- SQLCipher 3.4.0 with FTS5 and JSON1
 - Support Windows 8.1/Windows Phone 8.1 along with Windows 10 (WAL/MMAP disabled for Windows Phone 8.1)
 
 ### cordova-sqlite-storage 1.2.1
