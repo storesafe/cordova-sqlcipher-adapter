@@ -2,6 +2,9 @@
 
 ## 0.1.x-xx
 
+- SQLCipher 3.4.0 with FTS5 and JSON1
+- Support Windows 8.1/Windows Phone 8.1 along with Windows 10 (WAL/MMAP disabled for Windows Phone 8.1)
+
 ### cordova-sqlite-storage 1.2.1
 
 - Close Android SQLiteStatement after INSERT/UPDATE/DELETE
@@ -10,7 +13,6 @@
 
 ### x.x.x-common-dev
 
-- TODO (disabled): Support Windows 8.1/Windows Phone 8.1 along with Windows 10
 - Fix PCH issue with Debug Win32 UWP (Windows 10) build
 
 ### cordova-sqlite-storage 1.2.0

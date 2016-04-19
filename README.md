@@ -1,6 +1,6 @@
 # Cordova/PhoneGap SQLCipher adapter plugin
 
-Native interface to sqlcipher in a Cordova/PhoneGap plugin for Android, iOS, and Windows ~~Universal (8.1)~~ _10 (UWP)_, with API similar to HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/).
+Native interface to sqlcipher in a Cordova/PhoneGap plugin for Android, iOS, and Windows, with API similar to HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/).
 
 License for Android and Windows versions: MIT or Apache 2.0
 
@@ -65,10 +65,10 @@ Some other projects by [@brodybits](https://github.com/brodybits):
   - for future consideration: embed OpenSSL libcrypto for all target platforms
 - A recent version of Cordova (such as `6.1.1`) is recommended. Cordova versions older than `6.0.0` are not supported by this project.
 - Windows version is in an alpha state (using the performant [doo / SQLite3-WinRT](https://github.com/doo/SQLite3-WinRT) component):
-  - Windows 8.1/Windows Phone 8.1 build currently not tested or supported
   - Issue with UNICODE `\u0000` character (same as `\0`)
   - No background processing (for future consideration)
-  - Uses libTomCrypt for encryption which *may* be inferior to OpenSSL for encryption
+  - Uses libTomCrypt for encryption which *may* be inferior to OpenSSL for encryption _and seems to run much more slowly_
+  - WAL/MMAP *disabled* for Windows Phone 8.1
 - Android version:
   - ARM (v5/v6/v7/v7a) and x86 CPUs
   - Minimum SDK 10 (a.k.a. Gingerbread, Android 2.3.3); support for older versions is available upon request.
@@ -85,7 +85,7 @@ Some other projects by [@brodybits](https://github.com/brodybits):
 ## Announcements
 
 - SQLCipher version `3.4.0` for Android/iOS/Windows
-- Windows 10 UWP is now supported by this version ~~- along with Windows 8.1 and Windows Phone 8.1~~
+- Windows 10 UWP is now supported by this version - along with Windows 8.1 and Windows Phone 8.1
 - More explicit `openDatabase` and `deleteDatabase` `iosDatabaseLocation` option
 - Added simple sql batch query function
 - Added echo test function to verify installation of this plugin

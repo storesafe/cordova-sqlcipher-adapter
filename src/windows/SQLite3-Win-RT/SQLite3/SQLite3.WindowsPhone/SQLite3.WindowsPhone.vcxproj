@@ -95,9 +95,9 @@
 			<PreprocessorDefinitions>_WINRT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 			<PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
 			<PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
-			<AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+			<AdditionalOptions>/bigobj /DSQLITE_OMIT_WAL /DSQLITE_MAX_MMAP_SIZE=0 %(AdditionalOptions)</AdditionalOptions>
 			<SDLCheck>true</SDLCheck>
-			<AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)..\..\..\..\common;$(MSBuildThisFileDirectory)..\..\..\..\external</AdditionalIncludeDirectories>
+			<AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 		</ClCompile>
 		<Link>
 			<SubSystem>Console</SubSystem>
@@ -111,9 +111,9 @@
 			<PreprocessorDefinitions>_WINRT_DLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 			<PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
 			<PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
-			<AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+			<AdditionalOptions>/bigobj /DSQLITE_OMIT_WAL /DSQLITE_MAX_MMAP_SIZE=0 %(AdditionalOptions)</AdditionalOptions>
 			<SDLCheck>true</SDLCheck>
-			<AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)..\..\..\..\common;$(MSBuildThisFileDirectory)..\..\..\..\external</AdditionalIncludeDirectories>
+			<AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 		</ClCompile>
 		<Link>
 			<SubSystem>Console</SubSystem>
@@ -127,9 +127,9 @@
 			<PreprocessorDefinitions>_WINRT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 			<PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
 			<PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
-			<AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+			<AdditionalOptions>/bigobj /DSQLITE_OMIT_WAL /DSQLITE_MAX_MMAP_SIZE=0 %(AdditionalOptions)</AdditionalOptions>
 			<SDLCheck>true</SDLCheck>
-			<AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)..\..\..\..\common;$(MSBuildThisFileDirectory)..\..\..\..\external</AdditionalIncludeDirectories>
+			<AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 			<FunctionLevelLinking>true</FunctionLevelLinking>
 		</ClCompile>
 		<Link>
@@ -144,9 +144,9 @@
 			<PreprocessorDefinitions>_WINRT_DLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 			<PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
 			<PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
-			<AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+			<AdditionalOptions>/bigobj /DSQLITE_OMIT_WAL /DSQLITE_MAX_MMAP_SIZE=0 %(AdditionalOptions)</AdditionalOptions>
 			<SDLCheck>true</SDLCheck>
-			<AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)..\..\..\..\common;$(MSBuildThisFileDirectory)..\..\..\..\external</AdditionalIncludeDirectories>
+			<AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 			<FunctionLevelLinking>true</FunctionLevelLinking>
 		</ClCompile>
 		<Link>
