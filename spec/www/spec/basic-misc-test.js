@@ -4,17 +4,9 @@ var MYTIMEOUT = 20000;
 
 var DEFAULT_SIZE = 5000000; // max to avoid popup in safari/ios
 
-var isAndroid = /Android/.test(navigator.userAgent);
-var isWP8 = /IEMobile/.test(navigator.userAgent); // Matches WP(7/8/8.1)
-//var isWindows = /Windows NT/.test(navigator.userAgent); // Windows [NT] (8.1)
 var isWindows = /Windows /.test(navigator.userAgent); // Windows (8.1)
-//var isWindowsPC = /Windows NT/.test(navigator.userAgent); // Windows [NT] (8.1)
-//var isWindowsPhone_8_1 = /Windows Phone 8.1/.test(navigator.userAgent); // Windows Phone 8.1
-//var isIE = isWindows || isWP8 || isWindowsPhone_8_1;
-var isIE = isWindows || isWP8;
-var isWebKit = !isIE; // TBD [Android or iOS]
+var isAndroid = !isWindows && /Android/.test(navigator.userAgent);
 
-// XXX TODO SKIP extra plugin test in SQLCipher version branch:
 // NOTE: In the core-master branch there is no difference between the default
 // implementation and implementation #2. But the test will also apply
 // the androidLockWorkaround: 1 option in the case of implementation #2.
@@ -24,9 +16,10 @@ var scenarioList = [
   'Plugin-implementation-2'
 ];
 
-var scenarioCount = (!!window.hasWebKitBrowser) ? (isAndroid ? 3 : 2) : 1;
+//var scenarioCount = (!!window.hasWebKitBrowser) ? (isAndroid ? 3 : 2) : 1;
+var scenarioCount = (!!window.hasWebKitBrowser) ? 2 : 1;
 
-// simple tests:
+// tests:
 var mytests = function() {
 
   for (var i=0; i<scenarioCount; ++i) {
@@ -69,7 +62,7 @@ var mytests = function() {
             tx.executeSql('CREATE VIRTUAL TABLE IF NOT EXISTS virtual_book USING FTS3 (liv, cap, ver, tex, tes);', [], function(tx, res) {
               // ok:
               expect(true).toBe(true);
-            }, function(err) {
+            }, function(ignored1, ignored2) {
               // went wrong:
               expect(false).toBe(true);
             });
@@ -100,7 +93,88 @@ var mytests = function() {
             tx.executeSql('CREATE VIRTUAL TABLE IF NOT EXISTS virtual_book USING FTS4 (liv, cap, ver, tex, tes);', [], function(tx, res) {
               // ok:
               expect(true).toBe(true);
-            }, function(err) {
+            }, function(ignored1, ignored2) {
+              // went wrong:
+              expect(false).toBe(true);
+            });
+          }, function(err) {
+            // [ignored here]:
+            //expect(false).toBe(true);
+            expect(true).toBe(true);
+            done();
+          }, function() {
+            // verify tx was ok:
+            expect(true).toBe(true);
+            done();
+          });
+        }, MYTIMEOUT);
+
+        it(suiteName + 'Basic JSON1 json test', function(done) {
+          if (isWebSql) pending('SKIP for Web SQL test');
+          if (isWindows) pending('BROKEN for Windows');
+
+          var db = openDatabase('basic-json1-json-test.db', '1.0', 'Test', DEFAULT_SIZE);
+
+          expect(db).toBeDefined();
+
+          db.transaction(function(tx) {
+
+            expect(tx).toBeDefined();
+
+            // Derived from sample in: https://www.sqlite.org/json1.html
+            tx.executeSql("SELECT json(?) AS my_json;", [' { "this" : "is", "a": [ "test" ] } '], function(tx, res) {
+              expect(res.rows.item(0).my_json).toEqual('{"this":"is","a":["test"]}');
+              done();
+            }, function(tx, e) {
+              // went wrong:
+              expect(false).toBe(true);
+              expect(JSON.stringify(e)).toBe('--');
+              done();
+            });
+          });
+        }, MYTIMEOUT);
+
+        it(suiteName + 'JSON1 json_object test', function(done) {
+          if (isWebSql) pending('SKIP for Web SQL test');
+          if (isWindows) pending('BROKEN for Windows');
+
+          var db = openDatabase('json1-json-object-test.db', '1.0', 'Test', DEFAULT_SIZE);
+
+          expect(db).toBeDefined();
+
+          db.transaction(function(tx) {
+
+            expect(tx).toBeDefined();
+
+            // Derived from sample in: https://www.sqlite.org/json1.html
+            tx.executeSql("SELECT json_object(?,?) AS my_object;", ['ex','[52,3.14159]'], function(tx, res) {
+              expect(res.rows.item(0).my_object).toEqual('{"ex":"[52,3.14159]"}');
+              done();
+            }, function(tx, e) {
+              // went wrong:
+              expect(false).toBe(true);
+              expect(JSON.stringify(e)).toBe('--');
+              done();
+            });
+          });
+        }, MYTIMEOUT);
+
+        it(suiteName + 'create virtual table using FTS5', function(done) {
+          if (isWebSql) pending('SKIP for Web SQL test');
+
+          var db = openDatabase('virtual-table-using-fts5.db', '1.0', 'Test', DEFAULT_SIZE);
+
+          expect(db).toBeDefined();
+
+          db.transaction(function(tx) {
+            expect(tx).toBeDefined();
+
+            tx.executeSql('CREATE INDEX liv_index ON book (liv, cap);');
+            tx.executeSql('DROP TABLE IF EXISTS virtual_book');
+            tx.executeSql('CREATE VIRTUAL TABLE IF NOT EXISTS virtual_book USING FTS5 (liv, cap, ver, tex, tes);', [], function(tx, res) {
+              // ok:
+              expect(true).toBe(true);
+            }, function(tx, e) {
               // went wrong:
               expect(false).toBe(true);
             });

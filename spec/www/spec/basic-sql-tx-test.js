@@ -4,15 +4,8 @@ var MYTIMEOUT = 12000;
 
 var DEFAULT_SIZE = 5000000; // max to avoid popup in safari/ios
 
-var isAndroid = /Android/.test(navigator.userAgent);
-var isWP8 = /IEMobile/.test(navigator.userAgent); // Matches WP(7/8/8.1)
-//var isWindows = /Windows NT/.test(navigator.userAgent); // Windows [NT] (8.1)
-var isWindows = /Windows /.test(navigator.userAgent); // Windows (8.1)
-//var isWindowsPC = /Windows NT/.test(navigator.userAgent); // Windows [NT] (8.1)
-//var isWindowsPhone_8_1 = /Windows Phone 8.1/.test(navigator.userAgent); // Windows Phone 8.1
-//var isIE = isWindows || isWP8 || isWindowsPhone_8_1;
-var isIE = isWindows || isWP8;
-var isWebKit = !isIE; // TBD [Android or iOS]
+var isWindows = /Windows /.test(navigator.userAgent); // Windows
+var isAndroid = !isWindows && /Android/.test(navigator.userAgent);
 
 // NOTE: In the core-master branch there is no difference between the default
 // implementation and implementation #2. But the test will also apply
@@ -73,10 +66,10 @@ var mytests = function() {
           });
         }, MYTIMEOUT);
 
-      // Only test ICU-UNICODE with Android 5.0(+) (Web SQL):
-      if (isWebSql && /Android [5-9]/.test(navigator.userAgent))
-        it(suiteName + 'ICU-UNICODE string manipulation test', function(done) {
-          if ((!isWebSql) && isAndroid) pending('BROKEN for Android version of plugin [with sqlite-connector]');
+      // Only test ICU-UNICODE with Android:
+      if (isAndroid)
+        it(suiteName + 'Android ICU-UNICODE string manipulation test', function(done) {
+          if (isWebSql && /Android [1-4]/.test(navigator.userAgent)) pending('BROKEN for Android 1.x-4.x Web SQL');
 
           var db = openDatabase('UNICODE-string-test.db', '1.0', 'Test', DEFAULT_SIZE);
 

@@ -4,8 +4,8 @@ var MYTIMEOUT = 12000;
 
 var DEFAULT_SIZE = 5000000; // max to avoid popup in safari/ios
 
-var isAndroid = /Android/.test(navigator.userAgent);
-var isWindows = /Windows /.test(navigator.userAgent); // Windows (8.1)
+var isWindows = /Windows /.test(navigator.userAgent); // Windows
+var isAndroid = !isWindows && /Android/.test(navigator.userAgent);
 
 var scenarioList = [ isAndroid ? 'Plugin-xxx' : 'Plugin', 'HTML5', 'Plugin-xxx' ];
 
@@ -30,16 +30,15 @@ var mytests = function() {
         if (isWebSql) {
           return window.openDatabase(name, "1.0", "Demo", DEFAULT_SIZE);
         } else {
-          return window.sqlitePlugin.openDatabase(name, "1.0", "Demo", DEFAULT_SIZE);
+          return window.sqlitePlugin.openDatabase({name: name, location: 2});
         }
       }
 
       it(suiteName + 'Simple REGEXP test',
         function(done) {
-          if (!isWebSql) pending('XXX TODO FIX TEST'); // XXX TODO FIX THIS TEST
+          if (!isWebSql && isAndroid) pending('BROKEN-NOT IMPLEMENTED for android.database.sqlcipher');
           if (isWebSql && !isAndroid) pending('BROKEN for iOS Web SQL');
-          //if (!isWebSql && isAndroid && !isOldImpl) pending('BROKEN for default Android implementation');
-          if (isWindows) pending('BROKEN for Windows ("Universal")');
+          if (isWindows) pending('BROKEN-NOT IMPLEMENTED for Windows');
 
           var db = openDatabase('simple-regexp-test.db', '1.0', 'test', DEFAULT_SIZE);
 

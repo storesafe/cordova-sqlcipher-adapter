@@ -6,7 +6,9 @@ License for Android and Windows versions: MIT or Apache 2.0
 
 License for iOS version: MIT only
 
-NOTE (TBD): no Circle CI or Travis CI working in this version branch.
+|Android Circle-CI (**full** suite)|iOS Travis-CI (*very* limited suite)|
+|-----------------------|----------------------|
+|[![Circle CI](https://circleci.com/gh/litehelpers/Cordova-sqlcipher-adapter.svg?style=svg)](https://circleci.com/gh/litehelpers/Cordova-sqlcipher-adapter)|[![Build Status](https://travis-ci.org/litehelpers/Cordova-sqlcipher-adapter.svg?branch=core-master)](https://travis-ci.org/litehelpers/Cordova-sqlcipher-adapter)|
 
 **WARNING:** In case you lose the database password you have no way to recover the data.
 
@@ -57,34 +59,38 @@ Some other projects by [@brodybits](https://github.com/brodybits):
 
 ## Status
 
-- iOS database location is now mandatory, as documented below.
-- ~~Pre-alpha version with~~ SQLCipher `3.4.0`
+- Alpha version with SQLCipher `3.4.0`
   - with OpenSSL libcrypto for Android 
-  - using ~~Security~~ _CommonCrypto_ framework for iOS
-  - with LibTomCrypt (1.17) embedded for Windows ~~"Universal" (8.1)~~
+  - using CommonCrypto framework for iOS
+  - with LibTomCrypt (1.17) embedded for Windows
   - for future consideration: embed OpenSSL libcrypto for all target platforms
+- iOS database location is now mandatory, as documented below.
 - A recent version of Cordova (such as `6.1.1`) is recommended. Cordova versions older than `6.0.0` are not supported by this project.
 - Windows version is in an alpha state (using the performant [doo / SQLite3-WinRT](https://github.com/doo/SQLite3-WinRT) component):
   - Issue with UNICODE `\u0000` character (same as `\0`)
   - No background processing (for future consideration)
-  - Uses libTomCrypt for encryption which *may* be inferior to OpenSSL for encryption _and seems to run much more slowly_
+  - Uses libTomCrypt for encryption which *may* be inferior to OpenSSL for encryption and apparently runs much more slowly
   - WAL/MMAP *disabled* for Windows Phone 8.1
+  - JSON1 not working for Windows
+  - with a minor adjustment in [litehelpers / sqlcipher-winrt-fix](https://github.com/litehelpers/sqlcipher-winrt-fix) to use `fopen_s` instead of `fopen` for WinRT (Windows 8.1/Windows Phone 8.1/Windows 10)
 - Android version:
   - ARM (v5/v6/v7/v7a) and x86 CPUs
   - Minimum SDK 10 (a.k.a. Gingerbread, Android 2.3.3); support for older versions is available upon request.
   - SQLCipher for Android build uses the OpenSSL crypto library for encryption
   - NOTE: 64-bit CPUs such as `x64_64`, ARM-64, and MIPS are currently not supported by the SQLCipher for Android build (support for these CPUs is for future consideration).
-- FTS3, FTS4, and R-Tree support is tested working OK for all target platforms in this version branch Android/iOS/Windows
+  - Case-insensitive matching and other string manipulations on Unicode characters using ICU integration for Android *only*
+- FTS3, FTS4, FTS5, and R-Tree support is tested working OK for all target platforms in this version branch Android/iOS/Windows
+- JSON1 support for Android/iOS (not working for Windows)
 - iOS version:
   - iOS versions supported: 7.x/8.x/9.x
-  - _(using CommonCrypto framework library for encryption)_
+  - REGEXP supported for iOS *only*
 - In case of memory issues please use smaller transactions.
 - Pre-populatd DB is NOT supported by this version.
-- Lawnchair & PouchDB have NOT been tested with this version.
+- Lawnchair adapter has *not* been validated with this version *and is not expected to work (see below)*.
 
 ## Announcements
 
-- SQLCipher version `3.4.0` for Android/iOS/Windows (with FTS5 and JSON1 added)
+- SQLCipher version `3.4.0` for Android/iOS/Windows with FTS5 (all platforms) and JSON1 (Android/iOS)
 - Windows 10 UWP is now supported by this version - along with Windows 8.1 and Windows Phone 8.1
 - More explicit `openDatabase` and `deleteDatabase` `iosDatabaseLocation` option
 - Added simple sql batch query function
@@ -97,13 +103,14 @@ Some other projects by [@brodybits](https://github.com/brodybits):
 
 ## Highlights
 
-- This version connects to [sqlcipher](https://www.zetetic.net/sqlcipher/).
+- This version connects to [SQLCipher](https://www.zetetic.net/sqlcipher/).
 - Drop-in replacement for HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/): the only change should be to replace the static `window.openDatabase()` factory call with `window.sqlitePlugin.openDatabase()`, with parameters as documented below.
 - Failure-safe nested transactions with batch processing optimizations (according to HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/))
 - As described in [this posting](http://brodyspark.blogspot.com/2012/12/cordovaphonegap-sqlite-plugins-offer.html):
   - Keeps sqlite database in a user data location that is known; can be reconfigured (iOS version); and synchronized to iCloud by default (iOS version; can be disabled as described below).
   - No 5MB maximum, more information at: http://www.sqlite.org/limits.html
 - This project is self-contained: no dependencies on other plugins such as cordova-plugin-file
+- Windows 8.1/Windows Phone 8.1/Windows 10 version uses the performant C++ [doo / SQLite3-WinRT](https://github.com/doo/SQLite3-WinRT) component.
 - Intellectual property:
   - All source code is tracked to the original author in git
   - Major authors are tracked in AUTHORS.md
@@ -118,15 +125,16 @@ TBD *YOUR APP HERE*
 
 - iOS version does not support certain rapidly repeated open-and-close or open-and-delete test scenarios due to how the implementation handles background processing
 - As described below, auto-vacuum is NOT enabled by default.
-- INSERT statement that affects multiple rows (due to SELECT cause or using TRIGGER(s), for example) does not report proper rowsAffected on Android ~~in case the built-in Android database used (using the `androidDatabaseImplementation` option in `window.sqlitePlugin.openDatabase`)~~
-- Memory issue observed when adding a large number of records due to the JSON implementation which is improved in [litehelpers / Cordova-sqlite-enterprise-free](https://github.com/litehelpers/Cordova-sqlite-enterprise-free) (available with a different licensing scheme _without SQLCipher_)
+- INSERT statement that affects multiple rows (due to SELECT cause or using TRIGGER(s), for example) does not report proper rowsAffected on Android
+- Memory issue observed when adding a large number of records due to the JSON implementation which is improved in [litehelpers / Cordova-sqlite-enterprise-free](https://github.com/litehelpers/Cordova-sqlite-enterprise-free) (available with a different licensing scheme *without SQLCipher*)
 - A stability issue was reported on the iOS version when in use together with [SockJS](http://sockjs.org/) client such as [pusher-js](https://github.com/pusher/pusher-js) at the same time (see [litehelpers/Cordova-sqlite-storage#196](https://github.com/litehelpers/Cordova-sqlite-storage/issues/196)). The workaround is to call sqlite functions and [SockJS](http://sockjs.org/) client functions in separate ticks (using setTimeout with 0 timeout).
 - If a sql statement fails for which there is no error handler or the error handler does not return `false` to signal transaction recovery, the plugin fires the remaining sql callbacks before aborting the transaction.
-- In case of an error, the error `code` member is bogus on Android and Windows (fixed for Android in [litehelpers / Cordova-sqlite-enterprise-free](https://github.com/litehelpers/Cordova-sqlite-enterprise-free)_, available under a different licensing scheme without SQLCipher_).
-- Possible crash on Android when using Unicode emoji characters due to [Android bug 81341](https://code.google.com/p/android/issues/detail?id=81341), which _should_ be fixed in Android 6.x
-- REGEXP is only supported on iOS, ~~known to be broken on~~ _not implemented for_ Android (default database implementation) ~~and~~ _or_ Windows ~~("Universal")~~.
+- In case of an error, the error `code` member is bogus on Android and Windows (fixed for Android in [litehelpers / Cordova-sqlite-enterprise-free](https://github.com/litehelpers/Cordova-sqlite-enterprise-free), available under a different licensing scheme *without SQLCipher*).
+- Possible crash on Android when using Unicode emoji characters due to [Android bug 81341](https://code.google.com/p/android/issues/detail?id=81341), which *should* be fixed in Android 6.x
 - Close/delete database bugs described below.
 - When a database is opened and deleted without closing, the iOS version is known to leak resources.
+- Lawnchair adapter is *not* expected to work as described below.
+- JSON1 feature is not working for Windows
 - It is NOT possible to open multiple databases with the same name but in different locations (iOS version).
 - Problems reported with PhoneGap Build in the past:
   - PhoneGap Build Hydration.
@@ -140,11 +148,11 @@ TBD *YOUR APP HERE*
 - This version will not work within a web worker (not properly supported by the Cordova framework). Use within a web worker is supported for Android and iOS (*without SQLCipher*) in: [litehelpers / cordova-sqlite-workers-evfree](https://github.com/litehelpers/cordova-sqlite-workers-evfree) (available with a different licensing scheme)
 - In-memory database `db=window.sqlitePlugin.openDatabase({name: ':memory:', ...})` is currently not supported.
 - The Android version cannot work with more than 100 open db files (due to the threading model used).
-- REGEXP is ~~not supported by~~ _not tested in_ this version branch
+- REGEXP is only supported on iOS *only*, not implemented for Android or Windows.
 - UNICODE `\u2028` (line separator) and `\u2029` (paragraph separator) characters are currently not supported and known to be broken in iOS version due to [Cordova bug CB-9435](https://issues.apache.org/jira/browse/CB-9435). There *may* be a similar issue with certain other UNICODE characters in the iOS version (needs further investigation). This is fixed in: [litehelpers / Cordova-sqlite-enterprise-free](https://github.com/litehelpers/Cordova-sqlite-enterprise-free) (available with a different licensing scheme - *without SQLCipher*)
 - Blob type is currently not supported and known to be broken on multiple platforms.
-- UNICODE `\u0000` (same as `\0`) character not working in ~~Android (default native database implementation) or~~ Windows
-- Case-insensitive matching and other string manipulations on Unicode characters, which is provided by _SQLCipher for Android by_ ~~optional~~ ICU integration ~~in~~ _from_ the _Android_ sqlite _database_ source _(and working with recent versions of Android)_, is not supported for ~~any target platforms~~ _iOS or Windows_.
+- UNICODE `\u0000` (same as `\0`) character not working in Windows version
+- Case-insensitive matching and other string manipulations on Unicode characters, which is provided by SQLCipher for Android by ICU integration from the Android sqlite database source (and working with recent versions of Android), is not supported for iOS or Windows.
 - iOS version uses a thread pool but with only one thread working at a time due to "synchronized" database access
 - Large query result can be slow, also due to JSON implementation
 - ATTACH to another database file is not supported by this version. Attach/detach is supported (along with the memory and iOS UNICODE `\u2028` line separator / `\u2029` paragraph separator fixes) in: [litehelpers / Cordova-sqlite-evfree-ext](https://github.com/litehelpers/Cordova-sqlite-evfree-ext) (available with a different licensing scheme - *without SQLCipher*)
@@ -210,7 +218,7 @@ TBD *YOUR APP HERE*
 
 ### Other versions
 
-- [litehelpers / Cordova-sqlite-storage](https://github.com/litehelpers/Cordova-sqlite-storage) - Cordova sqlite storage plugin without sqlcipher, supported for more platforms.
+- [litehelpers / Cordova-sqlite-storage](https://github.com/litehelpers/Cordova-sqlite-storage) - Cordova sqlite storage plugin without sqlcipher, using built-in SQLite library on Android/iOS
 - [litehelpers / cordova-sqlite-ext](https://github.com/litehelpers/cordova-sqlite-ext) - version with [Android-sqlite-connector](https://github.com/liteglue/Android-sqlite-connector), Windows 8.1/Windows Phone 8.1/Windows 10 (using [doo / SQLite3-WinRT](https://github.com/doo/SQLite3-WinRT)), REGEXP support for Android/iOS, and pre-populated database support for Android/iOS/Windows
 - [litehelpers / Cordova-sqlite-legacy](https://github.com/litehelpers/Cordova-sqlite-legacy) - maintenance of WP8 version along with the other supported platforms Android/iOS/Windows 8.1/Windows Phone 8.1/Windows 10
 - [litehelpers / Cordova-sqlite-enterprise-free](https://github.com/litehelpers/Cordova-sqlite-enterprise-free) - internal memory improvements to support larger transactions (Android/iOS) and fix to support all Unicode characters (iOS) - with a different licensing scheme
@@ -715,8 +723,6 @@ Use `window.sqlitePlugin.echoTest` as described above (please wait for the `devi
 
 ### Quick installation test
 
-**TBD may be replaced:**
-
 Assuming your app has a recent template as used by the Cordova create script, add the following code to the `onDeviceReady` function, after `app.receivedEvent('deviceready');`:
 
 ```Javascript
@@ -823,9 +829,16 @@ To run from a windows powershell (here is a sample for android target):
 
 # Adapters
 
-**TBD:** Need a smoother way to make these adapters work with the database encryption/decryption functionality.
+## PouchDB
 
-## Lawnchair Adapter
+The adapter is part of [PouchDB](http://pouchdb.com/) as documented at:
+- <https://pouchdb.com/api.html#create_database> (with `key` option)
+- <https://pouchdb.com/adapters.html>
+- <http://pouchdb.com/faq.html>
+
+## Lawnchair adapter
+
+**BROKEN:** The Lawnchair adapter does not support the `openDatabase` options such as `key`, `location` or `iosDatabaseLocation` options and is therefore *not* expected to work with this plugin.
 
 ### Common adapter
 
@@ -860,13 +873,6 @@ ingredients = new Lawnchair({db: "cookbook", name: "ingredients", ...}, myCallba
 ```
 
 **KNOWN ISSUE:** the new db options are *not* supported by the Lawnchair adapter. The workaround is to first open the database file using `sqlitePlugin.openDatabase()`.
-
-## PouchDB
-
-The adapter is part of [PouchDB](http://pouchdb.com/) as documented at:
-- <https://pouchdb.com/adapters.html>
-- <https://pouchdb.com/api.html#create_database>
-- <http://pouchdb.com/faq.html>.
 
 # Contributing
 
