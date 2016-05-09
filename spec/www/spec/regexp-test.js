@@ -34,11 +34,11 @@ var mytests = function() {
         }
       }
 
+      // ONLY working for Android Web SQL in this version:
       it(suiteName + 'Simple REGEXP test',
         function(done) {
-          if (!isWebSql && isAndroid) pending('BROKEN-NOT IMPLEMENTED for android.database.sqlcipher');
+          if (!isWebSql) pending('BROKEN-NOT IMPLEMENTED for plugin (Android/iOS/Windows)');
           if (isWebSql && !isAndroid) pending('BROKEN for iOS Web SQL');
-          if (isWindows) pending('BROKEN-NOT IMPLEMENTED for Windows');
 
           var db = openDatabase('simple-regexp-test.db', '1.0', 'test', DEFAULT_SIZE);
 

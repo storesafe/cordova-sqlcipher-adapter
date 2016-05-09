@@ -66,12 +66,13 @@ var mytests = function() {
           });
         }, MYTIMEOUT);
 
-      // Only test ICU-UNICODE with Android:
+      // Test ICU-UNICODE with Android: Web SQL (Android 5.x/+) ONLY:
       if (isAndroid)
         it(suiteName + 'Android ICU-UNICODE string manipulation test', function(done) {
           if (isWebSql && /Android [1-4]/.test(navigator.userAgent)) pending('BROKEN for Android 1.x-4.x Web SQL');
+          if (!isWebSql) pending('SKIP: REMOVED for android.database.sqlcipher');
 
-          var db = openDatabase('UNICODE-string-test.db', '1.0', 'Test', DEFAULT_SIZE);
+          var db = openDatabase('ICU-UNICODE-string-manipulation-results-test.db', '1.0', 'Test', DEFAULT_SIZE);
 
           expect(db).toBeDefined();
 

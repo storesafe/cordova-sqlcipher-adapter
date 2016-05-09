@@ -2,7 +2,7 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-sqlcipher-adapter"
-    version="0.1.5">
+    version="0.1.6">
 
     <name>Cordova sqlcipher adapter</name>
 
@@ -14,11 +14,13 @@
 
     <author>Litehelpers/Various</author>
 
+    <!-- No longer enforced:
     <engines>
         <engine name="cordova" version=">=6.0.0" />
         <engine name="cordova-android" version=">=5.0.0" />
         <engine name="cordova-ios" version=">=4.0.0" />
     </engines>
+     -->
 
     <js-module src="www/SQLitePlugin.js" name="SQLitePlugin">
         <clobbers target="SQLitePlugin" />
@@ -37,17 +39,10 @@
         <source-file src="src/android/io/sqlc/SQLiteAndroidDatabase.java" target-dir="src/io/sqlc"/>
 
         <!-- SQLCipher distribution for Android: -->
-        <source-file src="src/android/sqlcipher/assets/icudt46l.zip" target-dir="assets" />
         <source-file src="src/android/sqlcipher/libs/sqlcipher.jar" target-dir="libs" />
-        <source-file src="src/android/sqlcipher/libs/armeabi/libdatabase_sqlcipher.so" target-dir="libs/armeabi" />
-        <source-file src="src/android/sqlcipher/libs/armeabi/libsqlcipher_android.so" target-dir="libs/armeabi" />
-        <source-file src="src/android/sqlcipher/libs/armeabi/libstlport_shared.so" target-dir="libs/armeabi" />
-        <source-file src="src/android/sqlcipher/libs/armeabi-v7a/libdatabase_sqlcipher.so" target-dir="libs/armeabi-v7a" />
-        <source-file src="src/android/sqlcipher/libs/armeabi-v7a/libsqlcipher_android.so" target-dir="libs/armeabi-v7a" />
-        <source-file src="src/android/sqlcipher/libs/armeabi-v7a/libstlport_shared.so" target-dir="libs/armeabi-v7a" />
-        <source-file src="src/android/sqlcipher/libs/x86/libdatabase_sqlcipher.so" target-dir="libs/x86" />
-        <source-file src="src/android/sqlcipher/libs/x86/libsqlcipher_android.so" target-dir="libs/x86" />
-        <source-file src="src/android/sqlcipher/libs/x86/libstlport_shared.so" target-dir="libs/x86" />
+        <source-file src="src/android/sqlcipher/libs/armeabi/libsqlcipher.so" target-dir="libs/armeabi" />
+        <source-file src="src/android/sqlcipher/libs/armeabi-v7a/libsqlcipher.so" target-dir="libs/armeabi-v7a" />
+        <source-file src="src/android/sqlcipher/libs/x86/libsqlcipher.so" target-dir="libs/x86" />
 
     </platform>
 

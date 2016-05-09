@@ -74,16 +74,17 @@ Some other projects by [@brodybits](https://github.com/brodybits):
   - JSON1 not working for Windows
   - with a minor adjustment in [litehelpers / sqlcipher-winrt-fix](https://github.com/litehelpers/sqlcipher-winrt-fix) to use `fopen_s` instead of `fopen` for WinRT (Windows 8.1/Windows Phone 8.1/Windows 10)
 - Android version:
+  - Build from [litehelpers / android-database-sqlcipher-api-fix](https://github.com/litehelpers/android-database-sqlcipher-api-fix), now supports Android N (preview) and fixed for Android API 23
   - ARM (v5/v6/v7/v7a) and x86 CPUs
   - Minimum SDK 10 (a.k.a. Gingerbread, Android 2.3.3); support for older versions is available upon request.
   - SQLCipher for Android build uses the OpenSSL crypto library for encryption
   - NOTE: 64-bit CPUs such as `x64_64`, ARM-64, and MIPS are currently not supported by the SQLCipher for Android build (support for these CPUs is for future consideration).
-  - Case-insensitive matching and other string manipulations on Unicode characters using ICU integration for Android *only*
+  - ICU case-insensitive matching and other Unicode string manipulations is no longer supported for Android.
 - FTS3, FTS4, FTS5, and R-Tree support is tested working OK for all target platforms in this version branch Android/iOS/Windows
 - JSON1 support for Android/iOS (not working for Windows)
 - iOS version:
   - iOS versions supported: 7.x/8.x/9.x
-  - REGEXP supported for iOS *only*
+  - REGEXP is no longer supported for iOS.
 - In case of memory issues please use smaller transactions.
 - Pre-populatd DB is NOT supported by this version.
 - Lawnchair adapter has *not* been validated with this version *and is not expected to work (see below)*.
@@ -148,11 +149,9 @@ TBD *YOUR APP HERE*
 - This version will not work within a web worker (not properly supported by the Cordova framework). Use within a web worker is supported for Android and iOS (*without SQLCipher*) in: [litehelpers / cordova-sqlite-workers-evfree](https://github.com/litehelpers/cordova-sqlite-workers-evfree) (available with a different licensing scheme)
 - In-memory database `db=window.sqlitePlugin.openDatabase({name: ':memory:', ...})` is currently not supported.
 - The Android version cannot work with more than 100 open db files (due to the threading model used).
-- REGEXP is only supported on iOS *only*, not implemented for Android or Windows.
 - UNICODE `\u2028` (line separator) and `\u2029` (paragraph separator) characters are currently not supported and known to be broken in iOS version due to [Cordova bug CB-9435](https://issues.apache.org/jira/browse/CB-9435). There *may* be a similar issue with certain other UNICODE characters in the iOS version (needs further investigation). This is fixed in: [litehelpers / Cordova-sqlite-enterprise-free](https://github.com/litehelpers/Cordova-sqlite-enterprise-free) (available with a different licensing scheme - *without SQLCipher*)
 - Blob type is currently not supported and known to be broken on multiple platforms.
 - UNICODE `\u0000` (same as `\0`) character not working in Windows version
-- Case-insensitive matching and other string manipulations on Unicode characters, which is provided by SQLCipher for Android by ICU integration from the Android sqlite database source (and working with recent versions of Android), is not supported for iOS or Windows.
 - iOS version uses a thread pool but with only one thread working at a time due to "synchronized" database access
 - Large query result can be slow, also due to JSON implementation
 - ATTACH to another database file is not supported by this version. Attach/detach is supported (along with the memory and iOS UNICODE `\u2028` line separator / `\u2029` paragraph separator fixes) in: [litehelpers / Cordova-sqlite-evfree-ext](https://github.com/litehelpers/Cordova-sqlite-evfree-ext) (available with a different licensing scheme - *without SQLCipher*)
@@ -175,7 +174,6 @@ TBD *YOUR APP HERE*
 - UPDATE/DELETE with LIMIT or ORDER BY (not supported by older sqlite3 versions)
 - WITH clause (not supported by older sqlite3 versions)
 - SQL statements with extra semicolon(s) in the beginning (known to cause issues with android.database implementation)
-- TODO add some *more* REGEXP tests
 - Integration with JXCore for Cordova (must be built without sqlite(3) built-in)
 - Delete an open database inside a statement or transaction callback.
 

@@ -1,5 +1,12 @@
 # Changes
 
+## cordova-sqlcipher-adapter 0.1.6
+
+- SQLCipher for Android with API 23 fixes from: https://github.com/litehelpers/android-database-sqlcipher-api-fix
+- ICU-Unicode string manipulation no longer supported for Android
+- REGEXP disabled for iOS
+- Minimum Cordova version no longer enforced
+
 ## cordova-sqlcipher-adapter 0.1.5
 
 - SQLCipher 3.4.0 with FTS5 (all platforms) and JSON1 (Android/iOS)

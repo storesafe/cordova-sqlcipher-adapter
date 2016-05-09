@@ -10,8 +10,10 @@
 
 #import "sqlite3.h"
 
+#if 0
 // REGEXP:
 #include <regex.h>
+#endif
 
 // NOTE: This is now broken by cordova-ios 4.0, see:
 // https://issues.apache.org/jira/browse/CB-9638
@@ -20,6 +22,7 @@
 #import <Cordova/NSData+Base64.h>
 #endif
 
+#if 0
 static void
 sqlite_regexp(sqlite3_context * context, int argc, sqlite3_value ** values) {
     if ( argc < 2 ) {
@@ -49,6 +52,7 @@ sqlite_regexp(sqlite3_context * context, int argc, sqlite3_value ** values) {
 
     sqlite3_result_int(context, (ret != REG_NOMATCH));
 }
+#endif
 
 
 @implementation SQLitePlugin
@@ -170,7 +174,9 @@ sqlite_regexp(sqlite3_context * context, int argc, sqlite3_value ** values) {
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Unable to open DB"];
                 return;
             } else {
+#if 0
                 sqlite3_create_function(db, "REGEXP", 2, SQLITE_ANY, NULL, &sqlite_regexp, NULL, NULL);
+#endif
 
                 // SQLCipher key:
                 NSString *dbkey = [options objectForKey:@"key"];
