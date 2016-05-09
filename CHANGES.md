@@ -1,5 +1,9 @@
 # Changes
 
+## cordova-sqlcipher-adapter 0.1.7-pre1
+
+TBD
+
 ## cordova-sqlcipher-adapter 0.1.6
 
 - SQLCipher for Android with API 23 fixes from: https://github.com/litehelpers/android-database-sqlcipher-api-fix
