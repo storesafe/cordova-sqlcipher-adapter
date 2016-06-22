@@ -8,7 +8,7 @@ License for iOS version: MIT only
 
 |Android Circle-CI (**full** suite)|iOS Travis-CI (*very* limited suite)|
 |-----------------------|----------------------|
-|[![Circle CI](https://circleci.com/gh/litehelpers/Cordova-sqlcipher-adapter.svg?style=svg)](https://circleci.com/gh/litehelpers/Cordova-sqlcipher-adapter)|[![Build Status](https://travis-ci.org/litehelpers/Cordova-sqlcipher-adapter.svg?branch=core-master)](https://travis-ci.org/litehelpers/Cordova-sqlcipher-adapter)|
+|[![Circle CI](https://circleci.com/gh/litehelpers/Cordova-sqlcipher-adapter.svg?style=svg)](https://circleci.com/gh/litehelpers/Cordova-sqlcipher-adapter)|[![Build Status](https://travis-ci.org/litehelpers/Cordova-sqlcipher-adapter.svg)](https://travis-ci.org/litehelpers/Cordova-sqlcipher-adapter)|
 
 **WARNING:** In case you lose the database password you have no way to recover the data.
 
@@ -72,7 +72,7 @@ Some other projects by [@brodybits](https://github.com/brodybits):
   - Uses libTomCrypt for encryption which *may* be inferior to OpenSSL for encryption and apparently runs much more slowly
   - WAL/MMAP *disabled* for Windows Phone 8.1
   - JSON1 not working for Windows
-  - with a minor adjustment in [litehelpers / sqlcipher-winrt-fix](https://github.com/litehelpers/sqlcipher-winrt-fix) to use `fopen_s` instead of `fopen` for WinRT (Windows 8.1/Windows Phone 8.1/Windows 10)
+  - **NOTE:** libTomCrypt may have inferior entropy (randomness) for encryption. It is desired to replace libTomCrypt with a recent build of the OpenSSL crypto library.
 - Android version:
   - Build from [litehelpers / android-database-sqlcipher-api-fix](https://github.com/litehelpers/android-database-sqlcipher-api-fix), now supports Android N (preview) and fixed for Android API 23
   - ARM (v5/v6/v7/v7a) and x86 CPUs
@@ -414,7 +414,7 @@ db.transaction(function(tx) {
   tx.executeSql('INSERT INTO MyTable VALUES (?)', ['test-value'], function(tx, resultSet) {
     console.log('resultSet.insertId: ' + resultSet.insertId);
     console.log('resultSet.rowsAffected: ' + resultSet.rowsAffected);
-  }, function(error) {
+  }, function(tx, error) {
     console.log('INSERT error: ' + error.message);
   });
 }, function(error) {
@@ -433,7 +433,7 @@ db.readTransaction(function(tx) {
   }, function(error) {
     console.log('SELECT error: ' + error.message);
   });
-}, function(error) {
+}, function(tx, error) {
   console.log('transaction error: ' + error.message);
 }, function() {
   console.log('transaction ok');

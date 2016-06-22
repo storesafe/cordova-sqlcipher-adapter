@@ -1,6 +1,6 @@
 # Changes
 
-## cordova-sqlcipher-adapter 0.1.7-pre4
+## cordova-sqlcipher-adapter 0.1.7
 
 - Fix Windows build
 - SQLCipher prerelease fix to use append mode for cipher_profile
