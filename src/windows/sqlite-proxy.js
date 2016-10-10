@@ -4,6 +4,7 @@ var nextTick = window.setImmediate || function(fun) {
     window.setTimeout(fun, 0);
 };
 
+/* **
 function handle(p, win, fail) {
     if (p)
         p.done(
@@ -18,6 +19,7 @@ function handle(p, win, fail) {
             }
         );
 }
+// */
 
 module.exports = {
 	echoStringValue: function(win, fail, args) {
@@ -29,7 +31,9 @@ module.exports = {
 	    var res;
 
 		function openImmediate(dbname) {
-			//var dbname = options.name;
+			// STOP with success if db is already open:
+			if (!!dbmap[dbname]) return nextTick(win);
+
 			// from @EionRobb / phonegap-win8-sqlite:
 			var opendbname = Windows.Storage.ApplicationData.current.localFolder.path + "\\" + dbname;
 			console.log("open db name: " + dbname + " at full path: " + opendbname);
@@ -88,10 +92,10 @@ module.exports = {
 	    var options = args[0];
 	    var dbname = options.dbargs.dbname;
 		var executes = options.executes;
-	    //var executes = options.executes.map(function (e) { return [String(e.qid), e.sql, e.params]; });
 		var db = dbmap[dbname];
 		var results = [];
 		var i, count=executes.length;
+
 		//console.log("executes: " + JSON.stringify(executes));
 		//console.log("execute sql count: " + count);
 		for (i=0; i<count; ++i) {
@@ -109,15 +113,13 @@ module.exports = {
 				}
 				results.push({
 					type: "success",
-					qid: e.qid,
 					result: result
 				});
 			} catch(ex) {
 				console.log("sql exception error: " + ex.message);
 				results.push({
 					type: "error",
-					qid: e.qid,
-					result: { code: -1, message: ex.message }
+					result: { message: ex.message, code: 0 }
 				});
 			}
 		}

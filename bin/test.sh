@@ -43,12 +43,15 @@ fi
 echo "compiled coffeescript to javascript"
 
 # move everything to a temp folder to avoid infinite recursion errors
-rm -fr ../.plugin
-mkdir -p ../.plugin
-cp -r ../src ../plugin.xml ../www ../.plugin
+rm -fr myplugin
+mkdir -p myplugin
+cp -r ../scripts ../src ../plugin.xml ../package.json ../www myplugin
+
+# cleanup old test
+rm -fr plugins platforms
 
 # update the plugin, run the test app
 cordova platform add $platform
-cordova plugin rm com.brodysoft.cordova.sqlcipher
-cordova plugin add ../.plugin
+#cordova plugin rm com.brodysoft.cordova.sqlcipher
+cordova plugin add myplugin
 cordova run $platform

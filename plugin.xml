@@ -2,7 +2,7 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-sqlcipher-adapter"
-    version="0.1.8-pre1">
+    version="0.1.8-pre2">
 
     <name>Cordova sqlcipher adapter</name>
 
@@ -14,12 +14,18 @@
 
     <author>Litehelpers/Various</author>
 
-    <!-- No longer enforced:
+    <!-- No longer enforced in this version (branch):
     <engines>
         <engine name="cordova" version=">=6.0.0" />
         <engine name="cordova-android" version=">=5.0.0" />
         <engine name="cordova-ios" version=">=4.0.0" />
+        <engine name="cordova-windows" version=">=4.0.0" />
     </engines>
+     -->
+
+    <!-- THANKS to AllJoyn-Cordova / cordova-plugin-alljoyn: -->
+    <!-- [NOT in this version branch]
+    <hook type="before_plugin_install" src="scripts/beforePluginInstall.js" />
      -->
 
     <js-module src="www/SQLitePlugin.js" name="SQLitePlugin">
@@ -37,6 +43,14 @@
 
         <source-file src="src/android/io/sqlc/SQLitePlugin.java" target-dir="src/io/sqlc"/>
         <source-file src="src/android/io/sqlc/SQLiteAndroidDatabase.java" target-dir="src/io/sqlc"/>
+        <!-- [FUTURE TBD] ref: litehelpers/Cordova-sqlcipher-adapter#40
+                               litehelpers/Cordova-sqlcipher-adapter#25
+                               sqlcipher/sqlcipher#125
+        <source-file src="src/android/io/sqlc/SQLiteConnectorDatabase.java" target-dir="src/io/sqlc"/>
+
+        <source-file src="node_modules/cordova-sqlite-storage-dependencies/libs/sqlite-connector.jar" target-dir="libs"/>
+         ...
+         -->
 
         <!-- SQLCipher distribution for Android: -->
         <source-file src="src/android/sqlcipher/libs/sqlcipher.jar" target-dir="libs" />
@@ -46,7 +60,7 @@
 
     </platform>
 
-    <!-- ios -->
+    <!-- iOS -->
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
             <feature name="SQLitePlugin">
@@ -65,6 +79,27 @@
 
     </platform>
 
+    <!-- macOS -->
+    <platform name="osx">
+        <config-file target="config.xml" parent="/*">
+            <feature name="SQLitePlugin">
+                <param name="ios-package" value="SQLitePlugin" />
+            </feature>
+        </config-file>
+
+        <!-- Note: the macOS src is based off src/ios implicitly -->
+        <header-file src="src/ios/SQLitePlugin.h" />
+        <source-file src="src/ios/SQLitePlugin.m" />
+        <!-- FUTURE TBD: more common directory name for Apple macOS/iOS versions -->
+
+        <!-- SQLCipher source distribution and Security.framework dependency for macOS: -->
+        <header-file src="src/common/sqlite3.h" />
+        <source-file src="src/common/sqlite3.c"
+                     compiler-flags="-DSQLITE_HAS_CODEC -DSQLITE_THREADSAFE=2 -DSQLITE_TEMP_STORE=3 -DSQLCIPHER_CRYPTO_CC -DSQLITE_LOCKING_STYLE=1 -DSQLITE_OMIT_BUILTIN_TEST=1 -DSQLITE_OMIT_LOAD_EXTENSION=1 -DSQLITE_ENABLE_FTS3=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_RTREE=1 -DNDEBUG -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_JSON1" />
+        <framework src="Security.framework" />
+
+    </platform>
+
     <!-- windows -->
     <platform name="windows">
         <js-module src="src/windows/sqlite-proxy.js" name="SQLiteProxy">
@@ -76,7 +111,7 @@
             <merges target="" />
         </js-module>
 
-        <!-- Thanks to AllJoyn-Cordova / cordova-plugin-alljoyn: -->
+        <!-- Thanks to AllJoyn-Cordova / cordova-plugin-alljoyn for guidance: -->
         <framework src="src/windows/SQLite3-Win-RT/SQLite3/SQLite3.UWP/SQLite3.UWP.vcxproj" custom="true" type="projectReference" versions="10.*" />
         <framework src="src/windows/SQLite3-Win-RT/SQLite3/SQLite3.Windows/SQLite3.Windows.vcxproj" custom="true" type="projectReference" target="windows" versions="8.1" />
         <framework src="src/windows/SQLite3-Win-RT/SQLite3/SQLite3.WindowsPhone/SQLite3.WindowsPhone.vcxproj" custom="true" type="projectReference" target="phone" versions="8.1" />
