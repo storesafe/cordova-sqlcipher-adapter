@@ -1,5 +1,9 @@
 # Changes
 
+## cordova-sqlcipher-adapter 0.1.8-pre1
+
+- Android version with android-database-sqlcipher 3.5.4
+
 ## cordova-sqlcipher-adapter 0.1.7
 
 - Fix Windows build

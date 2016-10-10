@@ -59,8 +59,10 @@ Some other projects by [@brodybits](https://github.com/brodybits):
 
 ## Status
 
-- Alpha version with SQLCipher `3.4.0`
-  - with OpenSSL libcrypto for Android 
+- Alpha version
+  - SQLCipher `3.5.4` for Android
+  - SQLCipher `3.4.0` for iOS/Windows
+  - with OpenSSL libcrypto for Android
   - using CommonCrypto framework for iOS
   - with LibTomCrypt (1.17) embedded for Windows
   - for future consideration: embed OpenSSL libcrypto for all target platforms
@@ -74,7 +76,6 @@ Some other projects by [@brodybits](https://github.com/brodybits):
   - JSON1 not working for Windows
   - **NOTE:** libTomCrypt may have inferior entropy (randomness) for encryption. It is desired to replace libTomCrypt with a recent build of the OpenSSL crypto library.
 - Android version:
-  - Build from [litehelpers / android-database-sqlcipher-api-fix](https://github.com/litehelpers/android-database-sqlcipher-api-fix), now supports Android N (preview) and fixed for Android API 23
   - ARM (v5/v6/v7/v7a) and x86 CPUs
   - Minimum SDK 10 (a.k.a. Gingerbread, Android 2.3.3); support for older versions is available upon request.
   - SQLCipher for Android build uses the OpenSSL crypto library for encryption
@@ -83,7 +84,7 @@ Some other projects by [@brodybits](https://github.com/brodybits):
 - FTS3, FTS4, FTS5, and R-Tree support is tested working OK for all target platforms in this version branch Android/iOS/Windows
 - JSON1 support for Android/iOS (not working for Windows)
 - iOS version:
-  - iOS versions supported: 7.x/8.x/9.x
+  - iOS versions supported: 8.x/9.x
   - REGEXP is no longer supported for iOS.
 - In case of memory issues please use smaller transactions.
 - Pre-populatd DB is NOT supported by this version.
@@ -216,16 +217,16 @@ TBD *YOUR APP HERE*
 
 ### Other versions
 
-- [litehelpers / Cordova-sqlite-storage](https://github.com/litehelpers/Cordova-sqlite-storage) - Cordova sqlite storage plugin without sqlcipher, using built-in SQLite library on Android/iOS
+- [litehelpers / Cordova-sqlite-storage](https://github.com/litehelpers/Cordova-sqlite-storage) - Cordova sqlite storage plugin without sqlcipher, using SQLite `3.8.10.2` on Android/iOS/Windows
 - [litehelpers / cordova-sqlite-ext](https://github.com/litehelpers/cordova-sqlite-ext) - version with [Android-sqlite-connector](https://github.com/liteglue/Android-sqlite-connector), Windows 8.1/Windows Phone 8.1/Windows 10 (using [doo / SQLite3-WinRT](https://github.com/doo/SQLite3-WinRT)), REGEXP support for Android/iOS, and pre-populated database support for Android/iOS/Windows
 - [litehelpers / Cordova-sqlite-legacy](https://github.com/litehelpers/Cordova-sqlite-legacy) - maintenance of WP8 version along with the other supported platforms Android/iOS/Windows 8.1/Windows Phone 8.1/Windows 10
 - [litehelpers / Cordova-sqlite-enterprise-free](https://github.com/litehelpers/Cordova-sqlite-enterprise-free) - internal memory improvements to support larger transactions (Android/iOS) and fix to support all Unicode characters (iOS) - with a different licensing scheme
 - [litehelpers / Cordova-sqlite-evfree-ext](https://github.com/litehelpers/Cordova-sqlite-evfree-ext) - version with support for ATTACH, includes internal memory improvements to support larger transactions (Android/iOS) and fix to support all Unicode characters (with a different licensing scheme)
 - [litehelpers / cordova-sqlite-workers-evfree](https://github.com/litehelpers/cordova-sqlite-workers-evfree) - version with support for web workers, includes internal memory improvements to support larger transactions (Android/iOS) and fix to support all Unicode characters (iOS) (with a different licensing scheme)
-- Adaptation for React Native Android and iOS: [andpor / react-native-sqlite-storage](https://github.com/andpor/react-native-sqlite-storage)
-- Original version for iOS (with a slightly different transaction API): [davibe / Phonegap-SQLitePlugin](https://github.com/davibe/Phonegap-SQLitePlugin)
+- Adaptation for React Native Android and iOS: [andpor / react-native-sqlite-storage](https://github.com/andpor/react-native-sqlite-storage) (without SQLCipher)
+- Original version for iOS (with a slightly different transaction API): [davibe / Phonegap-SQLitePlugin](https://github.com/davibe/Phonegap-SQLitePlugin) (without SQLCipher)
 
-### Other SQLite adapter projects
+### Other SQLite adapter projects (without SQLCipher)
 
 - [an-rahulpandey / cordova-plugin-dbcopy](https://github.com/an-rahulpandey/cordova-plugin-dbcopy) - Supports pre-populated database (*NOT* expected with work SQLCipher for Android)
 - [object-layer / AnySQL](https://github.com/object-layer/anysql) - Unified SQL API over multiple database engines
