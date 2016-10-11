@@ -130,7 +130,6 @@ See the [Sample section](#sample) for a sample with a more detailed explanation.
   - Windows version may crash in certain cases when invalid (bogus) function parameters are given, for example: `db.readTransaction('bogus');`
   - Uses libTomCrypt for encryption which *may* be inferior to OpenSSL for encryption and apparently runs much more slowly
   - WAL/MMAP *disabled* for Windows Phone 8.1
-  - JSON1 not working for Windows
   - **NOTE:** libTomCrypt may have inferior entropy (randomness) for encryption. It is desired to replace libTomCrypt with a recent build of the OpenSSL crypto library.
 - Android version:
   - ARM (v5/v6/v7/v7a) and x86 CPUs
@@ -139,7 +138,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation.
   - NOTE: 64-bit CPUs such as `x64_64`, ARM-64, and MIPS are currently not supported by the SQLCipher for Android build (support for these CPUs is for future consideration).
   - ICU case-insensitive matching and other Unicode string manipulations is no longer supported for Android.
 - FTS3, FTS4, FTS5, and R-Tree support is tested working OK for all target platforms in this version branch Android/iOS/Windows
-- JSON1 support for Android/iOS (not working for Windows)
+- JSON1 support for Android/iOS/macOS/Windows
 - iOS version:
   - iOS versions supported: 8.x/9.x/10.x see [deviations section](#deviations) below for differences in case of WKWebView)
   - REGEXP is no longer supported for iOS.
@@ -154,7 +153,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation.
 
 - macOS ("osx" platform) is now supported
 - The [brodybits / Cordova-sqlite-bootstrap-test](https://github.com/brodybits/Cordova-sqlite-bootstrap-test) project is a CC0 (public domain) starting point to reproduce issues with this plugin and may be used as a quick way to start developing a new app.
-- SQLCipher version `3.4.0`/`3.5.4` for Android/iOS/macOS/Windows with FTS5 (all platforms) and JSON1 (Android/iOS)
+- SQLCipher version `3.4.0`/`3.5.4` for Android/iOS/macOS/Windows with FTS5 and JSON1
 - Windows 10 UWP is now supported by this version - along with Windows 8.1 and Windows Phone 8.1
 - Self-test functions to verify proper installation and operation of this plugin
 - More explicit `openDatabase` and `deleteDatabase` `iosDatabaseLocation` option
@@ -407,6 +406,7 @@ See **Security of sensitive data** in the [Security](#security) section above.
 
 - iOS/macOS version does not support certain rapidly repeated open-and-close or open-and-delete test scenarios due to how the implementation handles background processing
 - As described below, auto-vacuum is NOT enabled by default.
+- Cannot read encrypted database with CORRECT password directly after attempt to open with INCORRECT password ref: [litehelpers/Cordova-sqlcipher-adapter#43](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/43)
 - INSERT statement that affects multiple rows (due to SELECT cause or using TRIGGER(s), for example) does not report proper rowsAffected on Android
 - If a sql statement fails for which there is no error handler or the error handler does not return `false` to signal transaction recovery, the plugin fires the remaining sql callbacks before aborting the transaction.
 - In case of an error, the error `code` member is bogus on Android and Windows (fixed for Android in [litehelpers / Cordova-sqlite-enterprise-free](https://github.com/litehelpers/Cordova-sqlite-enterprise-free), available under a different licensing scheme *without SQLCipher*).
@@ -422,7 +422,6 @@ See **Security of sensitive data** in the [Security](#security) section above.
 - When a database is opened and deleted without closing, the iOS/macOS version is known to leak resources.
 - It is NOT possible to open multiple databases with the same name but in different locations (iOS/macOS).
 - Incorrect or missing rowsAffected in results for INSERT/UPDATE/DELETE SQL statements with extra semicolon(s) in the beginning for Android ~~in case the `androidDatabaseImplementation: 2` (built-in android.database implementation) option is used~~.
-- JSON1 feature is not working for Windows
 - It is NOT possible to open multiple databases with the same name but in different locations (iOS version).
 - Problems reported with PhoneGap Build in the past:
   - PhoneGap Build Hydration.

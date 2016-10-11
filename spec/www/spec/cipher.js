@@ -183,6 +183,130 @@ describe('encryption test(s)', function() {
         });
     });
 
+      it(suiteName + ' Attempt to open encrypted DB with INCORRECT password THEN OPEN & READ with CORRECT PASSWORD [PLUGIN BROKEN: MUST CLOSE THEN TRY AGAIN]', function (done) {
+        if (isWindows) pending('SKIP for Windows: CALLBACK NOT RECEIVED');
+
+        var dbName = 'Encrypted-DB-attempt-incorrect-password-then-correct-password.db';
+        var test_data = 'test-data';
+
+        window.sqlitePlugin.openDatabase({name: dbName, key: 'test-password', location: 'default'}, function (db1) {
+            expect(db1).toBeDefined();
+            // CREATE TABLE to put some contents into the DB:
+            db1.transaction(function(tx) {
+              tx.executeSql('DROP TABLE IF EXISTS tt');
+              tx.executeSql('CREATE TABLE IF NOT EXISTS tt (test_data)');
+              tx.executeSql('INSERT INTO tt (test_data) VALUES (?)', [test_data]);
+            }, function(error) {
+              // NOT EXPECTED:
+              expect(false).toBe(true);
+              expect(error.message).toBe('--');
+              done();
+            }, function() {
+              db1.close(function () {
+
+                window.sqlitePlugin.openDatabase({name: dbName, key: 'another-password', location: 'default'}, function (db2) {
+                  // NOT EXPECTED:
+                  expect(false).toBe(true);
+                  done();
+                }, function (error) {
+                  // EXPECTED RESULT:
+                  expect(error).toBeDefined();
+                  // FUTURE TBD CHECK code/message
+
+                  window.sqlitePlugin.openDatabase({name: dbName, key: 'test-password', location: 'default'}, function (db3) {
+                    // EXPECTED RESULT:
+                    expect(db3).toBeDefined();
+                    //* ** ALT 1:
+                    db3.transaction(function(tx) {
+                      tx.executeSql('SELECT * FROM tt', null, function(ignored, rs) {
+                        expect('PLUGIN FIXED PLEASE UPDATE THIS TEST').toBe('--');
+                        expect(rs).toBeDefined();
+                        expect(rs.rows).toBeDefined();
+                        expect(rs.rows.length).toBe(1);
+                        expect(rs.rows.item(0).test_data).toBe(test_data);
+                        done();
+                      }, function (ignored, error) {
+                        // NOT EXPECTED:
+                        expect(false).toBe(true);
+                        expect(error.message).toBe('--');
+                        done();
+                      });
+
+                    }, function (error) {
+                      // TEST GETS HERE [Android/iOS/macOS]:
+                      //expect(false).toBe(true);
+                      //expect(error.message).toBe('--');
+                      expect(error).toBeDefined();
+                      db3.close(function() {
+                        expect('PLUGIN BEHAVIOR CHANGED PLEASE UPDATE THIS TEST AND CHECK STORED DATA HERE').toBe('--');
+                        done();
+                      }, function(error) {
+                        // TBD ???:
+                        //expect(error).toBeDefined();
+                        expect(error).not.toBeDefined();
+                        // TRY AGAIN:
+                        window.sqlitePlugin.openDatabase({name: dbName, key: 'test-password', location: 'default'}, function (db4) {
+                          // EXPECTED RESULT:
+                          expect(db4).toBeDefined();
+                          //* ** ALT 1:
+                          db4.transaction(function(tx) {
+                            tx.executeSql('SELECT * FROM tt', null, function(ignored, rs) {
+                              expect(rs).toBeDefined();
+                              expect(rs.rows).toBeDefined();
+                              expect(rs.rows.length).toBe(1);
+                              expect(rs.rows.item(0).test_data).toBe(test_data);
+                              done();
+                            }, function (ignored, error) {
+                              // NOT EXPECTED:
+                              expect(false).toBe(true);
+                              expect(error.message).toBe('--');
+                              done();
+                            });
+                          }, function (error) {
+                            // NOT EXPECTED:
+                            expect(false).toBe(true);
+                            expect(error.message).toBe('--');
+                            done();
+                          });
+                        });
+                      });
+                    });
+                    // */
+                    /* ** FUTURE TBD ALT 2 [NO SQL CALLBACK RECEIVED]:
+                    expect('check1').toBe('--'); // TEST ALT 2 GETS HERE
+                    db3.executeSql('SELECT * FROM tt', null, function(rs) {
+                      // NOT TRIGGERED Android/iOS:
+                      expect(rs).toBeDefined();
+                      // FUTURE TBD CHECK rs
+                      done();
+                    }, function (error) {
+                      // NOT TRIGGERED Android/iOS:
+                      // NOT EXPECTED:
+                      expect(false).toBe(true);
+                      expect(error.message).toBe('--');
+                      done();
+                    });
+                    expect('check2').toBe('--'); // TEST ALT 2 GETS HERE
+                    // */
+                  });
+
+                });
+
+              }, function (error) {
+                // NOT EXPECTED:
+                expect(false).toBe(true);
+                expect(error.message).toBe('--');
+                done();
+              });
+            });
+        }, function (error) {
+          // NOT EXPECTED:
+          expect(false).toBe(true);
+          expect(error.message).toBe('--');
+          done();
+        });
+      });
+
       test_it(suiteName + 'Attempt to open and read unencrypted DB with password key', function () {
 
         var dbName = 'Open-and-read-unencrypted-DB-with-password.db';
