@@ -111,9 +111,9 @@ See the [Sample section](#sample) for a sample with a more detailed explanation.
 
 - Alpha version
   - SQLCipher `3.5.4` for Android
-  - SQLCipher `3.4.0` for iOS/Windows
+  - SQLCipher `3.4.0` for iOS/macOS/Windows
   - with OpenSSL libcrypto for Android
-  - using CommonCrypto framework for iOS
+  - using CommonCrypto framework for iOS/macOS
   - with LibTomCrypt (1.17) embedded for Windows
   - for future consideration: embed OpenSSL libcrypto for all target platforms
 - NOT supported by PhoneGap Developer App or PhoneGap Desktop App
@@ -137,7 +137,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation.
   - SQLCipher for Android build uses the OpenSSL crypto library for encryption
   - NOTE: 64-bit CPUs such as `x64_64`, ARM-64, and MIPS are currently not supported by the SQLCipher for Android build (support for these CPUs is for future consideration).
   - ICU case-insensitive matching and other Unicode string manipulations is no longer supported for Android.
-- FTS3, FTS4, FTS5, and R-Tree support is tested working OK for all target platforms in this version branch Android/iOS/Windows
+- FTS3, FTS4, FTS5, and R-Tree support is tested working OK for all target platforms in this version branch Android/iOS/macOS/Windows
 - JSON1 support for Android/iOS/macOS/Windows
 - iOS version:
   - iOS versions supported: 8.x/9.x/10.x see [deviations section](#deviations) below for differences in case of WKWebView)
@@ -159,7 +159,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation.
 - More explicit `openDatabase` and `deleteDatabase` `iosDatabaseLocation` option
 - Added simple sql batch query function
 - Added echo test function to verify installation of this plugin
-- All iOS operations are now using background processing (reported to resolve intermittent problems with cordova-ios@4.0.1)
+- All iOS/macOS operations are now using background processing (reported to resolve intermittent problems with cordova-ios@4.0.1)
 - Published [brodybits / Cordova-quick-start-checklist](https://github.com/brodybits/Cordova-quick-start-checklist) and [brodybits / Cordova-troubleshooting-guide](https://github.com/brodybits/Cordova-troubleshooting-guide)
 - A version with support for web workers is available (with a different licensing scheme _without SQLCipher_) at: [litehelpers / cordova-sqlite-workers-evfree](https://github.com/litehelpers/cordova-sqlite-workers-evfree)
 - PhoneGap Build is now supported through the npm package: http://phonegap.com/blog/2015/05/26/npm-plugins-available/
@@ -238,7 +238,7 @@ Add any desired platform(s) if not already present, for example:
 cordova platform add android
 ```
 
-and then prepare before building (**MANDATORY** for iOS, *RECOMMENDED* for other platforms):
+and then prepare before building (**MANDATORY** for iOS/macOS, *RECOMMENDED* for other platforms):
 
 ```shell
 cordova prepare
