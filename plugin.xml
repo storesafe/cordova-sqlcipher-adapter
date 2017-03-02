@@ -2,7 +2,7 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-sqlcipher-adapter"
-    version="0.1.8">
+    version="0.1.9-pre1">
 
     <name>Cordova sqlcipher adapter</name>
 
@@ -13,15 +13,6 @@
     <description>SQLCipher database adapter for PhoneGap/Cordova, based on Cordova-sqlite-storage. Allows you to use more storage and provides more flexibility than the standard Web SQL database (window.openDatabase).</description>
 
     <author>Litehelpers/Various</author>
-
-    <!-- No longer enforced in this version (branch):
-    <engines>
-        <engine name="cordova" version=">=6.0.0" />
-        <engine name="cordova-android" version=">=5.0.0" />
-        <engine name="cordova-ios" version=">=4.0.0" />
-        <engine name="cordova-windows" version=">=4.0.0" />
-    </engines>
-     -->
 
     <!-- THANKS to AllJoyn-Cordova / cordova-plugin-alljoyn: -->
     <!-- [NOT in this version branch]
@@ -52,12 +43,11 @@
          ...
          -->
 
-        <!-- SQLCipher distribution for Android: -->
+        <!-- SQLCipher distribution for Android [jar & native libs]: -->
         <source-file src="src/android/sqlcipher/libs/sqlcipher.jar" target-dir="libs" />
         <source-file src="src/android/sqlcipher/libs/armeabi/libsqlcipher.so" target-dir="libs/armeabi" />
         <source-file src="src/android/sqlcipher/libs/armeabi-v7a/libsqlcipher.so" target-dir="libs/armeabi-v7a" />
         <source-file src="src/android/sqlcipher/libs/x86/libsqlcipher.so" target-dir="libs/x86" />
-
     </platform>
 
     <!-- iOS -->
@@ -76,7 +66,6 @@
         <source-file src="src/common/sqlite3.c"
                      compiler-flags="-DSQLITE_HAS_CODEC -DSQLITE_THREADSAFE=2 -DSQLITE_TEMP_STORE=3 -DSQLCIPHER_CRYPTO_CC -DSQLITE_LOCKING_STYLE=1 -DSQLITE_OMIT_BUILTIN_TEST=1 -DSQLITE_OMIT_LOAD_EXTENSION=1 -DSQLITE_ENABLE_FTS3=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_RTREE=1 -DNDEBUG -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_JSON1" />
         <framework src="Security.framework" />
-
     </platform>
 
     <!-- macOS -->
@@ -97,25 +86,25 @@
         <source-file src="src/common/sqlite3.c"
                      compiler-flags="-DSQLITE_HAS_CODEC -DSQLITE_THREADSAFE=2 -DSQLITE_TEMP_STORE=3 -DSQLCIPHER_CRYPTO_CC -DSQLITE_LOCKING_STYLE=1 -DSQLITE_OMIT_BUILTIN_TEST=1 -DSQLITE_OMIT_LOAD_EXTENSION=1 -DSQLITE_ENABLE_FTS3=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_RTREE=1 -DNDEBUG -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_JSON1" />
         <framework src="Security.framework" />
-
     </platform>
 
     <!-- windows -->
     <platform name="windows">
         <js-module src="src/windows/sqlite-proxy.js" name="SQLiteProxy">
-            <merges target="" />
+            <runs />
         </js-module>
 
         <!-- SQLite3 JS module from SQLite3-WinRT/SQLite3JS: -->
         <js-module src="src/windows/SQLite3-Win-RT/SQLite3JS/js/SQLite3.js" name="SQLite3">
-            <merges target="" />
+            <runs />
         </js-module>
 
         <!-- Thanks to AllJoyn-Cordova / cordova-plugin-alljoyn for guidance: -->
         <framework src="src/windows/SQLite3-Win-RT/SQLite3/SQLite3.UWP/SQLite3.UWP.vcxproj" custom="true" type="projectReference" versions="10.*" />
+        <!-- Windows 8.1 / Windows Phone 8.1 not tested, not supported in this version branch:
         <framework src="src/windows/SQLite3-Win-RT/SQLite3/SQLite3.Windows/SQLite3.Windows.vcxproj" custom="true" type="projectReference" target="windows" versions="8.1" />
         <framework src="src/windows/SQLite3-Win-RT/SQLite3/SQLite3.WindowsPhone/SQLite3.WindowsPhone.vcxproj" custom="true" type="projectReference" target="phone" versions="8.1" />
-
+         -->
     </platform>
 
 </plugin>

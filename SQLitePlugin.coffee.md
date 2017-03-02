@@ -389,7 +389,8 @@
         for v in values
           t = typeof v
           params.push (
-            if v == null || v == undefined || t == 'number' || t == 'string' then v
+            if v == null || v == undefined then null
+            else if t == 'number' || t == 'string' then v
             else v.toString()
           )
 
@@ -512,13 +513,15 @@
       succeeded = (tx) ->
         txLocks[tx.db.dbname].inProgress = false
         tx.db.startNextTransaction()
-        if tx.error then tx.error txFailure
+        if tx.error and typeof tx.error is 'function'
+          tx.error txFailure
         return
 
       failed = (tx, err) ->
         txLocks[tx.db.dbname].inProgress = false
         tx.db.startNextTransaction()
-        if tx.error then tx.error newSQLError("error while trying to roll back: " + err.message, err.code)
+        if tx.error and typeof tx.error is 'function'
+          tx.error newSQLError 'error while trying to roll back: ' + err.message, err.code
         return
 
       @finalized = true
@@ -538,13 +541,15 @@
       succeeded = (tx) ->
         txLocks[tx.db.dbname].inProgress = false
         tx.db.startNextTransaction()
-        if tx.success then tx.success()
+        if tx.success and typeof tx.success is 'function'
+          tx.success()
         return
 
       failed = (tx, err) ->
         txLocks[tx.db.dbname].inProgress = false
         tx.db.startNextTransaction()
-        if tx.error then tx.error newSQLError("error while trying to commit: " + err.message, err.code)
+        if tx.error and typeof tx.error is 'function'
+          tx.error newSQLError 'error while trying to commit: ' + err.message, err.code
         return
 
       @finalized = true
@@ -616,10 +621,10 @@
           throw newSQLError 'Database name value is missing in openDatabase call'
 
         if !openargs.iosDatabaseLocation and !openargs.location and openargs.location isnt 0
-          throw newSQLError 'Database location or iosDatabaseLocation value is now mandatory in openDatabase call'
+          throw newSQLError 'Database location or iosDatabaseLocation setting is now mandatory in openDatabase call.'
 
         if !!openargs.location and !!openargs.iosDatabaseLocation
-          throw newSQLError 'AMBIGUOUS: both location or iosDatabaseLocation values are present in openDatabase call'
+          throw newSQLError 'AMBIGUOUS: both location and iosDatabaseLocation settings are present in openDatabase call. Please use either setting, not both.'
 
         dblocation =
           if !!openargs.location and openargs.location is 'default'
@@ -673,10 +678,10 @@
           #args.dblocation = dblocation || dblocations[0]
 
         if !first.iosDatabaseLocation and !first.location and first.location isnt 0
-          throw newSQLError 'Database location or iosDatabaseLocation value is now mandatory in deleteDatabase call'
+          throw newSQLError 'Database location or iosDatabaseLocation setting is now mandatory in deleteDatabase call.'
 
         if !!first.location and !!first.iosDatabaseLocation
-          throw newSQLError 'AMBIGUOUS: both location or iosDatabaseLocation values are present in deleteDatabase call'
+          throw newSQLError 'AMBIGUOUS: both location and iosDatabaseLocation settings are present in deleteDatabase call. Please use either setting value, not both.'
 
         dblocation =
           if !!first.location and first.location is 'default'
@@ -910,7 +915,7 @@
         error = (e) ->
           errorcb e
 
-        cordova.exec okcb, errorcb, "SQLitePlugin", "echoStringValue", [{value:'test-string'}]
+        cordova.exec ok, error, "SQLitePlugin", "echoStringValue", [{value:'test-string'}]
 
       selfTest: SelfTest.start
 

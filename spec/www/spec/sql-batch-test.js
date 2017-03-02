@@ -63,11 +63,36 @@ var mytests = function() {
               expect(rs.rows).toBeDefined();
               expect(rs.rows.length).toBe(1);
               expect(rs.rows.item(0).data).toBe('test-value');
-              done();
+              db.close(done, done);
             });
           }, function(error) {
-            expect(true).toBe(false);
-            done();
+            // NOT EXPECTED:
+            expect(false).toBe(true);
+            expect(error.message).toBe('--');
+            db.close(done, done);
+          });
+        }, MYTIMEOUT);
+
+        it(suiteName + 'Single-column batch sql test 2 (CREATE TABLE SQL statement with no parameters in [])', function(done) {
+          var db = openDatabase('Single-column-batch-sql-test-2.db', '1.0', 'Test', DEFAULT_SIZE);
+          expect(db).toBeDefined();
+
+          db.sqlBatch([
+            'DROP TABLE IF EXISTS MyTable',
+            [ 'CREATE TABLE MyTable (data)' ],
+            [ 'INSERT INTO MyTable VALUES (?)', ['test-value'] ],
+          ], function() {
+            db.executeSql('SELECT * FROM MyTable', [], function (rs) {
+              expect(rs.rows).toBeDefined();
+              expect(rs.rows.length).toBe(1);
+              expect(rs.rows.item(0).data).toBe('test-value');
+              db.close(done, done);
+            });
+          }, function(error) {
+            // NOT EXPECTED:
+            expect(false).toBe(true);
+            expect(error.message).toBe('--');
+            db.close(done, done);
           });
         }, MYTIMEOUT);
 
@@ -147,18 +172,17 @@ var mytests = function() {
                 expect(rs.rows.item(6).u1).toBe('0.0');
               else
                 expect(rs.rows.item(6).u1).toBe('0');
-              done();
+              db.close(done, done);
             });
           }, function(error) {
+            // NOT EXPECTED:
             expect(false).toBe(true);
             expect(error.message).toBe('--');
-            done();
+            db.close(done, done);
           });
         }, MYTIMEOUT);
 
-        it(suiteName + 'Single-column batch sql test values: INSERT null/undefined values and check stored data [BROKEN on Windows]', function(done) {
-          if (isWP8) pending('SKIP for WP8'); // SKIP for now
-
+        it(suiteName + 'Single-column batch sql test values: INSERT null/undefined values and check stored data', function(done) {
           var db = openDatabase('Single-column-batch-sql-test-null-undefined-values.db', '1.0', 'Test', DEFAULT_SIZE);
           expect(db).toBeDefined();
 
@@ -168,7 +192,6 @@ var mytests = function() {
             [ 'INSERT INTO MyTable VALUES (?)', [null] ],
             [ 'INSERT INTO MyTable VALUES (?)', [undefined] ],
           ], function() {
-            if (isWindows) expect('Windows plugin version FIXED please update this test').toBe('--');
             db.executeSql('SELECT data AS d1, TYPEOF(data) AS t1, ABS(data) AS a1, UPPER(data) as u1 FROM MyTable', [], function (rs) {
               expect(rs.rows).toBeDefined();
               expect(rs.rows.length).toBe(2);
@@ -180,24 +203,13 @@ var mytests = function() {
               expect(rs.rows.item(1).t1).toBe('null');
               expect(rs.rows.item(1).a1).toBe(null);
               expect(rs.rows.item(1).u1).toBe(null);
-              done();
+              db.close(done, done);
             });
           }, function(error) {
-            // ERROR in case of Windows:
-            if (isWindows) {
-              expect(error).toBeDefined();
-              expect(error.code).toBeDefined();
-              expect(error.message).toBeDefined();
-              expect(error.code).toBe(0);
-              expect(error.message).toMatch(/a statement with no error handler failed: Unsupported argument type: undefined/);
-              return done();
-            }
-
-            // OTHERWISE
             // NOT EXPECTED:
             expect(false).toBe(true);
             expect(error.message).toBe('--');
-            done();
+            db.close(done, done);
           });
         }, MYTIMEOUT);
 
@@ -241,12 +253,43 @@ var mytests = function() {
               expect(rs.rows.item(2).t1).toBe('null');
               expect(rs.rows.item(2).a1).toBe(null);
               expect(rs.rows.item(2).u1).toBe(null);
-              done();
+              db.close(done, done);
             });
           }, function(error) {
+            // NOT EXPECTED:
             expect(false).toBe(true);
             expect(error.message).toBe('--');
-            done();
+            db.close(done, done);
+          });
+        }, MYTIMEOUT);
+
+        it(suiteName + 'Single-column batch sql test values: INSERT true/false values and check stored data [stored as strings]', function(done) {
+          var db = openDatabase('Single-column-batch-sql-test-true-false-values.db', '1.0', 'Test', DEFAULT_SIZE);
+
+          db.sqlBatch([
+            'DROP TABLE IF EXISTS MyTable',
+            'CREATE TABLE MyTable (data)',
+            [ 'INSERT INTO MyTable VALUES (?)', [true] ],
+            [ 'INSERT INTO MyTable VALUES (?)', [false] ],
+          ], function() {
+            db.executeSql('SELECT data AS d1, TYPEOF(data) AS t1, ABS(data) AS a1, UPPER(data) as u1 FROM MyTable', [], function (rs) {
+              expect(rs.rows).toBeDefined();
+              expect(rs.rows.length).toBe(2);
+              expect(rs.rows.item(0).d1).toBe('true');
+              expect(rs.rows.item(0).t1).toBe('text');
+              expect(rs.rows.item(0).a1).toBe(0);
+              expect(rs.rows.item(0).u1).toBe('TRUE');
+              expect(rs.rows.item(1).d1).toBe('false');
+              expect(rs.rows.item(1).t1).toBe('text');
+              expect(rs.rows.item(1).a1).toBe(0);
+              expect(rs.rows.item(1).u1).toBe('FALSE');
+              db.close(done, done);
+            });
+          }, function(error) {
+            // NOT EXPECTED:
+            expect(false).toBe(true);
+            expect(error.message).toBe('--');
+            db.close(done, done);
           });
         }, MYTIMEOUT);
 
@@ -271,11 +314,13 @@ var mytests = function() {
           ], function() {
             db.executeSql('SELECT * FROM MyTable', [], function (res) {
               expect(res.rows.item(0).data).toBe('Carol');
-              done();
+              db.close(done, done);
             });
           }, function(error) {
-            expect(true).toBe(false);
-            done();
+            // NOT EXPECTED:
+            expect(false).toBe(true);
+            expect(error.message).toBe('--');
+            db.close(done, done);
           });
           myObject.name = 'Carol';
         }, MYTIMEOUT);
@@ -302,11 +347,13 @@ var mytests = function() {
           ], function() {
             db.executeSql('SELECT * FROM MyTable', [], function (res) {
               expect(res.rows.item(0).data).toBe('Carol');
-              done();
+              db.close(done, done);
             });
           }, function(error) {
-            expect(true).toBe(false);
-            done();
+            // NOT EXPECTED:
+            expect(false).toBe(true);
+            expect(error.message).toBe('--');
+            db.close(done, done);
           });
           myObject.name = 'Carol';
         }, MYTIMEOUT);
@@ -330,11 +377,13 @@ var mytests = function() {
               expect(resultSet.rows.item(0).y).toBe(1);
               expect(resultSet.rows.item(1).x).toBe('b');
               expect(resultSet.rows.item(1).y).toBe(2);
-              done();
+              db.close(done, done);
             });
           }, function(error) {
-            expect(true).toBe(false);
-            done();
+            // NOT EXPECTED:
+            expect(false).toBe(true);
+            expect(error.message).toBe('--');
+            db.close(done, done);
           });
         }, MYTIMEOUT);
 
@@ -351,7 +400,7 @@ var mytests = function() {
           ], function() {
             // NOT EXPECTED:
             expect(true).toBe(false);
-            done();
+            db.close(done, done);
           }, function(error) {
             // EXPECTED RESULT:
             expect(error).toBeDefined();
@@ -372,7 +421,7 @@ var mytests = function() {
             else
               expect(error.message).toMatch(/a statement with no error handler failed.*near \"CRETE\": syntax error/);
 
-            done();
+            db.close(done, done);
           });
         }, MYTIMEOUT);
 
@@ -390,7 +439,7 @@ var mytests = function() {
           ], function() {
             // NOT EXPECTED:
             expect(false).toBe(true);
-            done();
+            db.close(done, done);
           }, function(error) {
             // EXPECTED RESULT:
             expect(error).toBeDefined();
@@ -410,8 +459,7 @@ var mytests = function() {
               expect(error.message).toMatch(/a statement with no error handler failed: SQLite3 step error result code: 1/);
             else
               expect(error.message).toMatch(/a statement with no error handler failed.*constraint fail/);
-
-            done();
+            db.close(done, done);
           });
         }, MYTIMEOUT);
 
@@ -428,21 +476,214 @@ var mytests = function() {
               // syntax error below:
               [ 'INSRT INTO MyTable VALUES (?)', 'test-value' ]
             ], function() {
-              // not expected:
+              // NOT EXPECTED:
               expect(true).toBe(false);
-              done();
+              db.close(done, done);
             }, function(error) {
-              // check integrity:
+              // CHECK INTEGRITY & FINISH:
               db.executeSql('SELECT * FROM MyTable', [], function (res) {
                 expect(res.rows.item(0).SampleColumn).toBe('test-value');
-                done();
+                db.close(done, done);
               });
             });
 
           }, function(error) {
-            expect(true).toBe(false);
-            done();
+            // NOT EXPECTED:
+            expect(false).toBe(true);
+            expect(error.message).toBe('--');
+            db.close(done, done);
           });
+        }, MYTIMEOUT);
+
+        it(suiteName + 'sqlBatch() with no arguments (BOGUS)', function(done) {
+          var db = openDatabase('sql-batch-with-no-arguments.db', '1.0', 'Test', DEFAULT_SIZE);
+
+          try {
+            db.sqlBatch();
+            // SHOULD NOT GET HERE:
+            expect(false).toBe(true);
+          } catch(e) {
+            // EXPECTED:
+            expect(e).toBeDefined();
+            expect(e.message).toMatch(/sqlBatch expects an array/);
+            db.close(done, done);
+          };
+        }, MYTIMEOUT);
+
+        it(suiteName + 'sqlBatch with [] for sql batch item (BOGUS)', function(done) {
+          var db = openDatabase('sql-batch-with-empty-array-for-batch-item.db', '1.0', 'Test', DEFAULT_SIZE);
+
+          try {
+            db.sqlBatch(['SELECT 1', []], function() {
+              // NOT EXPECTED:
+              expect(false).toBe(true);
+              db.close(done, done);
+            }, function(error) {
+              // NOT EXPECTED:
+              expect(false).toBe(true);
+              db.close(done, done);
+            });
+            // SHOULD NOT GET HERE:
+            expect(false).toBe(true);
+          } catch(e) {
+            expect(e).toBeDefined();
+            expect(e.message).toMatch(/sqlBatch array element of zero .*0.* length/);
+            db.close(done, done);
+          };
+        }, MYTIMEOUT);
+
+        it(suiteName + 'sqlBatch with true for SQL statements (BOGUS)', function(done) {
+          var db = openDatabase('sql-batch-with-true-for-sql-statements.db', '1.0', 'Test', DEFAULT_SIZE);
+
+          try {
+            db.sqlBatch(true, function() {
+              // NOT EXPECTED:
+              expect(false).toBe(true);
+              db.close(done, done);
+            }, function(error) {
+              // NOT EXPECTED:
+              expect(false).toBe(true);
+              db.close(done, done);
+            });
+            // SHOULD NOT GET HERE:
+            expect(false).toBe(true);
+          } catch(e) {
+            expect(e).toBeDefined();
+            expect(e.message).toMatch(/sqlBatch expects an array/);
+            db.close(done, done);
+          };
+        }, MYTIMEOUT);
+
+        it(suiteName + 'batch sql with batch item with false for arguments array (BOGUS)', function(done) {
+          var db = openDatabase('batch-sql-with-false-for-args-array.db', '1.0', 'Test', DEFAULT_SIZE);
+
+          var check1 = false;
+          try {
+            db.sqlBatch([
+              'SELECT 1',
+              [ 'SELECT 1', false ],
+            ], function() {
+              // TBD EXPECTED RESULT:
+              check1 = true;
+            }, function(error) {
+              // TBD NOT EXPECTED:
+              expect(false).toBe(true);
+              expect(error.message).toBe('--');
+            });
+          } catch(e) {
+            expect('Plugin behavior changed please update this test').toBe('--');
+            db.close(done, done);
+          };
+
+          db.sqlBatch([
+            'SELECT 1',
+          ], function() {
+            // EXPECTED RESULT:
+            expect(check1).toBe(true);
+            db.close(done, done);
+          }, function(error) {
+            // NOT EXPECTED:
+            expect(false).toBe(true);
+            expect(error.message).toBe('--');
+            db.close(done, done);
+          });
+        }, MYTIMEOUT);
+
+        it(suiteName + 'batch sql with batch item with "string-value" for arguments array (BOGUS)', function(done) {
+          var db = openDatabase('batch-sql-with-false-for-args-array.db', '1.0', 'Test', DEFAULT_SIZE);
+
+          var check1 = false;
+          try {
+            db.sqlBatch([
+              'SELECT 1',
+              [ 'SELECT 1', 'string-value' ],
+            ], function() {
+              // TBD EXPECTED RESULT:
+              check1 = true;
+            }, function(error) {
+              // TBD NOT EXPECTED:
+              expect(false).toBe(true);
+              expect(error.message).toBe('--');
+            });
+          } catch(e) {
+            expect('Plugin behavior changed please update this test').toBe('--');
+            db.close(done, done);
+          };
+
+          db.sqlBatch([
+            'SELECT 1',
+          ], function() {
+            // EXPECTED RESULT:
+            expect(check1).toBe(true);
+            db.close(done, done);
+          }, function(error) {
+            // NOT EXPECTED:
+            expect(false).toBe(true);
+            expect(error.message).toBe('--');
+            db.close(done, done);
+          });
+        }, MYTIMEOUT);
+
+        it(suiteName + 'sqlBatch with single SELECT statement, false for error callback (BOGUS)', function(done) {
+          var db = openDatabase('sql-batch-with-select-false-for-error-cb.db', '1.0', 'Test', DEFAULT_SIZE);
+
+          try {
+            db.sqlBatch(['SELECT 1'], function() {
+              // EXPECTED:
+              expect(true).toBe(true);
+              db.close(done, done);
+            }, false);
+          } catch(e) {
+            expect('Plugin behavior changed please update this test').toBe('--');
+            db.close(done, done);
+          };
+        }, MYTIMEOUT);
+
+        it(suiteName + 'sqlBatch with single SELECT statement, string-value for error callback (BOGUS)', function(done) {
+          var db = openDatabase('sql-batch-with-select-string-value-for-error-cb.db', '1.0', 'Test', DEFAULT_SIZE);
+
+          try {
+            db.sqlBatch(['SELECT 1'], function() {
+              // EXPECTED:
+              expect(true).toBe(true);
+              db.close(done, done);
+            }, 'stirng-value');
+          } catch(e) {
+            expect('Plugin behavior changed please update this test').toBe('--');
+            db.close(done, done);
+          };
+        }, MYTIMEOUT);
+
+        it(suiteName + 'sqlBatch with error, false for success callback (BOGUS)', function(done) {
+          var db = openDatabase('sql-batch-with-select-false-for-success-cb.db', '1.0', 'Test', DEFAULT_SIZE);
+
+          try {
+            db.sqlBatch(['SLCT 1'], false, function(e) {
+              // EXPECTED:
+              expect(e).toBeDefined();
+              // TBD ...
+              db.close(done, done);
+            }, true);
+          } catch(e) {
+            expect('Plugin behavior changed please update this test').toBe('--');
+            db.close(done, done);
+          };
+        }, MYTIMEOUT);
+
+        it(suiteName + 'sqlBatch with error, string-value for success callback (BOGUS)', function(done) {
+          var db = openDatabase('sql-batch-with-select-string-value-for-success-cb.db', '1.0', 'Test', DEFAULT_SIZE);
+
+          try {
+            db.sqlBatch(['SLCT 1'], 'string-value', function(e) {
+              // EXPECTED:
+              expect(e).toBeDefined();
+              // TBD ...
+              db.close(done, done);
+            }, true);
+          } catch(e) {
+            expect('Plugin behavior changed please update this test').toBe('--');
+            db.close(done, done);
+          };
         }, MYTIMEOUT);
 
       });

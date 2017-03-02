@@ -14,7 +14,7 @@ MIT only
 
 based on Phonegap-SQLitePlugin by @davibe (Davide Bertola <dade@dadeb.it>) and @joenoon (Joe Noon <joenoon@gmail.com>)
 
-## Windows (8.1) version
+## Windows version
 
 MIT or Apache 2.0
 
@@ -23,3 +23,7 @@ MIT or Apache 2.0
 by @doo (doo GmbH)
 
 MIT License
+
+## SQLite3
+
+Public domain
