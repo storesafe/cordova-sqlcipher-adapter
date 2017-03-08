@@ -1568,10 +1568,10 @@ var mytests = function() {
             });
 
           }, function() {
-            // NOT EXPECTED by Web SQL, Android, or iOS:
-            if (isWindows)
-              expect(true).toBe(true);
-            else
+            // NOT EXPECTED:
+            //if (isWindows)
+            //  expect(true).toBe(true);
+            //else
               expect(false).toBe(true);
             // Close (plugin only) & finish:
             (isWebSql) ? done() : db.close(done, done);
@@ -1579,7 +1579,7 @@ var mytests = function() {
 
         }, MYTIMEOUT);
 
-        it(suiteName + "transaction.executeSql on BOGUS empty SQL string ('') [TBD SQLCipher for Android reports nonsense error message]", function (done) {
+        it(suiteName + "transaction.executeSql on BOGUS empty SQL string ('') [TBD SQLCipher for Android REPORTS NO ERROR]", function (done) {
           var db = openDatabase("tx-empty-sql-string.db", "1.0", "Demo", DEFAULT_SIZE);
 
           var check1 = false;
@@ -1606,8 +1606,9 @@ var mytests = function() {
               expect(true).toBe(true); // SKIP for now
             else if (isWindows)
               expect(error.message).toMatch(/a statement with no error handler failed: SQLite3 step error result code: 21/);
-            else if (!isWebSql && isAndroid) // [TBD SQLCipher for Android reports nonsense error message]
-              expect(error.message).toMatch(/a statement with no error handler failed: length.*regionStart.*regionLength.*/);
+            else if (!isWebSql && isAndroid) // [TBD SQLCipher for Android REPORTS NO ERROR]
+              //expect(error.message).toMatch(/a statement with no error handler failed: length.*regionStart.*regionLength.*/);
+              expect('UNEXPECTED ERROR with message: ' + error.message).toBe('--'); // NOT EXPECTED for Android
             else if (!isWebSql)
               expect(error.message).toMatch(/a statement with no error handler failed:.*not an error/);
             else
@@ -1635,8 +1636,8 @@ var mytests = function() {
             });
 
           }, function() {
-            // NOT EXPECTED by Web SQL, Android, or iOS:
-            if (isWindows)
+            // NOT EXPECTED on Web SQL, iOS, or Windows:
+            if (!isWindows && (isAndroid && !isWebSql))
               expect(true).toBe(true);
             else
               expect(false).toBe(true);
@@ -1646,7 +1647,7 @@ var mytests = function() {
 
         }, MYTIMEOUT);
 
-        it(suiteName + "readTransaction.executeSql on BOGUS empty SQL string ('') [TBD SQLCipher for Android reports nonsense error message]", function (done) {
+        it(suiteName + "readTransaction.executeSql on BOGUS empty SQL string ('') [TBD SQLCipher for Android REPORTS NO ERROR]", function (done) {
           var db = openDatabase("read-tx-empty-sql-string.db", "1.0", "Demo", DEFAULT_SIZE);
 
           var check1 = false;
@@ -1673,8 +1674,9 @@ var mytests = function() {
               expect(true).toBe(true); // SKIP for now
             else if (isWindows)
               expect(error.message).toMatch(/a statement with no error handler failed: SQLite3 step error result code: 21/);
-            else if (!isWebSql && isAndroid) // [TBD SQLCipher for Android reports nonsense error message]
-              expect(error.message).toMatch(/a statement with no error handler failed: length.*regionStart.*regionLength.*/);
+            else if (!isWebSql && isAndroid) // [TBD SQLCipher for Android REPORTS NO ERROR]
+              //expect(error.message).toMatch(/a statement with no error handler failed: length.*regionStart.*regionLength.*/);
+              expect('UNEXPECTED ERROR with message: ' + error.message).toBe('--'); // NOT EXPECTED for Android
             else if (!isWebSql)
               expect(error.message).toMatch(/a statement with no error handler failed:.*not an error/);
             else
@@ -1702,8 +1704,8 @@ var mytests = function() {
             });
 
           }, function() {
-            // NOT EXPECTED by Web SQL, Android, or iOS:
-            if (isWindows)
+            // NOT EXPECTED on Web SQL, iOS, or Windows:
+            if (!isWindows && (isAndroid && !isWebSql))
               expect(true).toBe(true);
             else
               expect(false).toBe(true);
@@ -1713,7 +1715,7 @@ var mytests = function() {
 
         }, MYTIMEOUT);
 
-        it(suiteName + "transaction.executeSql on BOGUS ';' SQL statement [TBD SQLCipher for Android reports nonsense error message]", function (done) {
+        it(suiteName + "transaction.executeSql on BOGUS ';' SQL statement [TBD SQLCipher for Android & Windows do not report error]", function (done) {
           var db = openDatabase("tx-semicolon-sql-statement.db", "1.0", "Demo", DEFAULT_SIZE);
 
           var check1 = false;
@@ -1740,8 +1742,9 @@ var mytests = function() {
               expect(true).toBe(true); // SKIP for now
             else if (isWindows)
               expect(error.message).toMatch(/a statement with no error handler failed: SQLite3 step error result code: 21/);
-            else if (!isWebSql && isAndroid) // [TBD SQLCipher for Android reports nonsense error message]
-              expect(error.message).toMatch(/a statement with no error handler failed: length.*regionStart.*regionLength.*/);
+            else if (!isWebSql && isAndroid) // [TBD SQLCipher for Android REPORTS NO ERROR]
+              //expect(error.message).toMatch(/a statement with no error handler failed: length.*regionStart.*regionLength.*/);
+              expect('UNEXPECTED ERROR with message: ' + error.message).toBe('--'); // NOT EXPECTED for Android
             else if (!isWebSql)
               expect(error.message).toMatch(/a statement with no error handler failed:.*not an error/);
             else
@@ -1770,8 +1773,8 @@ var mytests = function() {
             });
 
           }, function() {
-            // NOT EXPECTED by Web SQL, Android, or iOS:
-            if (isWindows)
+            // NOT EXPECTED on Web SQL, iOS, or Windows:
+            if (!isWindows && (isAndroid && !isWebSql))
               expect(true).toBe(true);
             else
               expect(false).toBe(true);
@@ -1781,7 +1784,7 @@ var mytests = function() {
 
         }, MYTIMEOUT);
 
-        it(suiteName + "readTransaction.executeSql on BOGUS ';' SQL statement [TBD SQLCipher for Android reports nonsense error message]", function (done) {
+        it(suiteName + "readTransaction.executeSql on BOGUS ';' SQL statement [TBD SQLCipher for Android & Windows do not report error]", function (done) {
           var db = openDatabase("read-tx-semicolon-sql-statement.db", "1.0", "Demo", DEFAULT_SIZE);
 
           var check1 = false;
@@ -1808,8 +1811,9 @@ var mytests = function() {
               expect(true).toBe(true); // SKIP for now
             else if (isWindows)
               expect(error.message).toMatch(/a statement with no error handler failed: SQLite3 step error result code: 21/);
-            else if (!isWebSql && isAndroid) // [TBD SQLCipher for Android reports nonsense error message]
-              expect(error.message).toMatch(/a statement with no error handler failed: length.*regionStart.*regionLength.*/);
+            else if (!isWebSql && isAndroid) // [TBD SQLCipher for Android REPORTS NO ERROR]
+              //expect(error.message).toMatch(/a statement with no error handler failed: length.*regionStart.*regionLength.*/);
+              expect('UNEXPECTED ERROR with message: ' + error.message).toBe('--'); // NOT EXPECTED for Android
             else if (!isWebSql)
               expect(error.message).toMatch(/a statement with no error handler failed:.*not an error/);
             else
@@ -1838,8 +1842,8 @@ var mytests = function() {
             });
 
           }, function() {
-            // NOT EXPECTED by Web SQL, Android, or iOS:
-            if (isWindows)
+            // NOT EXPECTED on Web SQL, iOS, or Windows:
+            if (!isWindows && (isAndroid && !isWebSql))
               expect(true).toBe(true);
             else
               expect(false).toBe(true);
@@ -2070,8 +2074,6 @@ var mytests = function() {
               expect(true).toBe(true); // SKIP for now
             else if (isWindows)
               expect(error.message).toMatch(/a statement with no error handler failed: Error preparing an SQLite statement/);
-            else if (!isWebSql && isAndroid) // [TBD SQLCipher for Android reports nonsense error message]
-              expect(error.message).toMatch(/a statement with no error handler failed: length.*regionStart.*regionLength.*/);
             else if (!isWebSql)
               expect(error.message).toMatch(/a statement with no error handler failed:.*near \"101\": syntax error/);
             else
@@ -2135,8 +2137,6 @@ var mytests = function() {
               expect(true).toBe(true); // SKIP for now
             else if (isWindows)
               expect(error.message).toMatch(/a statement with no error handler failed: Error preparing an SQLite statement/);
-            else if (!isWebSql && isAndroid) // [TBD SQLCipher for Android reports nonsense error message]
-              expect(error.message).toMatch(/a statement with no error handler failed: length.*regionStart.*regionLength.*/);
             else if (!isWebSql)
               expect(error.message).toMatch(/a statement with no error handler failed:.*near \"0\": syntax error/);
             else
@@ -2263,8 +2263,6 @@ var mytests = function() {
               expect(true).toBe(true); // SKIP for now
             else if (isWindows)
               expect(error.message).toMatch(/a statement with no error handler failed: Error preparing an SQLite statement/);
-            else if (!isWebSql && isAndroid) // [TBD SQLCipher for Android reports nonsense error message]
-              expect(error.message).toMatch(/a statement with no error handler failed: length.*regionStart.*regionLength.*/);
             else if (!isWebSql)
               expect(error.message).toMatch(/a statement with no error handler failed:.*near \"true\": syntax error/);
             else
@@ -2327,8 +2325,6 @@ var mytests = function() {
               expect(true).toBe(true); // SKIP for now
             else if (isWindows)
               expect(error.message).toMatch(/a statement with no error handler failed: Error preparing an SQLite statement/);
-            else if (!isWebSql && isAndroid) // [TBD SQLCipher for Android reports nonsense error message]
-              expect(error.message).toMatch(/a statement with no error handler failed: length.*regionStart.*regionLength.*/);
             else if (!isWebSql)
               expect(error.message).toMatch(/a statement with no error handler failed:.*near \"false\": syntax error/);
             else
@@ -2513,8 +2509,6 @@ var mytests = function() {
               expect(true).toBe(true); // SKIP for now
             else if (isWindows)
               expect(error.message).toMatch(/a statement with no error handler failed: Error preparing an SQLite statement/);
-            else if (!isWebSql && isAndroid) // [TBD SQLCipher for Android reports nonsense error message]
-              expect(error.message).toMatch(/a statement with no error handler failed: length.*regionStart.*regionLength.*/);
             else if (!isWebSql)
               expect(error.message).toMatch(/a statement with no error handler failed:.*near \"NaN\": syntax error/);
             else
@@ -2576,8 +2570,6 @@ var mytests = function() {
               expect(true).toBe(true); // SKIP for now
             else if (isWindows)
               expect(error.message).toMatch(/a statement with no error handler failed: Error preparing an SQLite statement/);
-            else if (!isWebSql && isAndroid) // [TBD SQLCipher for Android reports nonsense error message]
-              expect(error.message).toMatch(/a statement with no error handler failed: length.*regionStart.*regionLength.*/);
             else if (!isWebSql)
               expect(error.message).toMatch(/a statement with no error handler failed:.*near \"NaN\": syntax error/);
             else

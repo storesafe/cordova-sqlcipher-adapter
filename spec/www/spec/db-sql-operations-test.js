@@ -1141,8 +1141,6 @@ var mytests = function() {
               expect(true).toBe(true); // SKIP for now
             else if (isWindows)
               expect(error.message).toMatch(/Error preparing an SQLite statement/);
-            else if (isAndroid) // [TBD SQLCipher for Android reports nonsense error message]
-              expect(error.message).toMatch(/length=4; regionStart=0; regionLength=6/);
             else
               expect(error.message).toMatch(/near \"true\": syntax error/);
 
@@ -1175,8 +1173,6 @@ var mytests = function() {
               expect(true).toBe(true); // SKIP for now
             else if (isWindows)
               expect(error.message).toMatch(/Error preparing an SQLite statement/);
-            else if (isAndroid) // [TBD SQLCipher for Android reports nonsense error message]
-              expect(error.message).toMatch(/length=5; regionStart=0; regionLength=6/);
             else
               expect(error.message).toMatch(/near \"false\": syntax error/);
 
@@ -1273,8 +1269,6 @@ var mytests = function() {
               expect(true).toBe(true); // SKIP for now
             else if (isWindows)
               expect(error.message).toMatch(/Error preparing an SQLite statement/);
-            else if (isAndroid) // [TBD SQLCipher for Android reports nonsense error message]
-              expect(error.message).toMatch(/length=3; regionStart=0; regionLength=6/);
             else
               expect(error.message).toMatch(/near \"NaN\": syntax error/);
 

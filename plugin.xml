@@ -2,7 +2,7 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-sqlcipher-adapter"
-    version="0.1.9-pre1">
+    version="0.1.9-pre2">
 
     <name>Cordova sqlcipher adapter</name>
 
@@ -48,6 +48,8 @@
         <source-file src="src/android/sqlcipher/libs/armeabi/libsqlcipher.so" target-dir="libs/armeabi" />
         <source-file src="src/android/sqlcipher/libs/armeabi-v7a/libsqlcipher.so" target-dir="libs/armeabi-v7a" />
         <source-file src="src/android/sqlcipher/libs/x86/libsqlcipher.so" target-dir="libs/x86" />
+        <source-file src="src/android/sqlcipher/libs/arm64-v8a/libsqlcipher.so" target-dir="libs/arm64-v8a" />
+        <source-file src="src/android/sqlcipher/libs/x86_64/libsqlcipher.so" target-dir="libs/x86_64" />
     </platform>
 
     <!-- iOS -->
@@ -64,7 +66,7 @@
         <!-- SQLCipher source distribution and Security.framework dependency for iOS: -->
         <header-file src="src/common/sqlite3.h" />
         <source-file src="src/common/sqlite3.c"
-                     compiler-flags="-DSQLITE_HAS_CODEC -DSQLITE_THREADSAFE=2 -DSQLITE_TEMP_STORE=3 -DSQLCIPHER_CRYPTO_CC -DSQLITE_LOCKING_STYLE=1 -DSQLITE_OMIT_BUILTIN_TEST=1 -DSQLITE_OMIT_LOAD_EXTENSION=1 -DSQLITE_ENABLE_FTS3=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_RTREE=1 -DNDEBUG -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_JSON1" />
+                     compiler-flags="-DSQLITE_HAS_CODEC -DSQLITE_THREADSAFE=1 -DSQLITE_TEMP_STORE=3 -DSQLCIPHER_CRYPTO_CC -DSQLITE_LOCKING_STYLE=1 -DSQLITE_OMIT_LOAD_EXTENSION=1 -DSQLITE_ENABLE_FTS3=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_RTREE=1 -DNDEBUG -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_JSON1 -DSQLITE_DEFAULT_MEMSTATUS=0 -DSQLITE_OMIT_DECLTYPE -DSQLITE_OMIT_PROGRESS_CALLBACK -DSQLITE_OMIT_SHARED_CACHE -DSQLITE_DEFAULT_PAGE_SIZE=1024" />
         <framework src="Security.framework" />
     </platform>
 
@@ -84,7 +86,7 @@
         <!-- SQLCipher source distribution and Security.framework dependency for macOS: -->
         <header-file src="src/common/sqlite3.h" />
         <source-file src="src/common/sqlite3.c"
-                     compiler-flags="-DSQLITE_HAS_CODEC -DSQLITE_THREADSAFE=2 -DSQLITE_TEMP_STORE=3 -DSQLCIPHER_CRYPTO_CC -DSQLITE_LOCKING_STYLE=1 -DSQLITE_OMIT_BUILTIN_TEST=1 -DSQLITE_OMIT_LOAD_EXTENSION=1 -DSQLITE_ENABLE_FTS3=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_RTREE=1 -DNDEBUG -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_JSON1" />
+                     compiler-flags="-DSQLITE_HAS_CODEC -DSQLITE_THREADSAFE=1 -DSQLITE_TEMP_STORE=3 -DSQLCIPHER_CRYPTO_CC -DSQLITE_LOCKING_STYLE=1 -DSQLITE_OMIT_LOAD_EXTENSION=1 -DSQLITE_ENABLE_FTS3=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_RTREE=1 -DNDEBUG -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_JSON1 -DSQLITE_DEFAULT_MEMSTATUS=0 -DSQLITE_OMIT_DECLTYPE -DSQLITE_OMIT_PROGRESS_CALLBACK -DSQLITE_OMIT_SHARED_CACHE -DSQLITE_DEFAULT_PAGE_SIZE=1024" />
         <framework src="Security.framework" />
     </platform>
 

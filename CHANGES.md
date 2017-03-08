@@ -1,7 +1,9 @@
 # Changes
 
-## cordova-sqlcipher-adapter 0.1.9-pre1
+## cordova-sqlcipher-adapter 0.1.9-pre2
 
+- SQLCipher 3.4.1, SQLCipher for Android 3.5.6
+- Build flag fixes
 - minor test fixes
 - certain array and object tests disabled in this version branch due to testing issues on iOS with WKWebView
 - doc fixes

@@ -114,8 +114,9 @@ See the [Sample section](#sample) for a sample with a more detailed explanation.
 ## Status
 
 - Alpha version
-  - SQLCipher `3.5.4` for Android
-  - SQLCipher `3.4.0` for iOS/macOS/Windows
+  - SQLCipher `3.4.1` for iOS/macOS/Windows
+  - SQLCipher `3.5.6` for Android built from [brodybits / android-database-sqlcipher-build-fix](https://github.com/brodybits/android-database-sqlcipher-build-fix)
+  - Default page size for unencrypted databases: 1K
   - with OpenSSL libcrypto for Android
   - using CommonCrypto framework for iOS/macOS
   - with LibTomCrypt (1.17) embedded for Windows
@@ -426,7 +427,7 @@ See **Security of sensitive data** in the [Security](#security) section above.
 - In case of a SQL error handler that does not recover the transaction, WebKit Web SQL (Android/iOS) would incorrectly report error code 0 while the plugin would report the same error code as in the SQL error handler. (In case of an error with no SQL error handler then Android/iOS WebKit Web SQL would report the same error code that would have been reported in the SQL error hander.)
 - In case a transaction function throws an exception, the message and code if present are reported by the plugin but *not* by (WebKit) Web SQL.
 - SQL error messages are inconsistent on Windows.
-- There are some other differences in the SQL error messages reported by WebKit Web SQL and this plugin. _NOTE that unlike the android.database.sqlite implementation on Android 4.x(+) SQLCipher for Android does not seem to include the error code in the error message. In addition SQLCipher for Android reports a nonsense error message in case values such as `0`, `true`, `false`, or `NaN` are used for the SQL statement._
+- There are some other differences in the SQL error messages reported by WebKit Web SQL and this plugin. _NOTE that unlike the android.database.sqlite implementation on Android 4.x(+) SQLCipher for Android does not seem to include the error code in the error message._
 
 <!-- END Deviations -->
 
