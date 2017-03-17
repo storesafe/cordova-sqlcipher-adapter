@@ -115,8 +115,8 @@ See the [Sample section](#sample) for a sample with a more detailed explanation.
 
 - Alpha version
   - SQLCipher `3.4.1` for iOS/macOS/Windows
-  - SQLCipher `3.5.6` for Android built from [brodybits / android-database-sqlcipher-build-fix](https://github.com/brodybits/android-database-sqlcipher-build-fix)
-  - Default page size for unencrypted databases: 1K
+  - SQLCipher `3.5.6` for Android built from [brodybits / android-database-sqlcipher-build-fix](https://github.com/brodybits/android-database-sqlcipher-build-fix), now with 64-bit CPU support
+  - `SQLITE_DEFAULT_PAGE_SIZE=1024` and `SQLITE_DEFAULT_CACHE_SIZE=2000` to avoid "potentially distruptive change(s)" from SQLite 3.12.0 in unencrypted databases ref: <http://sqlite.org/pgszchng2016.html>
   - with OpenSSL libcrypto for Android
   - using CommonCrypto framework for iOS/macOS
   - with LibTomCrypt (1.17) embedded for Windows
@@ -136,7 +136,6 @@ See the [Sample section](#sample) for a sample with a more detailed explanation.
   - This version branch with dependency on platform toolset libraries included by Visual Studio 2015 ref: [litehelpers/Cordova-sqlite-storage#580](https://github.com/litehelpers/Cordova-sqlite-storage/issues/580)
   - **NOTE:** libTomCrypt may have inferior entropy (randomness) for encryption _and seems to run much more slowly_. It is desired to replace libTomCrypt with a recent build of the OpenSSL crypto library _ref: [litehelpers/Cordova-sqlcipher-adapter#30](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/30)_
 - Android version:
-  - ARM (v5/v6/v7/v7a) and x86 CPUs
   - Minimum SDK 10 (a.k.a. Gingerbread, Android 2.3.3); support for older versions is available upon request.
   - SQLCipher for Android build uses the OpenSSL crypto library for encryption
   - NOTE: 64-bit CPUs such as `x64_64`, ARM-64, and MIPS are currently not supported by the SQLCipher for Android build (support for these CPUs is for future consideration).
@@ -155,6 +154,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation.
 
 ## Announcements
 
+- _SQLCipher for Android now supports 64-bit CPU targets._
 - _[brodybits / cordova-sqlite-test-app](https://github.com/brodybits/cordova-sqlite-test-app)_ project is a CC0 (public domain) starting point _(this plugin must be added)_ and may also be used to reproduce issues with this plugin.
 - The Lawnchair adapter is now moved to [litehelpers / cordova-sqlite-lawnchair-adapter](https://github.com/litehelpers/cordova-sqlite-lawnchair-adapter).
 - [brodybits / sql-promise-helper](https://github.com/brodybits/sql-promise-helper) provides a Promise-based API wrapper.
@@ -162,7 +162,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation.
 - macOS ("osx" platform) is now supported
 - Published [brodybits / Cordova-quick-start-checklist](https://github.com/brodybits/Cordova-quick-start-checklist) and [brodybits / Avoiding-some-Cordova-pitfalls](https://github.com/brodybits/Avoiding-some-Cordova-pitfalls).
 - Android version uses the lightweight [Android-sqlite-connector](https://github.com/liteglue/Android-sqlite-connector) by default configuration (may be changed as described below)
-- SQLCipher version `3.4.0`/`3.5.4` for Android/iOS/macOS/Windows with FTS5 and JSON1
+- SQLCipher ~~version `3.4.0`/`3.5.4`~~ for Android/iOS/macOS/Windows with FTS5 and JSON1
 - Windows 10 UWP is now supported by this version ~~- along with Windows 8.1 and Windows Phone 8.1~~
 - Self-test functions to verify proper installation and operation of this plugin
 - More explicit `openDatabase` and `deleteDatabase` `iosDatabaseLocation` option
