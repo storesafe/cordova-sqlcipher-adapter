@@ -35,8 +35,6 @@ Other services available include:
 - Front-end/back-end development
 - Mentoring and training services
 
-Fixed cost contract assignments are preferred.
-
 For more information:
 - <http://litehelpers.net/>
 - <sales@litehelpers.net>
@@ -122,18 +120,19 @@ See the [Sample section](#sample) for a sample with a more detailed explanation.
   - with LibTomCrypt (1.17) embedded for Windows
   - for future consideration: embed OpenSSL libcrypto for all target platforms
 - NOT supported by PhoneGap Developer App or PhoneGap Desktop App
-- A recent version of the Cordova CLI (_such as `6.4.0` or `6.5.0`_) is recommended. Cordova versions older than `6.0.0` are missing the `cordova-ios@4.0.0` security fixes. In addition it is *required* to use `cordova prepare` in case of cordova-ios older than `4.3.0` (Cordova CLI `6.4.0`).
+- A recent version of the Cordova CLI (such as `6.5.0`) is recommended. Cordova versions older than `6.0.0` are missing the `cordova-ios@4.0.0` security fixes. In addition it is *required* to use `cordova prepare` in case of cordova-ios older than `4.3.0` (Cordova CLI `6.4.0`).
 - The iOS database location is now mandatory, as documented below.
 - Windows 8.1 and Windows Phone 8.1 are no longer supported by this version.
 - Amazon Fire-OS is dropped due to lack of support by Cordova. Android version should be used to deploy to Fire-OS 5.0(+) devices. For reference: [cordova/cordova-discuss#32 (comment)](https://github.com/cordova/cordova-discuss/issues/32#issuecomment-167021676)
 - Windows version (using a customized version of the performant [doo / SQLite3-WinRT](https://github.com/doo/SQLite3-WinRT) C++ component) has the following known limitations:
-  - Issue with UNICODE `\u0000` character (same as `\0`)
-  - No background processing (for future consideration)
+  - Truncation issue with UNICODE `\u0000` character (same as `\0`)
+  - No background processing
   - INCORRECT error code (0) and INCONSISTENT error message (missing actual error info) in error callbacks ref: [litehelpers/Cordova-sqlite-storage#539](https://github.com/litehelpers/Cordova-sqlite-storage/issues/539)
   - Issue with emojis and other 4-octet UTF-8 characters (apparently not stored correctly) ref: [litehelpers/Cordova-sqlite-storage#564](https://github.com/litehelpers/Cordova-sqlite-storage/issues/564)
   - Not possible to read BLOB column values
   - It is **not** possible to use this plugin with the default "Any CPU" target. A specific target CPU type **must** be specified when building an app with this plugin.
   - This version branch with dependency on platform toolset libraries included by Visual Studio 2015 ref: [litehelpers/Cordova-sqlite-storage#580](https://github.com/litehelpers/Cordova-sqlite-storage/issues/580)
+  - Windows version uses `UTF-16le` internal database encoding while the other platform versions use `UTF-8` internal encoding. (`UTF-8` internal encoding is preferred ref: [litehelpers/Cordova-sqlite-storage#652](https://github.com/litehelpers/Cordova-sqlite-storage/issues/652))
   - **NOTE:** libTomCrypt may have inferior entropy (randomness) for encryption _and seems to run much more slowly_. It is desired to replace libTomCrypt with a recent build of the OpenSSL crypto library _ref: [litehelpers/Cordova-sqlcipher-adapter#30](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/30)_
 - Android version:
   - Minimum SDK 10 (a.k.a. Gingerbread, Android 2.3.3); support for older versions is available upon request.
@@ -424,6 +423,7 @@ See **Security of sensitive data** in the [Security](#security) section above.
 
 ### Other differences with WebKit Web SQL implementations
 
+- In case of ignored INSERT OR IGNORE statement WebKit Web SQL (Android/iOS) reports insertId with an old INSERT row id value while the plugin reports insertId: undefined.
 - In case of a SQL error handler that does not recover the transaction, WebKit Web SQL (Android/iOS) would incorrectly report error code 0 while the plugin would report the same error code as in the SQL error handler. (In case of an error with no SQL error handler then Android/iOS WebKit Web SQL would report the same error code that would have been reported in the SQL error hander.)
 - In case a transaction function throws an exception, the message and code if present are reported by the plugin but *not* by (WebKit) Web SQL.
 - SQL error messages are inconsistent on Windows.
@@ -450,11 +450,6 @@ See **Security of sensitive data** in the [Security](#security) section above.
 - Close/delete database bugs described below.
 - When a database is opened and deleted without closing, the iOS/macOS version is known to leak resources.
 - It is NOT possible to open multiple databases with the same name but in different locations (iOS/macOS).
-- Incorrect or missing rowsAffected in results for INSERT/UPDATE/DELETE SQL statements with extra semicolon(s) in the beginning for Android ~~in case the `androidDatabaseImplementation: 2` (built-in android.database implementation) option is used~~.
-- It is NOT possible to open multiple databases with the same name but in different locations (iOS version).
-- Problems reported with PhoneGap Build in the past:
-  - PhoneGap Build Hydration.
-  - Apparently FIXED: ~~PhoneGap Build may fail to build the iOS version unless the name of the app starts with an uppercase and contains no spaces (see [litehelpers/Cordova-sqlite-storage#243](https://github.com/litehelpers/Cordova-sqlite-storage/issues/243); [Wizcorp/phonegap-facebook-plugin#830](https://github.com/Wizcorp/phonegap-facebook-plugin/issues/830); [phonegap/build#431](https://github.com/phonegap/build/issues/431)).~~
 
 Some more known issues are tracked in the [open Cordova-sqlite-storage bugs](https://github.com/litehelpers/Cordova-sqlite-storage/issues?q=is%3Aissue+is%3Aopen+label%3Abug).
 
@@ -470,9 +465,9 @@ Some more known issues are tracked in the [open Cordova-sqlite-storage bugs](htt
 - In-memory database `db=window.sqlitePlugin.openDatabase({name: ':memory:', ...})` is currently not supported.
 - The Android version cannot work with more than 100 open db files (due to the threading model used).
 - SQL error messages on Windows version are not consistent with Android/iOS/macOS versions.
-- UNICODE `\u2028` (line separator) and `\u2029` (paragraph separator) characters are currently not supported and known to be broken _on Android, iOS, and macOS platforms_ due to [Cordova bug CB-9435](https://issues.apache.org/jira/browse/CB-9435). There *may* be a similar issue with certain other UNICODE characters in the iOS/macOS version (needs further investigation).
-- BLOB _value type_ is not supported in this version branch.
-- UNICODE `\u0000` (same as `\0`) character not working in Windows version
+- UNICODE `\u2028` (line separator) and `\u2029` (paragraph separator) characters are currently not supported and known to be broken _on Android, iOS, and macOS platform versions_ due to [Cordova bug CB-9435](https://issues.apache.org/jira/browse/CB-9435). There *may* be a similar issue with certain other UNICODE characters in the iOS/macOS version (needs further investigation).
+- BLOB _data value type_ is not _fully_ supported _by_ this version branch.
+- Truncation in case of UNICODE `\u0000` (same as `\0`) character _on Windows_
 - Case-insensitive matching and other string manipulations on Unicode characters, which is provided by optional ICU integration in the sqlite source and working with recent versions of Android, is not supported for any target platforms.
 - iOS/macOS version uses a thread pool but with only one thread working at a time due to "synchronized" database access
 - Large query result can be slow, also due to JSON implementation
@@ -724,6 +719,13 @@ window.sqlitePlugin.openDatabase({name: 'my.db', key: 'your-password-here', loca
 ```
 
 If any sql statements or transactions are attempted on a database object before the openDatabase result is known, they will be queued and will be aborted in case the database cannot be opened.
+
+**DATABASE NAME NOTES:**
+
+- Database file names with slash (`/`) character(s) are not supported and not expected to work.
+- Database file names with ASCII control characters such as tab, vertical tab, carriage return, line feed, form feed, and backspace are not supported and do not work on Windows.
+- Some other ASCII characters not supported and not working on Windows: `*` `<` `>` `?` `\` `"` `|`
+- Database file names with emojis and other 4-octet UTF-8 characters are NOT RECOMMENDED _and TBD BROKEN on Android in this version branch_.
 
 **OTHER NOTES:**
 - The database file name should include the extension, if desired.
@@ -1348,7 +1350,7 @@ The SQLite storage plugin sample allows you to execute SQL statements to interac
 * [Update rows in the database](#updateRow) that match a column value
 * [Close the database](#closeDb)
 
-##Open the database and create a table <a name="openDb"></a>
+## Open the database and create a table <a name="openDb"></a>
 
 Call the `openDatabase()` function to get started, passing in the name and location for the database.
 
@@ -1412,7 +1414,7 @@ addItem("Joe", "Auzomme", 102);
 addItem("Pete", "Smith", 103);
 ```
 
-##Read data from the database <a name="readRow"></a>
+## Read data from the database <a name="readRow"></a>
 
 Add code to read from the database using a SELECT statement. Include a WHERE condition to match the resultSet to the passed in last name.
 
@@ -1441,7 +1443,7 @@ function getData(last) {
 }
 ```
 
-##Remove a row from the database <a name="removeRow"></a>
+## Remove a row from the database <a name="removeRow"></a>
 
 Add a function to remove a row from the database that matches the passed in customer account number.
 
@@ -1467,7 +1469,7 @@ function removeItem(acctNum) {
 }
 ```
 
-##Update rows in the database <a name="updateRow"></a>
+## Update rows in the database <a name="updateRow"></a>
 
 Add a function to update rows in the database for records that match the passed in customer account number. In this form, the statement will update multiple rows if the account numbers are not unique.
 
@@ -1499,7 +1501,7 @@ To call the preceding function, add code like this in your app.
 updateItem("Yme", 102);
 ```
 
-##Close the database <a name="closeDb"></a>
+## Close the database <a name="closeDb"></a>
 
 When you are finished with your transactions, close the database. Call `closeDB` within the transaction success or failure callbacks (rather than the callbacks for `executeSql()`).
 

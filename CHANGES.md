@@ -1,12 +1,19 @@
 # Changes
 
-## cordova-sqlcipher-adapter 0.1.9-pre3
+## cordova-sqlcipher-adapter 0.1.9-pre4
 
 - SQLCipher 3.4.1, SQLCipher for Android 3.5.6
 - Build flag fixes
 - minor test fixes
 - certain array and object tests disabled in this version branch due to testing issues on iOS with WKWebView
 - doc fixes
+
+### cordova-sqlite-storage 1.5.4
+
+- Fix iOS/macOS version to report undefined insertId in case INSERT OR IGNORE is ignored
+- Fix FIRST_WORD check for android.sqlite.database implementation
+- SQLite 3.15.2 build fixes
+- Doc updates
 
 ### cordova-sqlite-storage 1.5.3
 

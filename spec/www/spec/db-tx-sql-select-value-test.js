@@ -10,9 +10,10 @@ var isAndroid = !isWindows && /Android/.test(navigator.userAgent);
 var isMac = /Macintosh/.test(navigator.userAgent);
 var isWKWebView = !isWindows && !isAndroid && !isWP8 && !isMac && !!window.webkit && !!window.webkit.messageHandlers;
 
-// NOTE: In the core-master branch there is no difference between the default
-// implementation and implementation #2. But the test will also apply
-// the androidLockWorkaround: 1 option in the case of implementation #2.
+// The following openDatabase settings are used for Plugin-implementation-2
+// on Android:
+// - androidDatabaseImplementation: 2
+// - androidLockWorkaround: 1
 var scenarioList = [
   isAndroid ? 'Plugin-implementation-default' : 'Plugin',
   'HTML5',
@@ -34,15 +35,19 @@ var mytests = function() {
       var isWebSql = (i === 1);
       var isImpl2 = (i === 2);
 
-      // NOTE: MUST be defined in function scope, NOT outer scope:
-      var openDatabase = function(name, ignored1, ignored2, ignored3) {
+      // NOTE 1: MUST be defined in proper describe function scope, NOT outer scope.
+      // NOTE 2: Using same database name in this script to avoid issue with
+      //         "Too many open files" on iOS with WKWebView engine plugin.
+      //         (FUTURE TBD NEEDS INVESTIGATION)
+      var openDatabase = function(name_ignored, ignored1, ignored2, ignored3) {
+        var name = 'select-value-test.db';
         if (isImpl2) {
           return window.sqlitePlugin.openDatabase({
             // prevent reuse of database from default db implementation:
             name: 'i2-'+name,
             androidDatabaseImplementation: 2,
             androidLockWorkaround: 1,
-            location: 1
+            location: 'default'
           });
         }
         if (isWebSql) {
@@ -1827,6 +1832,7 @@ var mytests = function() {
 
         it(suiteName + "SELECT X'FFD1FFD2' [TBD BROKEN androidDatabaseImplementation: 2 & Windows; missing result value iOS/macOS]", function(done) {
           if (isWP8) pending('SKIP for WP8');
+          if (!isWebSql && !isWindows && isAndroid && !isImpl2) pending('BROKEN: CRASH on Android 5.x (default sqlite-connector version)');
 
           var db = openDatabase("Inline-SELECT-BLOB-FFD1FFD2-result-test.db", "1.0", "Demo", DEFAULT_SIZE);
 
