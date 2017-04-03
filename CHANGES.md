@@ -1,6 +1,6 @@
 # Changes
 
-## cordova-sqlcipher-adapter 0.1.9-pre4
+## cordova-sqlcipher-adapter 0.1.9
 
 - SQLCipher 3.4.1, SQLCipher for Android 3.5.6
 - Build flag fixes
