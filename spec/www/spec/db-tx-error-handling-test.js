@@ -2988,6 +2988,9 @@ var mytests = function() {
         it(suiteName + 'Inline US-ASCII blank string test with arguments array=function (BOGUS) in a try-catch block [TBD (WebKit) Web SQL vs plugin]', function(done) {
           var db = openDatabase("Inline-US-ASCII-string-test-with-arguments-array-equals-function.db", "1.0", "Demo", DEFAULT_SIZE);
 
+          // TBD QUICK TEST WORKAROUND:
+          if (isWebSql && isAndroid) pending('SKIP for Android Web SQL');
+
           db.transaction(function(transaction) {
             try {
               transaction.executeSql("SELECT ''", function(ignored1, ignored2) {
@@ -3036,6 +3039,9 @@ var mytests = function() {
 
         it(suiteName + 'Inline US-ASCII blank string test with arguments array=function (BOGUS) in a try-catch block read tx [TBD (WebKit) Web SQL vs plugin]', function(done) {
           var db = openDatabase("Inline-US-ASCII-string-test-with-arguments-array-equals-function-read-tx.db", "1.0", "Demo", DEFAULT_SIZE);
+
+          // TBD QUICK TEST WORKAROUND:
+          if (isWebSql && isAndroid) pending('SKIP for Android Web SQL');
 
           db.readTransaction(function(readTransaction) {
             try {
@@ -3086,6 +3092,9 @@ var mytests = function() {
         it(suiteName + 'SELECT ? test with arguments array=function (BOGUS) in a try-catch block [TBD (WebKit) Web SQL vs plugin]', function(done) {
           var db = openDatabase("SELECT-parameter-with-arguments-array-equals-function.db", "1.0", "Demo", DEFAULT_SIZE);
 
+          // TBD QUICK TEST WORKAROUND:
+          if (isWebSql && isAndroid) pending('SKIP for Android Web SQL');
+
           db.transaction(function(transaction) {
             try {
               transaction.executeSql("SELECT ?", function(ignored1, ignored2) {
@@ -3134,6 +3143,9 @@ var mytests = function() {
 
         it(suiteName + 'SELECT ? test with arguments array=function (BOGUS) in a try-catch block read tx [TBD (WebKit) Web SQL vs plugin]', function(done) {
           var db = openDatabase("SELECT-parameter-with-arguments-array-equals-function-read-tx.db", "1.0", "Demo", DEFAULT_SIZE);
+
+          // TBD QUICK TEST WORKAROUND:
+          if (isWebSql && isAndroid) pending('SKIP for Android Web SQL');
 
           db.readTransaction(function(transaction) {
             try {

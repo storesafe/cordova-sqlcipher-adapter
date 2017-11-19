@@ -27,6 +27,7 @@
     # applications that repeatedly open and close the database.
     # [BUG #210] TODO: better to abort and clean up the pending transaction state.
     # XXX TBD this will be renamed and include some more per-db state.
+    # NOTE: In case txLocks is renamed or replaced the selfTest has to be adapted as well.
     txLocks = {}
 
 ## utility functions:
@@ -83,7 +84,7 @@
     SQLitePlugin = (openargs, openSuccess, openError) ->
       # console.log "SQLitePlugin openargs: #{JSON.stringify openargs}"
 
-      # _should_ already be checked by openDatabase:
+      # SHOULD already be checked by openDatabase:
       if !(openargs and openargs['name'])
         throw newSQLError "Cannot create a SQLitePlugin db instance without a db name"
 
@@ -114,8 +115,9 @@
     SQLitePlugin::databaseFeatures = isSQLitePluginDatabase: true
 
     # Keep track of state of open db connections
-    # XXX TBD this will be moved and renamed or
-    # combined with txLocks.
+    # XXX FUTURE TBD this *may* be moved and renamed,
+    # or even combined with txLocks if possible.
+    # NOTE: In case txLocks is renamed or replaced the selfTest has to be adapted as well.
     SQLitePlugin::openDBs = {}
 
     SQLitePlugin::addTransaction = (t) ->
@@ -126,14 +128,17 @@
         }
       txLocks[@dbname].queue.push t
       if @dbname of @openDBs && @openDBs[@dbname] isnt DB_STATE_INIT
-        # XXX TODO: only when queue has length of 1 [and test it!!]
+        # FUTURE TBD: rename startNextTransaction to something like
+        # triggerTransactionQueue
+        # ALT TBD: only when queue has length of 1 (and test)??
         @startNextTransaction()
 
       else
         if @dbname of @openDBs
-          console.log 'new transaction is waiting for open operation'
+          console.log 'new transaction is queued, waiting for open operation to finish'
         else
-          # XXX TBD TODO: in this case (which should not happen), should abort and discard the transaction.
+          # XXX SHOULD NOT GET HERE.
+          # FUTURE TBD TODO: in this exceptional case abort and discard the transaction.
           console.log 'database is closed, new transaction is [stuck] waiting until db is opened again!'
       return
 
@@ -208,6 +213,8 @@
           success @
           return
 
+        # (done)
+
       else
         console.log 'OPEN database: ' + @dbname
 
@@ -218,7 +225,7 @@
           #if !@openDBs[@dbname] then call open error cb, and abort pending tx if any
           if !@openDBs[@dbname]
             console.log 'database was closed during open operation'
-            # XXX TODO [BUG #210] (and test!!):
+            # XXX TODO (WITH TEST) ref BUG litehelpers/Cordova-sqlite-storage#210:
             # if !!error then error newSQLError 'database closed during open operation'
             # @abortAllPendingTransactions()
 
@@ -243,27 +250,44 @@
         # store initial DB state:
         @openDBs[@dbname] = DB_STATE_INIT
 
-        cordova.exec opensuccesscb, openerrorcb, "SQLitePlugin", "open", [ @openargs ]
+        # NEW WORKAROUND SOLUTION to BUG litehelpers/Cordova-sqlite-storage#666:
+        # Request to native implementation to close existing database
+        # connection if it is already open. Wait for success or error
+        # response before opening the database.
+        openStep2 = =>
+          cordova.exec opensuccesscb, openerrorcb, "SQLitePlugin", "open", [ @openargs ]
+
+        cordova.exec openStep2, openStep2, 'SQLitePlugin', 'close', [ { path: @dbname } ]
 
       return
 
     SQLitePlugin::close = (success, error) ->
       if @dbname of @openDBs
         if txLocks[@dbname] && txLocks[@dbname].inProgress
-          # XXX TBD: wait for current tx then close (??)
+          # FUTURE TBD TODO ref BUG litehelpers/Cordova-sqlite-storage#210:
+          # Wait for current tx to finish then close,
+          # then abort any other pending transactions
+          # (and cleanup any other internal resources).
+          # (This would need testing!!)
           console.log 'cannot close: transaction is in progress'
           error newSQLError 'database cannot be closed while a transaction is in progress'
           return
 
         console.log 'CLOSE database: ' + @dbname
 
-        # XXX [BUG #209] closing one db handle disables other handles to same db
+        # NOTE: closing one db handle disables other handles to same db
+        # FUTURE TBD TODO ref litehelpers/Cordova-sqlite-storage#210:
+        # Add a dispose method to simply invalidate the
+        # current database object ("this")
         delete @openDBs[@dbname]
 
         if txLocks[@dbname] then console.log 'closing db with transaction queue length: ' + txLocks[@dbname].queue.length
         else console.log 'closing db with no transaction lock state'
 
-        # XXX [BUG #210] TODO: when closing or deleting a db, abort any pending transactions [and test it!!]
+        # XXX TODO BUG litehelpers/Cordova-sqlite-storage#210:
+        # abort all pending transactions (with error callback)
+        # when closing a database (needs testing!!)
+        # (and cleanup any other internal resources)
 
         cordova.exec success, error, "SQLitePlugin", "close", [ { path: @dbname } ]
 
@@ -657,6 +681,12 @@
         new SQLitePlugin openargs, okcb, errorcb
 
       deleteDatabase: (first, success, error) ->
+        # XXX TODO BUG litehelpers/Cordova-sqlite-storage#367:
+        # abort all pending transactions (with error callback)
+        # when deleting a database
+        # (and cleanup any other internal resources)
+        # NOTE: This should properly close the database
+        # (at least on the JavaScript side) before deleting.
         args = {}
 
         if first.constructor == String
@@ -696,7 +726,10 @@
 
         args.dblocation = dblocation
 
-        # XXX [BUG #210] TODO: when closing or deleting a db, abort any pending transactions (with error callback)
+        # XXX TODO BUG litehelpers/Cordova-sqlite-storage#367 (repeated here):
+        # abort all pending transactions (with error callback)
+        # when deleting a database
+        # (and cleanup any other internal resources)
         delete SQLitePlugin::openDBs[args.path]
         cordova.exec success, error, "SQLitePlugin", "delete", [ args ]
 
@@ -707,11 +740,11 @@
 
       start: (successcb, errorcb) ->
         SQLiteFactory.deleteDatabase {name: SelfTest.DBNAME, location: 'default'},
-          (-> SelfTest.start2(successcb, errorcb)),
-          (-> SelfTest.start2(successcb, errorcb))
+          (-> SelfTest.step1(successcb, errorcb)),
+          (-> SelfTest.step1(successcb, errorcb))
         return
 
-      start2: (successcb, errorcb) ->
+      step1: (successcb, errorcb) ->
         SQLiteFactory.openDatabase {name: SelfTest.DBNAME, location: 'default'}, (db) ->
           check1 = false
           db.transaction (tx) ->
@@ -732,37 +765,80 @@
 
               if resutSet.rows.item(0).upperText isnt 'TEST'
                 return SelfTest.finishWithError errorcb,
-                  "Incorrect resutSet.rows.item(0).upperText value: #{resutSet.rows.item(0).data} (expected: 'TEST')"
+                  "Incorrect resutSet.rows.item(0).upperText value: #{resutSet.rows.item(0).upperText} (expected: 'TEST')"
 
               check1 = true
               return
 
-            , (sql_err) ->
-              SelfTest.finishWithError errorcb, "SQL error: #{sql_err}"
-              return
+            , (ignored, tx_sql_err) ->
+              return SelfTest.finishWithError errorcb, "TX SQL error: #{tx_sql_err}"
 
-          , (tx_err) ->
-            SelfTest.finishWithError errorcb, "TRANSACTION error: #{tx_err}"
             return
 
+          , (tx_err) ->
+            return SelfTest.finishWithError errorcb, "TRANSACTION error: #{tx_err}"
+
           , () ->
+            # tx success:
             if !check1
               return SelfTest.finishWithError errorcb,
                 'Did not get expected upperText result data'
 
-            # DELETE INTERNAL STATE to simulate the effects of location refresh or change:
-            delete db.openDBs[SelfTest.DBNAME]
-            delete txLocks[SelfTest.DBNAME]
+            # SIMULATE SCENARIO IN BUG litehelpers/Cordova-sqlite-storage#666:
+            db.executeSql 'BEGIN', null, (ignored) -> nextTick -> # (nextTick needed for Windows)
+              # DELETE INTERNAL STATE to simulate the effects of location refresh or change:
+              delete db.openDBs[SelfTest.DBNAME]
+              delete txLocks[SelfTest.DBNAME]
+              nextTick ->
+                # VERIFY INTERNAL STATE IS DELETED:
+                db.transaction (tx2) ->
+                  tx2.executeSql 'SELECT 1'
+                  return
+                , (tx_err) ->
+                  # EXPECTED RESULT:
+                  if !tx_err
+                    return SelfTest.finishWithError errorcb, 'Missing error object'
+                  SelfTest.step2 successcb, errorcb
+                  return
+                , () ->
+                  # NOT EXPECTED:
+                  return SelfTest.finishWithError errorcb, 'Missing error object'
+                return
+              return
 
-            SelfTest.start3 successcb, errorcb
             return
+          return
 
         , (open_err) ->
           SelfTest.finishWithError errorcb, "Open database error: #{open_err}"
         return
 
-      start3: (successcb, errorcb) ->
+      step2: (successcb, errorcb) ->
         SQLiteFactory.openDatabase {name: SelfTest.DBNAME, location: 'default'}, (db) ->
+          # TX SHOULD SUCCEED to demonstrate solution to BUG litehelpers/Cordova-sqlite-storage#666:
+          db.transaction (tx) ->
+            tx.executeSql 'SELECT ? AS myResult', [null], (ignored, resutSet) ->
+              if !resutSet.rows
+                return SelfTest.finishWithError errorcb, 'Missing resutSet.rows'
+              if !resutSet.rows.length
+                return SelfTest.finishWithError errorcb, 'Missing resutSet.rows.length'
+              if resutSet.rows.length isnt 1
+                return SelfTest.finishWithError errorcb,
+                  "Incorrect resutSet.rows.length value: #{resutSet.rows.length} (expected: 1)"
+              SelfTest.step3 successcb, errorcb
+              return
+            return
+          , (txError) ->
+            # NOT EXPECTED:
+            return SelfTest.finishWithError errorcb, "UNEXPECTED TRANSACTION ERROR: #{txError}"
+          return
+        , (open_err) ->
+          SelfTest.finishWithError errorcb, "Open database error: #{open_err}"
+        return
+
+      step3: (successcb, errorcb) ->
+        SQLiteFactory.openDatabase {name: SelfTest.DBNAME, location: 'default'}, (db) ->
+          # FUTURE TBD TEST CRUD OPERATIONS (already fixed in a newer version branch)
           db.sqlBatch [
             'CREATE TABLE TestTable(id integer primary key autoincrement unique, data);'
             [ 'INSERT INTO TestTable (data) VALUES (?);', ['test-value'] ]
@@ -894,8 +970,11 @@
         return
 
       finishWithError: (errorcb, message) ->
+        console.log "selfTest ERROR with message: #{message}"
         SQLiteFactory.deleteDatabase {name: SelfTest.DBNAME, location: 'default'}, ->
           errorcb newSQLError message
+          # FUTURE TODO: return
+        # FUTURE TODO log err2
         , (err2)-> errorcb newSQLError "Cleanup error: #{err2} for error: #{message}"
         return
 

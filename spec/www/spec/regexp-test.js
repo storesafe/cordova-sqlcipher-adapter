@@ -14,7 +14,6 @@ var scenarioList = [ isAndroid ? 'Plugin-implementation-default' : 'Plugin', 'HT
 
 var scenarioCount = (!!window.hasWebKitBrowser) ? (isAndroid ? 3 : 2) : 1;
 
-// simple tests:
 var mytests = function() {
 
   for (var i=0; i<scenarioCount; ++i) {
@@ -28,20 +27,22 @@ var mytests = function() {
       // NOTE: MUST be defined in function scope, NOT outer scope:
       var openDatabase = function(name, ignored1, ignored2, ignored3) {
         if (isImpl2) {
-          return window.sqlitePlugin.openDatabase({name: name, location: 1, androidDatabaseImplementation: 2});
+          // explicit database location:
+          return window.sqlitePlugin.openDatabase({name: name, location: 'default', androidDatabaseImplementation: 2});
         }
         if (isWebSql) {
           return window.openDatabase(name, "1.0", "Demo", DEFAULT_SIZE);
         } else {
-          return window.sqlitePlugin.openDatabase({name: name, location: 0});
+          // explicit database location:
+          return window.sqlitePlugin.openDatabase({name: name, location: 'default'});
         }
       }
 
-      // ONLY working for Android Web SQL in this version:
+      // ONLY working for Android Web SQL in this version branch:
       it(suiteName + 'Simple REGEXP test',
         function(done) {
-          if (!isWebSql) pending('BROKEN-NOT IMPLEMENTED for plugin (Android/iOS/Windows)');
-          if (isWebSql && !isAndroid) pending('BROKEN for iOS Web SQL');
+          if (!isWebSql) pending('SKIP: NOT IMPLEMENTED for plugin (Android/iOS/Windows)');
+          if (isWebSql && !isAndroid && !isWindows && !isWP8) pending('SKIP for iOS (WebKit) Web SQL');
 
           var db = openDatabase('simple-regexp-test.db', '1.0', 'test', DEFAULT_SIZE);
 

@@ -48,12 +48,12 @@ var mytests = function() {
 
         // Known to work with:
         // - iOS 9 Web SQL
-        // - Android (default Android-sqlite-connector implementation)
+        // - Android (SQLCipher for Android)
         // - iOS & Windows (with newer sqlite3 build)
         it(suiteName + 'db readTransaction with a WITH clause', function(done) {
           if (isWP8) pending('NOT IMPLEMENTED for WP(8)');
           if (isWebSql) pending('SKIP for Web SQL'); // NOT WORKING on all versions (Android/iOS)
-          if (isAndroid && isImpl2) pending('SKIP for android.database implementation'); // NOT WORKING on all versions
+          // if (isAndroid && isImpl2) pending('SKIP for android.database implementation'); // NOT WORKING on all versions
 
           var db = openDatabase('tx-with-a-with-clause-test.db', '1.0', 'Test', DEFAULT_SIZE);
 

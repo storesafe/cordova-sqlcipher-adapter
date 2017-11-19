@@ -33,9 +33,9 @@ function start(n) {
 }
 
 var isAndroid = /Android/.test(navigator.userAgent);
-var isWindows = /Windows NT/.test(navigator.userAgent); // Windows [NT] (8.1)
-var isWP8 = /IEMobile/.test(navigator.userAgent); // WP(8)
-// FUTURE:
+var isWindows = /Windows NT/.test(navigator.userAgent); // Windows (...)
+// TBD GONE:
+// var isWP8 = /IEMobile/.test(navigator.userAgent); // WP(8)
 //var isWindowsPhone = /Windows Phone 8.1/.test(navigator.userAgent); // Windows [NT] (8.1)
 var isIE = isWindows || isWP8;
 var isWebKit = !isIE; // TBD [Android or iOS]
@@ -75,9 +75,9 @@ describe('encryption test(s)', function() {
               console.log("rowsAffected: " + res.rowsAffected + " -- should be 1");
 
               expect(res).toBeDefined();
-              //if (!isWindows) // XXX TODO
+              // if (!isWindows) // ...
                 expect(res.insertId).toBeDefined();
-              //if (!isWindows) // XXX TODO
+              // if (!isWindows) // ...
                 expect(res.rowsAffected).toEqual(1);
 
               tx.executeSql("select count(id) as cnt from test_table;", [], function(tx, res) {
@@ -184,7 +184,7 @@ describe('encryption test(s)', function() {
     });
 
       it(suiteName + ' Attempt to open encrypted DB with INCORRECT password THEN OPEN & READ with CORRECT PASSWORD [PLUGIN BROKEN: MUST CLOSE THEN TRY AGAIN]', function (done) {
-        if (isWindows) pending('SKIP for Windows: CALLBACK NOT RECEIVED');
+        // if (isWindows) pending('SKIP for Windows: CALLBACK NOT RECEIVED');
 
         var dbName = 'Encrypted-DB-attempt-incorrect-password-then-correct-password.db';
         var test_data = 'test-data';

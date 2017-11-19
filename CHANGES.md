@@ -1,5 +1,39 @@
 # Changes
 
+## cordova-sqlcipher-adapter 0.1.10
+
+- Windows 8.1 and Windows Phone 8.1 supported again, NOW DEPRECATED
+
+##### cordova-sqlite-legacy-core 1.0.4
+
+- New workaround solution to BUG 666: close db before opening (ignore close error)
+
+##### cordova-sqlite-legacy-core 1.0.3
+
+- Suppress warnings when building sqlite3.c & PSPDFThreadSafeMutableDictionary.m on iOS/macOS
+
+##### cordova-sqlite-legacy-core 1.0.2
+
+- Fix log in case of transaction waiting for open to finish; doc fixes
+- SQLite 3.15.2 build with SQLITE_THREADSAFE=2 on iOS/macOS (SQLITE_THREADSAFE=1 on Android/Windows) and other flag fixes in this version branch to avoid possible malformed database due to multithreaded access ref: litehelpers/Cordova-sqlite-storage#703
+- Windows 10 (UWP) build with /SAFESEH flag on Win32 (x86) target
+
+###### cordova-sqlite-legacy-express-core 1.0.2
+
+- Use PSPDFThreadSafeMutableDictionary for iOS/macOS to avoid threading issue ref: litehelpers/Cordova-sqlite-storage#716
+
+###### cordova-sqlite-legacy-express-core 1.0.1
+
+- Fix bug 666 workaround to trigger ROLLBACK in the next event tick (needed to support version with pre-populated database on Windows)
+
+###### cordova-sqlite-legacy-express-core 1.0.0
+
+- Workaround solution to BUG litehelpers/Cordova-sqlite-storage#666 (hanging transaction in case of location reload/change)
+- selfTest simulate scenario & test solution to BUG litehelpers/Cordova-sqlite-storage#666 (also includes string test and test of effects of location reload/change in this version branch, along with another internal check)
+- Drop engine constraints in package.json & plugin.xml (in this version branch)
+- Remove Lawnchair adapter from this version branch
+- Support macOS platform with builtin libsqlite3.dylib framework in this version branch
+
 ## cordova-sqlcipher-adapter 0.1.9
 
 - SQLCipher 3.4.1, SQLCipher for Android 3.5.6
