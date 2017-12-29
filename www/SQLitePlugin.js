@@ -162,7 +162,7 @@
   };
 
   SQLitePlugin.prototype.open = function(success, error) {
-    var openStep2, openerrorcb, opensuccesscb;
+    var openerrorcb, opensuccesscb, step2;
     if (this.dbname in this.openDBs) {
       console.log('database already open: ' + this.dbname);
       nextTick((function(_this) {
@@ -202,12 +202,12 @@
         };
       })(this);
       this.openDBs[this.dbname] = DB_STATE_INIT;
-      openStep2 = (function(_this) {
+      step2 = (function(_this) {
         return function() {
-          return cordova.exec(opensuccesscb, openerrorcb, "SQLitePlugin", "open", [_this.openargs]);
+          cordova.exec(opensuccesscb, openerrorcb, "SQLitePlugin", "open", [_this.openargs]);
         };
       })(this);
-      cordova.exec(openStep2, openStep2, 'SQLitePlugin', 'close', [
+      cordova.exec(step2, step2, 'SQLitePlugin', 'close', [
         {
           path: this.dbname
         }
@@ -837,15 +837,10 @@
                       SelfTest.finishWithError(errorcb, 'second readTransaction did not finish');
                       return;
                     }
-                    return db.close(function() {
-                      return SQLiteFactory.deleteDatabase({
-                        name: SelfTest.DBNAME,
-                        location: 'default'
-                      }, successcb, function(cleanup_err) {
-                        return SelfTest.finishWithError(errorcb, "Cleanup error: " + cleanup_err);
-                      });
+                    db.close(function() {
+                      SelfTest.cleanupAndFinish(successcb, errorcb);
                     }, function(close_err) {
-                      return SelfTest.finishWithError(errorcb, "close error: " + close_err);
+                      SelfTest.finishWithError(errorcb, "close error: " + close_err);
                     });
                   });
                 });
@@ -861,15 +856,24 @@
         return SelfTest.finishWithError(errorcb, "Open database error: " + open_err);
       });
     },
+    cleanupAndFinish: function(successcb, errorcb) {
+      SQLiteFactory.deleteDatabase({
+        name: SelfTest.DBNAME,
+        location: 'default'
+      }, successcb, function(cleanup_err) {
+        SelfTest.finishWithError(errorcb, "CLEANUP DELETE ERROR: " + cleanup_err);
+      });
+    },
     finishWithError: function(errorcb, message) {
       console.log("selfTest ERROR with message: " + message);
       SQLiteFactory.deleteDatabase({
         name: SelfTest.DBNAME,
         location: 'default'
       }, function() {
-        return errorcb(newSQLError(message));
+        errorcb(newSQLError(message));
       }, function(err2) {
-        return errorcb(newSQLError("Cleanup error: " + err2 + " for error: " + message));
+        console.log("selfTest CLEANUP DELETE ERROR " + err2);
+        errorcb(newSQLError("CLEANUP DELETE ERROR: " + err2 + " for error: " + message));
       });
     }
   };

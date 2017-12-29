@@ -250,14 +250,16 @@
         # store initial DB state:
         @openDBs[@dbname] = DB_STATE_INIT
 
-        # NEW WORKAROUND SOLUTION to BUG litehelpers/Cordova-sqlite-storage#666:
-        # Request to native implementation to close existing database
-        # connection if it is already open. Wait for success or error
-        # response before opening the database.
-        openStep2 = =>
+        # UPDATED WORKAROUND SOLUTION to cordova-sqlite-storage BUG 666:
+        # Request to native side to close existing database
+        # connection in case it is already open.
+        # Wait for callback before opening the database
+        # (ignore close error).
+        step2 = =>
           cordova.exec opensuccesscb, openerrorcb, "SQLitePlugin", "open", [ @openargs ]
+          return
 
-        cordova.exec openStep2, openStep2, 'SQLitePlugin', 'close', [ { path: @dbname } ]
+        cordova.exec step2, step2, 'SQLitePlugin', 'close', [ { path: @dbname } ]
 
       return
 
@@ -908,6 +910,7 @@
 
                 , (tx2_err) ->
                   SelfTest.finishWithError errorcb, "readTransaction error: #{tx2_err}"
+
                 , () ->
                   if !readTransactionFinished
                     SelfTest.finishWithError errorcb, 'readTransaction did not finish'
@@ -951,13 +954,18 @@
                       if !secondReadTransactionFinished
                         SelfTest.finishWithError errorcb, 'second readTransaction did not finish'
                         return
+
                       # CLEANUP & FINISH:
                       db.close () ->
-                        SQLiteFactory.deleteDatabase {name: SelfTest.DBNAME, location: 'default'}, successcb, (cleanup_err)->
-                          SelfTest.finishWithError errorcb, "Cleanup error: #{cleanup_err}"
+                        SelfTest.cleanupAndFinish successcb, errorcb
+                        return
 
                       , (close_err) ->
+                        # DO NOT IGNORE CLOSE ERROR ON ANY PLATFORM:
                         SelfTest.finishWithError errorcb, "close error: #{close_err}"
+                        return
+
+                      return
 
             , (select_err) ->
               SelfTest.finishWithError errorcb, "SELECT error: #{select_err}"
@@ -969,13 +977,22 @@
           SelfTest.finishWithError errorcb, "Open database error: #{open_err}"
         return
 
+      cleanupAndFinish: (successcb, errorcb) ->
+        SQLiteFactory.deleteDatabase {name: SelfTest.DBNAME, location: 'default'}, successcb, (cleanup_err)->
+          # DO NOT IGNORE CLEANUP DELETE ERROR ON ANY PLATFORM:
+          SelfTest.finishWithError errorcb, "CLEANUP DELETE ERROR: #{cleanup_err}"
+          return
+        return
+
       finishWithError: (errorcb, message) ->
         console.log "selfTest ERROR with message: #{message}"
         SQLiteFactory.deleteDatabase {name: SelfTest.DBNAME, location: 'default'}, ->
           errorcb newSQLError message
-          # FUTURE TODO: return
-        # FUTURE TODO log err2
-        , (err2)-> errorcb newSQLError "Cleanup error: #{err2} for error: #{message}"
+          return
+        , (err2)->
+          console.log "selfTest CLEANUP DELETE ERROR #{err2}"
+          errorcb newSQLError "CLEANUP DELETE ERROR: #{err2} for error: #{message}"
+          return
         return
 
 ## Exported API:

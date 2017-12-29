@@ -1051,8 +1051,7 @@ var mytests = function() {
           }
         }
 
-        test_it(suiteName + ' test sqlitePlugin.deleteDatabase()', function () {
-          stop();
+        it(suiteName + ' test sqlitePlugin.deleteDatabase()', function (done) {
           var db = openDatabase("DB-Deletable", "1.0", "Demo", DEFAULT_SIZE);
 
           function createAndInsertStuff() {
@@ -1063,9 +1062,14 @@ var mytests = function() {
                 tx.executeSql('INSERT INTO test VALUES (?)', ['foo']);
               });
             }, function (err) {
-              ok(false, 'create and insert tx failed with ERROR: ' + JSON.stringify(err));
+              // NOT EXPECTED:
               console.log('create and insert tx failed with ERROR: ' + JSON.stringify(err));
-              start();
+              expect(false).toBe(true);
+              expect(err).toBeDefined();
+              expect(err.message).toBeDefined();
+              expect(err.message).toBe('--');
+              done();
+
             }, function () {
               // check that we can read it
               db.transaction(function(tx) {
@@ -1073,9 +1077,13 @@ var mytests = function() {
                   equal(res.rows.item(0).name, 'foo');
                 });
               }, function (err) {
-                ok(false, 'SELECT tx failed with ERROR: ' + JSON.stringify(err));
+                // NOT EXPECTED:
                 console.log('SELECT tx failed with ERROR: ' + JSON.stringify(err));
-                start();
+                expect(false).toBe(true);
+                expect(err).toBeDefined();
+                expect(err.message).toBeDefined();
+                expect(err.message).toBe('--');
+                done();
               }, function () {
                 deleteAndConfirmDeleted();
               });
@@ -1090,30 +1098,38 @@ var mytests = function() {
               db.transaction(function (tx) {
                 tx.executeSql('SELECT name FROM test', []);
               }, function (err) {
-                ok(true, 'got an expected transaction error');
+                // EXPECTED RESULT:
+                expect(err).toBeDefined();
+                expect(err.message).toBeDefined();
                 testDeleteError();
               }, function () {
+                // SUCCESS CALLBACK NOT EXPECTED:
                 console.log('UNEXPECTED SUCCESS: expected a transaction error');
-                ok(false, 'expected a transaction error');
-                start();
+                expect(false).toBe(true);
+                done();
               });
             }, function (err) {
+              // NOT EXPECTED - DO NOT IGNORE ON ANY PLATFORM:
               console.log("ERROR: " + JSON.stringify(err));
-              ok(false, 'error: ' + err);
-              start();
+              expect(false).toBe(true);
+              expect(err).toBeDefined();
+              expect(err.message).toBeDefined();
+              expect(err.message).toBe('--');
+              done();
             });
           }
 
           function testDeleteError() {
             // should throw an error if the db doesn't exist
             deleteDatabase("Foo-Doesnt-Exist", function () {
+              // SUCCESS CALLBACK NOT EXPECTED:
               console.log('UNEXPECTED SUCCESS: expected a delete error');
-              ok(false, 'expected error');
-              start();
+              expect(false).toBe(true);
+              done();
             }, function (err) {
-              ok(!!err, 'got error like we expected');
-
-              start();
+              // EXPECTED RESULT:
+              expect(err).toBeDefined();
+              done();
             });
           }
 
@@ -1339,16 +1355,46 @@ var mytests = function() {
       });
     }
 
-    describe('repeated open/close/delete test(s)', function() {
-      var scenarioName = isAndroid ? 'Plugin-implementation-default' : 'Plugin';
-      var suiteName = scenarioName + ': ';
+    for (var i=0; i<pluginScenarioCount; ++i) {
+
+      describe(pluginScenarioList[i] + ': repeated open/close/delete test(s)', function() {
+        var scenarioName = pluginScenarioList[i];
+        var suiteName = scenarioName + ': ';
+        var isImpl2 = (i === 1);
 
         // NOTE: MUST be defined in function scope, NOT outer scope:
         var openDatabase = function(first, second, third) {
+          if (first.constructor === String ) throw new Error('string not expected here');
+
+          // androidDatabaseImplementation: 2 (builtin android.database implementation):
+          if (isImpl2) {
+            var dbname = first.name;
+            return window.sqlitePlugin.openDatabase({
+              name: 'i2-'+dbname,
+              // database location setting needed here (value ignored on Android):
+              location: 'default',
+              androidDatabaseImplementation: 2,
+              androidLockWorkaround: 1
+            }, second, third);
+          }
+
           return window.sqlitePlugin.openDatabase(first, second, third);
         }
 
         var deleteDatabase = function(first, second, third) {
+          if (first.constructor === String ) throw new Error('string not expected here');
+
+          // androidDatabaseImplementation: 2 (builtin android.database implementation):
+          if (isImpl2) {
+            var dbname = first.name;
+            return window.sqlitePlugin.deleteDatabase({
+              name: 'i2-'+dbname,
+              // database location setting needed here (value ignored on Android):
+              location: 'default',
+              androidDatabaseImplementation: 2
+            }, second, third);
+          }
+
           window.sqlitePlugin.deleteDatabase(first, second, third);
         }
 
@@ -1363,23 +1409,23 @@ var mytests = function() {
           var db1 = openDatabase(dbargs, function () {
             var db2 = openDatabase(dbargs, function () {
               db1.readTransaction(function(tx1) {
-                tx1.executeSql('SELECT 1', [], function(tx1d, results) {
+                tx1.executeSql('SELECT 1', [], function(tx_ignored, results) {
                   ok(true, 'db1 transaction working');
                   start(1);
-                }, function(error) {
+                }, function(tx_ignored, error) {
                   ok(false, error);
                 });
               }, function(error) {
                 ok(false, error);
               });
               db2.readTransaction(function(tx2) {
-                tx2.executeSql('SELECT 1', [], function(tx2d, results) {
+                tx2.executeSql('SELECT 1', [], function(tx_ignored, results) {
                   ok(true, 'db2 transaction working');
                   start(1);
-                }, function(error) {
+                }, function(tx_ignored, error) {
                   ok(false, error);
                 });
-              }, function(error) {
+              }, function(tx_ignored, error) {
                 ok(false, error);
               });
             }, function (error) {
@@ -1633,6 +1679,8 @@ var mytests = function() {
         test_it(suiteName + ' repeatedly open and close database faster (5x)', function () {
           // TBD CURRENTLY BROKEN on iOS/macOS due to current background processing implementation:
           if (!isAndroid && !isWindows && !isWP8) pending('CURRENTLY BROKEN on iOS/macOS (background processing implementation)');
+          // TBD ???:
+          if (isAndroid && isImpl2) pending('FAILS on builtin android.database implementation (androidDatabaseImplementation: 2)');
 
           var dbName = 'repeatedly-open-and-close-faster-5x.db';
           var dbargs = {name: dbName, location: 'default'};
@@ -1812,7 +1860,8 @@ var mytests = function() {
           });
         });
 
-    });
+      });
+    }
 
   });
 

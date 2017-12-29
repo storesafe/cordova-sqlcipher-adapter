@@ -1316,6 +1316,7 @@ var mytests = function() {
                   tx.executeSql('SELECT name FROM test', [], function (tx_ignored, rs) {
                     var name = rs.rows.item(0).name;
 
+                    // TBD ???:
                     // There is a bug in WebKit and Chromium where strings are created
                     // using methods that rely on '\0' for termination instead of
                     // the specified byte length.
@@ -1326,6 +1327,7 @@ var mytests = function() {
                     // we would like to know, so the test is coded to fail if it starts
                     // working there.
 
+                    // TBD
                     // QUICK TEST WORKAROUND
                     if (isWebSql && isAndroid) return done();
 

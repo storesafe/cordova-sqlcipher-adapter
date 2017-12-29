@@ -1,5 +1,21 @@
 # Changes
 
+## cordova-sqlcipher-adapter 0.1.11
+
+##### cordova-sqlite-legacy-core 1.0.6
+
+###### cordova-sqlite-legacy-express-core 1.0.4
+
+- Cleaned up workaround solution to BUG 666: close db before opening (ignore close error)
+- android.database end transaction if active before closing
+
+##### cordova-sqlite-legacy-core 1.0.5
+
+###### cordova-sqlite-legacy-express-core 1.0.3
+
+- Resolve Java 6/7/8 concurrent map compatibility issue reported in litehelpers/Cordova-sqlite-storage#726, THANKS to pointer by @NeoLSN (Jason Yang/楊朝傑) in litehelpers/Cordova-sqlite-storage#727.
+- selfTest database cleanup do not ignore close or delete error on any platforms
+
 ## cordova-sqlcipher-adapter 0.1.10
 
 - Windows 8.1 and Windows Phone 8.1 supported again, NOW DEPRECATED
