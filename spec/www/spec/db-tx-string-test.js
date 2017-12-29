@@ -669,14 +669,9 @@ var mytests = function() {
           });
         }, MYTIMEOUT);
 
-        // TBD NOTE: In case of the default Android database implementation
-        // (Android-sqlite-connector) it is possible to manipulate,
-        // store, and retrieve a text string with 4-octet UTF-8 characters such as emojis.
-        // However HEX manipulations do not work the same as Android/iOS WebKit Web SQL,
-        // iOS plugin, or Android plugin with androidDatabaseImplementation : 2 setting.
-        // This linkely indicates that such characters are stored differently [incorrectly]
-        // due to UTF-8 string handling limitations of Android-sqlite-connector
-        // and Android-sqlite-native-driver. ref: litehelpers/Cordova-sqlite-storage#564
+        // NOTE: SQLCipher for Android database implementation shows consistent
+        // results in emoji string manipulation tests including HEX
+        // manipulation tests.
 
         it(suiteName + 'Inline emoji string manipulation test: SELECT UPPER("a\\uD83D\\uDE03.") [\\u1F603 SMILING FACE (MOUTH OPEN)]', function(done) {
           var db = openDatabase("Inline-emoji-hex-test.db", "1.0", "Demo", DEFAULT_SIZE);
@@ -715,9 +710,6 @@ var mytests = function() {
               expect(rs.rows).toBeDefined();
               expect(rs.rows.length).toBe(1);
 
-              // STOP HERE [HEX encoding BUG] for Android-sqlite-connector:
-              //if (!isWebSql && !isWindows && isAndroid && !isImpl2) return done();
-
               if (isWindows)
                 expect(rs.rows.item(0).hexvalue).toBe('40003DD803DE2100'); // (UTF-16le)
               else
@@ -737,8 +729,6 @@ var mytests = function() {
 
         it(suiteName + "Inline BLOB with emoji string manipulation test: SELECT LOWER(X'41F09F9883') [A\uD83D\uDE03] [\\u1F603 SMILING FACE (MOUTH OPEN)]", function(done) {
           if (isWP8) pending('BROKEN for WP8');
-          // XXX TBD ???:
-          // if (!isWebSql && !isWindows && isAndroid && !isImpl2) pending('BROKEN: CRASH on Android 5.x (default sqlite-connector version)');
           if (isWindows) pending('SKIP for Windows'); // FUTURE TBD
 
           var db = openDatabase("Inline-emoji-select-lower-result-test.db", "1.0", "Demo", DEFAULT_SIZE);
@@ -767,8 +757,6 @@ var mytests = function() {
 
         it(suiteName + 'emoji SELECT HEX(?) parameter value test: "@\\uD83D\\uDE03!" [\\u1F603 SMILING FACE (MOUTH OPEN)]', function(done) {
           if (isWP8) pending('BROKEN for WP8');
-          // XXX TBD ???:
-          //if (isAndroid && !isWebSql && !isImpl2) pending('BROKEN for Android (default sqlite-connector version)');
 
           var db = openDatabase("String-emoji-parameter-value-test.db", "1.0", "Demo", DEFAULT_SIZE);
           expect(db).toBeDefined();
