@@ -1,5 +1,9 @@
 # Changes
 
+## cordova-sqlcipher-adapter 0.2.0-aar-wip-pre1
+
+- Android aar from Maven repository
+
 ## cordova-sqlcipher-adapter 0.1.10
 
 - Windows 8.1 and Windows Phone 8.1 supported again, NOW DEPRECATED

@@ -2,7 +2,7 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-sqlcipher-adapter"
-    version="0.1.10">
+    version="0.2.0-aar-wip-pre1">
 
     <name>Cordova sqlcipher adapter</name>
 
@@ -43,13 +43,13 @@
          ...
          -->
 
-        <!-- SQLCipher distribution for Android [jar & native libs]: -->
-        <source-file src="src/android/sqlcipher/libs/sqlcipher.jar" target-dir="libs" />
-        <source-file src="src/android/sqlcipher/libs/armeabi/libsqlcipher.so" target-dir="libs/armeabi" />
-        <source-file src="src/android/sqlcipher/libs/armeabi-v7a/libsqlcipher.so" target-dir="libs/armeabi-v7a" />
-        <source-file src="src/android/sqlcipher/libs/x86/libsqlcipher.so" target-dir="libs/x86" />
-        <source-file src="src/android/sqlcipher/libs/arm64-v8a/libsqlcipher.so" target-dir="libs/arm64-v8a" />
-        <source-file src="src/android/sqlcipher/libs/x86_64/libsqlcipher.so" target-dir="libs/x86_64" />
+        <!-- THANKS to @jcesarmobile for GUIDANCE in accepted answer:
+             https://stackoverflow.com/questions/34115571/add-external-jar-library-to-build-cordova-plugin-ionic-framework/34129929#34129929
+         -->
+        <!-- SQLCipher distribution for Android
+             [sqlcipher.jar & ndk objects in aar (modified reference for Buildr)] from:
+             https://mvnrepository.com/artifact/net.zetetic/android-database-sqlcipher/3.5.9 -->
+        <framework src="net.zetetic:android-database-sqlcipher:3.5.9" />
     </platform>
 
     <!-- iOS -->
