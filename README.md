@@ -120,35 +120,42 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
 - _Windows platform support is now disabled in this plugin version, with CRYPTO provider (libTomCrypt) completely removed (ref: [litehelpers / Cordova-sqlcipher-adapter#63](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/63)). For future consideration: enable Windows build again with encryption using a recent build of the OpenSSL crypto library ref: [litehelpers/Cordova-sqlcipher-adapter#30](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/30)_
 - __Alpha version:__
   - SQLCipher `3.4.2` for iOS/macOS~~/Windows~~
-  - SQLCipher `3.5.6` for Android built from [brodybits / android-database-sqlcipher-build-fix](https://github.com/brodybits/android-database-sqlcipher-build-fix), now with 64-bit CPU support
+  - SQLCipher `3.5.9` for Android (Gradle reference)
   - `SQLITE_DEFAULT_PAGE_SIZE=1024` and `SQLITE_DEFAULT_CACHE_SIZE=2000` to avoid "potentially distruptive change(s)" from SQLite 3.12.0 in unencrypted databases ref: <http://sqlite.org/pgszchng2016.html>
   - with OpenSSL libcrypto for Android
   - using CommonCrypto framework for iOS/macOS
   - _NO ENCRYPTION ENABLED (completely removed)_ for Windows
   - for future consideration: embed OpenSSL libcrypto for all target platforms
 - This plugin is NOT supported by PhoneGap Developer App or PhoneGap Desktop App.
-- This plugin will NOT work on `cordova-android@7` due to issue with JAR and NDK library files as discussed in [litehelpers / Cordova-sqlcipher-adapter/issues/64](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/64) and [litehelpers/Cordova-sqlite-storage#729](https://github.com/litehelpers/Cordova-sqlite-storage/issues/729).
-- A recent version of the Cordova CLI (such as `6.5.0` / `7.1.0`) is recommended. (Cordova CLI 8.x includes `cordova-android@7`, NOT supported by this plugin due to [litehelpers / Cordova-sqlcipher-adapter/issues/64](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/64) / [litehelpers/Cordova-sqlite-storage#729](https://github.com/litehelpers/Cordova-sqlite-storage/issues/729).) Cordova versions older than `6.0.0` are missing the `cordova-ios@4.0.0` security fixes. In addition it is *required* to use `cordova prepare` in case of cordova-ios older than `4.3.0` (Cordova CLI `6.4.0`).
-- _This plugin version will NOT work on `cordova-android@7` due to [litehelpers / Cordova-sqlcipher-adapter/issues/64](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/64) / [litehelpers/Cordova-sqlite-storage#729](https://github.com/litehelpers/Cordova-sqlite-storage/issues/729)._
+- A recent version of the Cordova CLI (such as `6.5.0` / `7.1.0` / `8.0.0`) is recommended. Cordova versions older than `6.0.0` are missing the `cordova-ios@4.0.0` security fixes. In addition it is *required* to use `cordova prepare` in case of cordova-ios older than `4.3.0` (Cordova CLI `6.4.0`).
 - SQLCipher build settings used:
   - `SQLITE_HAS_CODEC` _(no longer enabled in Windows SQLite3 library build)_
+  - `SQLITE_SOUNDEX` (Android only)
+  - `SQLITE_MAX_VARIABLE_NUMBER=99999` (Android only)
   - `SQLITE_DEFAULT_JOURNAL_SIZE_LIMIT=1048576` (Android only)
   - `HAVE_USLEEP=1`
   - `SQLITE_TEMP_STORE=3`
   - `SQLCIPHER_CRYPTO_CC` (iOS/macOS only)
   - `SQLITE_LOCKING_STYLE=1` (iOS/macOS only)
+  - `DSQLITE_DEFAULT_JOURNAL_SIZE_LIMIT=1048576` (Android only)
   - `NDEBUG` (`NDEBUG=1` on Android)
   - `SQLITE_THREADSAFE=1` (`SQLITE_THREADSAFE=2` on iOS/macOS)
-  - `SQLITE_DEFAULT_MEMSTATUS=0`
-  - `SQLITE_OMIT_DECLTYPE`
+  - `DSQLITE_ENABLE_MEMORY_MANAGEMENT=1` (Android only)
+  - `SQLITE_DEFAULT_MEMSTATUS=0` (iOS/macOS/...)
+  - `SQLITE_OMIT_DECLTYPE` (iOS/macOS/...)
   - _~~`SQLITE_OMIT_DEPRECATED`~~ (FUTURE TODO)_
-  - `SQLITE_OMIT_PROGRESS_CALLBACK`
-  - `SQLITE_OMIT_SHARED_CACHE`
-  - `SQLITE_OMIT_LOAD_EXTENSION`
+  - `SQLITE_OMIT_PROGRESS_CALLBACK` (iOS/macOS/...)
+  - `SQLITE_OMIT_SHARED_CACHE` (iOS/macOS/...)
+  - `SQLITE_ENABLE_LOAD_EXTENSION` (Android only)
+  - `SQLITE_OMIT_LOAD_EXTENSION` (iOS/macOS/...)
+  - `SQLITE_ENABLE_COLUMN_METADATA` (Android only)
+  - `SQLITE_ENABLE_UNLOCK_NOTIFY` (Android only)
   - `SQLITE_ENABLE_FTS3` (iOS/macOS/Windows)
   - `SQLITE_ENABLE_FTS3_PARENTHESIS`
   - `SQLITE_ENABLE_FTS4`
   - `SQLITE_ENABLE_RTREE`
+  - `SQLITE_ENABLE_STAT3` (Android only)
+  - `SQLITE_ENABLE_STAT4` (Android only)
   - `SQLITE_ENABLE_FTS5`
   - `SQLITE_ENABLE_JSON1`
   - `SQLITE_DEFAULT_PAGE_SIZE=1024` (all platforms) and `SQLITE_DEFAULT_CACHE_SIZE=2000` (iOS/macOS/Windows) to avoid "potentially distruptive change(s)" from SQLite 3.12.0 ref: <http://sqlite.org/pgszchng2016.html>
@@ -471,7 +478,6 @@ See **Security of sensitive data** in the [Security](#security) section above.
 
 ## Known issues
 
-- This plugin will NOT work on `cordova-android@7` due to issue with JAR and NDK library files as discussed in [litehelpers / Cordova-sqlcipher-adapter/issues/64](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/64) and [litehelpers/Cordova-sqlite-storage#729](https://github.com/litehelpers/Cordova-sqlite-storage/issues/729).
 - The iOS/macOS platform versions do not support certain rapidly repeated open-and-close or open-and-delete test scenarios due to how the implementation handles background processing
 - ~~The Android platform version does not always handle four-byte UTF-8 characters emoji characters such as `\u1F603` (SMILING FACE, MOUTH OPEN) correctly ref: [litehelpers/Cordova-sqlite-storage#564](https://github.com/litehelpers/Cordova-sqlite-storage/issues/564). It is sometimes possible to store and retrieve such characters but certain operations such as hex conversions do not work properly when using the default [Android-sqlite-connector](https://github.com/liteglue/Android-sqlite-connector) database implementation. It is suspected that such characters would be stored incorrectly by the default Android platform version. Note that this is not an issue in case the built-in Android database is used (using the `androidDatabaseImplementation: 2` setting in `window.sqlitePlugin.openDatabase`)~~ _(NOT an issue in this plugin version)_
 - Cannot read encrypted database with CORRECT password directly after attempt to open with INCORRECT password ref: [litehelpers/Cordova-sqlcipher-adapter#43](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/43)

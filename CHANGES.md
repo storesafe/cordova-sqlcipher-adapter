@@ -1,7 +1,8 @@
 # Changes
 
-## cordova-sqlcipher-adapter 0.1.12-pre2
+## cordova-sqlcipher-adapter 0.1.12-rc1
 
+- SQLCipher for Android 3.5.9 Gradle reference
 - SQLCipher 3.4.2 for iOS/macOS
 - Windows platform build disabled (no longer tested in this plugin version; CRYPTO no longer enabled in Windows SQLite3 library build; unwanted libTomCrypt provider completely removed)
 
