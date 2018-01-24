@@ -5,7 +5,7 @@ var MYTIMEOUT = 12000;
 var DEFAULT_SIZE = 5000000; // max to avoid popup in safari/ios
 
 var isWP8 = /IEMobile/.test(navigator.userAgent); // Matches WP(7/8/8.1)
-var isWindows = /Windows /.test(navigator.userAgent); // Windows (8.1)
+var isWindows = /Windows /.test(navigator.userAgent); // Windows [XXX]
 var isAndroid = !isWindows && /Android/.test(navigator.userAgent);
 var isMac = /Macintosh/.test(navigator.userAgent);
 var isWKWebView = !isWindows && !isAndroid && !isWP8 && !isMac && !!window.webkit && !!window.webkit.messageHandlers;
@@ -543,15 +543,14 @@ var mytests = function() {
                     expect(rs3.rows).toBeDefined();
                     expect(rs3.rows.length).toBe(1);
 
-                    // XXX GONE:
-                    // STOP HERE [HEX encoding BUG] for Android-sqlite-connector:
+                    // XXX GONE [NO ISSUE on android-database-sqlcipher (SQLCipher for Android)]:
                     // if (!isWebSql && !isWindows && isAndroid && !isImpl2) return done();
 
                     if (isWindows)
                       expect(rs3.rows.item(0).hexvalue).toBe('40003DD803DE2100'); // (UTF-16le)
-                    // XXX GONE:
-                    //else if (!isWebSql && isAndroid && !isImpl2)
-                    //  expect(rs3.rows.item(0).hexvalue).toBe('--'); // (UTF-8)
+                    //- XXX GONE [NO ISSUE on android-database-sqlcipher (SQLCipher for Android)]:
+                    //- else if (!isWebSql && isAndroid && !isImpl2)
+                    //-   expect(rs3.rows.item(0).hexvalue).toBe('--'); // (UTF-8)
                     else
                       expect(rs3.rows.item(0).hexvalue).toBe('40F09F988321'); // (UTF-8)
 
@@ -1248,10 +1247,11 @@ var mytests = function() {
 
       describe(scenarioList[i] + ': special UNICODE column value binding test(s)', function() {
 
-        it(suiteName + ' stores [Unicode] string with \\u0000 (same as \\0) correctly [HEX encoding check BROKEN for Android-sqlite-connector]', function (done) {
-          if (isWP8) pending('BROKEN for WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
-          if (isWindows) pending('SKIP: BROKEN on Windows'); // [FUTURE TBD, already documented]
-          if (!isWebSql && isAndroid && !isImpl2) pending('BROKEN for Android (default sqlite-connector version)'); // [FUTURE TBD (documented)]
+        it(suiteName + ' stores [Unicode] string with \\u0000 (same as \\0) correctly [XXX NO HEX ENCODING ISSUE on android-database-sqlcipher (SQLCipher for Android)]', function (done) {
+          // if (isWP8) pending('...') // XXX GONE
+          if (isWindows) pending('XXX SKIP [TRUNCATION BUG] on Windows'); // XXX
+          // XXX NO ISSUE on android-database-sqlcipher (SQLCipher for Android):
+          // if (!isWebSql && isAndroid && !isImpl2) pending('...');
 
           var db = openDatabase('UNICODE-store-u0000-test.db');
 
@@ -1316,7 +1316,7 @@ var mytests = function() {
                   tx.executeSql('SELECT name FROM test', [], function (tx_ignored, rs) {
                     var name = rs.rows.item(0).name;
 
-                    // TBD ???:
+                    // XXX TBD ???:
                     // There is a bug in WebKit and Chromium where strings are created
                     // using methods that rely on '\0' for termination instead of
                     // the specified byte length.
@@ -1327,8 +1327,7 @@ var mytests = function() {
                     // we would like to know, so the test is coded to fail if it starts
                     // working there.
 
-                    // TBD
-                    // QUICK TEST WORKAROUND
+                    // XXX TBD [QUICK TEST WORKAROUND] ???:
                     if (isWebSql && isAndroid) return done();
 
                     if (isWebSql) {
