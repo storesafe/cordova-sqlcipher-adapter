@@ -118,8 +118,8 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
 ## Status
 
 - _Windows platform support is now disabled in this plugin version, with CRYPTO provider (libTomCrypt) completely removed (ref: [litehelpers / Cordova-sqlcipher-adapter#63](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/63)). For future consideration: enable Windows build again with encryption using a recent build of the OpenSSL crypto library ref: [litehelpers/Cordova-sqlcipher-adapter#30](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/30)_
-- Alpha version, with previous version of SQLCipher (will upgrade to SQLCipher 3.4.2 / 3.5.8 along with other fixes as discussed in <https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/62>)
-  - SQLCipher `3.4.1` for iOS/macOS~~/Windows~~
+- __Alpha version:__
+  - SQLCipher `3.4.2` for iOS/macOS~~/Windows~~
   - SQLCipher `3.5.6` for Android built from [brodybits / android-database-sqlcipher-build-fix](https://github.com/brodybits/android-database-sqlcipher-build-fix), now with 64-bit CPU support
   - `SQLITE_DEFAULT_PAGE_SIZE=1024` and `SQLITE_DEFAULT_CACHE_SIZE=2000` to avoid "potentially distruptive change(s)" from SQLite 3.12.0 in unencrypted databases ref: <http://sqlite.org/pgszchng2016.html>
   - with OpenSSL libcrypto for Android
