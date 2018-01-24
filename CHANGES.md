@@ -2,6 +2,8 @@
 
 ## cordova-sqlcipher-adapter 0.1.12-pre1
 
+- Windows platform build disabled (no longer tested in this plugin version; CRYPTO no longer enabled in Windows SQLite3 library build; unwanted libTomCrypt provider completely removed)
+
 ##### cordova-sqlite-legacy-core 1.0.7
 
 - Add error info text in case of close error on Windows

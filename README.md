@@ -2,24 +2,9 @@
 
 Native interface to sqlcipher in a Cordova/PhoneGap plugin for Android, iOS, macOS, ~~and _Windows_,~~ with API similar to HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/).
 
-License terms for Android and _UNSUPPORTED_ Windows platform versions: MIT or Apache 2.0
+License terms for Android and _DISABLED (unsupported)_ Windows platform versions: MIT or Apache 2.0
 
 License terms for iOS/macOS platform version: MIT only
-
-<!-- XXX GONE [NOT NEEDED HERE]:
-**PLEASE READ WARNING NOTICES BELOW.**
-
-**Windows platform REMOVAL NOTICE:** Windows platform support will be removed in the near future ref: [litehelpers / Cordova-sqlcipher-adapter#63](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/63)
-
-## About this plugin version branch
-
-Plugin version with SQLCipher included
-
- ... XXX GONE [NO LONGER WORKING]:
-|Android Circle-CI (**full** suite)|iOS Travis-CI (partial suite)|
-|-----------------------|----------------------|
-|[![Circle CI](https://circleci.com/gh/litehelpers/Cordova-sqlcipher-adapter.svg?style=svg)](https://circleci.com/gh/litehelpers/Cordova-sqlcipher-adapter)|[![Build Status](https://travis-ci.org/litehelpers/Cordova-sqlcipher-adapter.svg)](https://travis-ci.org/litehelpers/Cordova-sqlcipher-adapter)|
- ... -->
 
 <!-- END About this plugin version branch -->
 
@@ -29,15 +14,13 @@ Plugin version with SQLCipher included
 
 **IMPORTANT EXPORT REQUIREMENTS** described at: <https://discuss.zetetic.net/t/export-requirements-for-applications-using-sqlcipher/47>
 
-~~**WINDOWS ENCRYPTION WARNING NOTICE:** libTomCrypt may have inferior entropy (randomness) for encryption. It is desired to replace libTomCrypt with a recent build of the OpenSSL crypto library ref: [litehelpers/Cordova-sqlcipher-adapter#30](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/30)~~ _(Windows platform version no longer supported by this plugin version)_
-
 ### Multiple SQLite problem on Android
 
 This plugin uses a non-standard SQLCipher for Android implementation on Android. In case an application access the **same** database using multiple plugins there is a risk of data corruption ref: [litehelpers/Cordova-sqlite-storage#626](https://github.com/litehelpers/Cordova-sqlite-storage/issues/626)) as described in <http://ericsink.com/entries/multiple_sqlite_problem.html> and <https://www.sqlite.org/howtocorrupt.html>.
 
 ### Additional notice
 
-__Windows platform support is now disabled in this plugin version. This plugin version is no longer tested on Windows. Windows platform may be complete removed from this plugin version in the near future.__
+__Windows platform support is now disabled in this plugin version, with CRYPTO provider (libTomCrypt) completely removed. This plugin version is no longer tested on Windows. For future consideration: enable Windows build again with encryption using a recent build of the OpenSSL crypto library__
 
 <!-- END WARNING NOTICES -->
 
@@ -134,14 +117,14 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
 
 ## Status
 
-- _Windows platform support is now disabled in this plugin version. Windows platform support is no longer tested and may be removed in the near future. Ref: [litehelpers / Cordova-sqlcipher-adapter#63](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/63)_
+- _Windows platform support is now disabled in this plugin version, with CRYPTO provider (libTomCrypt) completely removed (ref: [litehelpers / Cordova-sqlcipher-adapter#63](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/63)). For future consideration: enable Windows build again with encryption using a recent build of the OpenSSL crypto library ref: [litehelpers/Cordova-sqlcipher-adapter#30](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/30)_
 - Alpha version, with previous version of SQLCipher (will upgrade to SQLCipher 3.4.2 / 3.5.8 along with other fixes as discussed in <https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/62>)
-  - SQLCipher `3.4.1` for iOS/macOS/Windows
+  - SQLCipher `3.4.1` for iOS/macOS~~/Windows~~
   - SQLCipher `3.5.6` for Android built from [brodybits / android-database-sqlcipher-build-fix](https://github.com/brodybits/android-database-sqlcipher-build-fix), now with 64-bit CPU support
   - `SQLITE_DEFAULT_PAGE_SIZE=1024` and `SQLITE_DEFAULT_CACHE_SIZE=2000` to avoid "potentially distruptive change(s)" from SQLite 3.12.0 in unencrypted databases ref: <http://sqlite.org/pgszchng2016.html>
   - with OpenSSL libcrypto for Android
   - using CommonCrypto framework for iOS/macOS
-  - with ~~LibTomCrypt (1.17) embedded~~ _(NO ENCRYPTION ENABLED)_ for Windows
+  - _NO ENCRYPTION ENABLED (completely removed)_ for Windows
   - for future consideration: embed OpenSSL libcrypto for all target platforms
 - This plugin is NOT supported by PhoneGap Developer App or PhoneGap Desktop App.
 - This plugin will NOT work on `cordova-android@7` due to issue with JAR and NDK library files as discussed in [litehelpers / Cordova-sqlcipher-adapter/issues/64](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/64) and [litehelpers/Cordova-sqlite-storage#729](https://github.com/litehelpers/Cordova-sqlite-storage/issues/729).
@@ -170,21 +153,19 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
   - `SQLITE_ENABLE_JSON1`
   - `SQLITE_DEFAULT_PAGE_SIZE=1024` (all platforms) and `SQLITE_DEFAULT_CACHE_SIZE=2000` (iOS/macOS/Windows) to avoid "potentially distruptive change(s)" from SQLite 3.12.0 ref: <http://sqlite.org/pgszchng2016.html>
   - `SQLITE_OS_WINRT` (Windows only)
-  - ~~`SQLCIPHER_CRYPTO_LIBTOMCRYPT` (Windows only)~~
   - `SQLCIPHER_CRYPTO_OPENSSL` (Android only)
 - The iOS database location is now mandatory, as documented below.
 - ~~Windows 8.1 and Windows Phone 8.1 are currently supported by this plugin version, now deprecated **and will be removed in the near future**.~~
 - Amazon Fire-OS is dropped due to lack of support by Cordova. Android version should be used to deploy to Fire-OS 5.0(+) devices. For reference: [cordova/cordova-discuss#32 (comment)](https://github.com/cordova/cordova-discuss/issues/32#issuecomment-167021676)
-- Windows platform version (using a customized version of the performant [doo / SQLite3-WinRT](https://github.com/doo/SQLite3-WinRT) C++ component) __is now disabled in this plugin version and may be removed in the near future__ ref: [litehelpers / Cordova-sqlcipher-adapter#63](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/63), has the following known limitations:
+- Windows platform version (using a customized version of the performant [doo / SQLite3-WinRT](https://github.com/doo/SQLite3-WinRT) C++ component) __is now disabled in this plugin version (with CRYPTO provider completely removed) and may be removed in the near future__ ref: [litehelpers / Cordova-sqlcipher-adapter#63](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/63), has the following known limitations:
   - This plugin version branch has dependency on `v140` toolset libraries included by Visual Studio 2015 ref: [litehelpers/Cordova-sqlite-storage#580](https://github.com/litehelpers/Cordova-sqlite-storage/issues/580) (UNTESTED and UNSUPPORTED WORKAROUND for Visual Studio 2017 is described at: <https://developercommunity.visualstudio.com/content/problem/48806/cant-find-v140-in-visual-studio-2017.html>)
-  - _Encryption no longer enabled in Windows SQLite3 library build_
+  - _Encryption no longer enabled in Windows SQLite3 library build. For future consideration: enable Windows build again with encryption using a recent build of the OpenSSL crypto library ref: [litehelpers/Cordova-sqlcipher-adapter#30](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/30)_
   - It is **not** possible to use this plugin with the default "Any CPU" target. A specific target CPU type **must** be specified when building an app with this plugin.
   - Truncation issue with UNICODE `\u0000` character (same as `\0`)
   - No background processing
   - INCORRECT error code (0) and INCONSISTENT error message (missing actual error info) in error callbacks ref: [litehelpers/Cordova-sqlite-storage#539](https://github.com/litehelpers/Cordova-sqlite-storage/issues/539)
   - Not possible to select BLOB column values
   - Windows platform version uses `UTF-16le` internal database encoding while the other platform versions use `UTF-8` internal encoding. (`UTF-8` internal encoding is preferred ref: [litehelpers/Cordova-sqlite-storage#652](https://github.com/litehelpers/Cordova-sqlite-storage/issues/652))
-  - ~~**IMPORTANT WARNING NOTICE:** libTomCrypt may have inferior entropy (randomness) for encryption and may run much more slowly. It is desired to replace libTomCrypt with a recent build of the OpenSSL crypto library ref: [litehelpers/Cordova-sqlcipher-adapter#30](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/30)~~
 - The macOS platform version ("osx" platform) is not tested in a release build and should be considered pre-alpha.
 - Android platform version:
   - Android versions supported: 2.3.3 - 7.1.1 (API level 10 - 25), depending on Cordova version ref: <https://cordova.apache.org/docs/en/latest/guide/platforms/android/>
@@ -220,7 +201,6 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
 - macOS ("osx" platform) is now supported
 - New [litehelpers / Cordova-sqlite-evcore-extbuild-free](https://github.com/litehelpers/Cordova-sqlite-evcore-extbuild-free) plugin version _(WITHOUT SQLCipher support)_ with Android JSON and SQL statement handling implemented in C, as well as support for PhoneGap Build, Intel XDK, etc. (GPL or commercial license terms). Handles large SQL batches in less than half the time as this plugin version. Also supports arbitrary database location on Android. _FUTURE TBD evcore version with SQLCipher supported may be added upon sufficient demand._
 - Published [brodybits / Cordova-quick-start-checklist](https://github.com/brodybits/Cordova-quick-start-checklist) and [brodybits / Avoiding-some-Cordova-pitfalls](https://github.com/brodybits/Avoiding-some-Cordova-pitfalls).
-- ~~Windows 8.1/Windows Phone 8.1/Windows 10 _platform version_ is available _(with SQLCipher)_ **here** (with dependency on `v140` build toolset included by Visual Studio 2015)~~ _(Windows 8.1/Windows Phone 8.1/Windows 10 platform support is available WITHOUT SQLCipher support in [litehelpers / Cordova-sqlite-legacy](https://github.com/litehelpers/Cordova-sqlite-legacy))_. UNTESTED and UNSUPPORTED WORKAROUND for Visual Studio 2017 is described at: <https://developercommunity.visualstudio.com/content/problem/48806/cant-find-v140-in-visual-studio-2017.html>)
 - Self-test functions to verify proper installation and operation of this plugin
 - More explicit `openDatabase` and `deleteDatabase` `iosDatabaseLocation` option
 - Added straightforward sql batch function
@@ -236,7 +216,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
 - Failure-safe nested transactions with batch processing optimizations (according to HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/))
 - Transaction API (based on HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/)) is designed for maximum flexiblibility, does not allow any transactions to be left hanging open.
 - As described in [this posting](http://brodyspark.blogspot.com/2012/12/cordovaphonegap-sqlite-plugins-offer.html):
-  - Keeps sqlite database in known, platform specific user data location on all supported platforms (Android/iOS/macOS/Windows), which can be reconfigured on iOS/macOS. Whether or not the database on the iOS platform is synchronized to iCloud depends on the selected database location.
+  - Keeps sqlite database in known, platform specific user data location on all supported platforms (Android/iOS/macOS/...), which can be reconfigured on iOS/macOS. Whether or not the database on the iOS platform is synchronized to iCloud depends on the selected database location.
   - No arbitrary size limit. SQLite limits described at: <http://www.sqlite.org/limits.html>
 - Also validated for multi-page applications by internal test selfTest function.
 - This project is self-contained. There are no dependencies on other plugins such as cordova-plugin-file.
@@ -276,7 +256,7 @@ In addition, this guide assumes a basic knowledge of some key JavaScript concept
 
 **NOTICE:** This plugin is only supported with the Cordova CLI. This plugin is *not* supported with other Cordova/PhoneGap systems such as PhoneGap CLI, PhoneGap Build, Plugman, Intel XDK, Webstorm, etc.
 
-<!-- XXX NOT NEEDED IN THIS PLUGIN VERSION:
+<!-- FUTURE TBD SUPPORT Windows build with OpenSSL CRYPTO PROVIDER ...
 ### Windows platform notes
 
 The Windows platform can present a number of challenges which increase when using this plugin. The following tips are recommended for getting started with Windows:
@@ -592,7 +572,7 @@ Additional limitations are tracked in [cordova-sqlite-help doc-todo issues](http
 - As discussed in [litehelpers/Cordova-sqlite-storage#355](https://github.com/litehelpers/Cordova-sqlite-storage/issues/355), it may be necessary to install ionic-plugin-keyboard
 - Navigation items such as root page can be tricky on Ionic 2 ref: [litehelpers/Cordova-sqlite-storage#613](https://github.com/litehelpers/Cordova-sqlite-storage/issues/613)
 
-<!-- XXX NOT NEEDED IN THIS PLUGIN VERSION:
+<!-- FUTURE TBD SUPPORT Windows build with OpenSSL CRYPTO PROVIDER ...
 ### Windows platform pitfalls
 
 - This plugin does **not** work with the default "Any CPU" target. A specific, valid CPU target platform **must** be specified.
@@ -999,7 +979,7 @@ db.readTransaction(function(tx) {
 The threading model depends on which platform version is used:
 - For Android, one background thread per db;
 - for iOS/macOS, background processing using a very limited thread pool (only one thread working at a time);
-- for Windows _(disabled in this plugin version)_, no background processing.
+- for Windows _(disabled DUE TO MISSING CRYPTO PROVIDER in this plugin version)_, no background processing.
 
 <!-- END Background processing -->
 
@@ -1245,7 +1225,7 @@ cordova platform add ios
 
 <!-- END Plugin installation sources -->
 
-<!-- XXX NOT NEEDED IN THIS PLUGIN VERSION:
+<!-- FUTURE TBD SUPPORT Windows build with OpenSSL CRYPTO PROVIDER ...
 ## Windows platform usage
 
 This plugin can be challenging to use on Windows since it includes a native SQLite3 library that is built as a part of the Cordova app. Here are some requirements:
@@ -1340,7 +1320,7 @@ In case of a problem with a pre-populated database, please post your entire proj
 ## What information is needed for help
 
 Please include the following:
-- Which platform(s) (Android/iOS/macOS~~/Windows 8.1/Windows Phone 8.1/Windows 10~~)
+- Which platform(s) (Android/iOS/macOS~~/Windows XXX~~)
 - Clear description of the issue
 - A small, complete, self-contained program that demonstrates the problem, preferably as a Github project, based on [brodybits / cordova-sqlite-test-app](https://github.com/brodybits/cordova-sqlite-test-app). ZIP/TGZ/BZ2 archive available from a public link is OK. No RAR or other such formats please.
 - In case of a Windows build problem please capture the entire compiler output.
