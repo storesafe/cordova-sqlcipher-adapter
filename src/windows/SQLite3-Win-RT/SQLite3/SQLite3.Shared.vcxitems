@@ -10,8 +10,8 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)..\..\..\common;$(MSBuildThisFileDirectory)..\..\libTomCrypt</AdditionalIncludeDirectories>
-      <AdditionalOptions>/DSQLITE_HAS_CODEC /DSQLITE_TEMP_STORE=3 /DSQLCIPHER_CRYPTO_LIBTOMCRYPT /DNDEBUG /DSQLITE_THREADSAFE=1 /DSQLITE_DEFAULT_MEMSTATUS=0 /DSQLITE_OMIT_DECLTYPE /DSQLITE_OMIT_PROGRESS_CALLBACK /DSQLITE_OMIT_SHARED_CACHE /DSQLITE_OMIT_LOAD_EXTENSION /DSQLITE_ENABLE_FTS3 /DSQLITE_ENABLE_FTS3_PARENTHESIS /DSQLITE_ENABLE_FTS4 /DSQLITE_ENABLE_RTREE /DSQLITE_OS_WINRT /DSQLITE_ENABLE_FTS5 /DSQLITE_ENABLE_JSON1 /DSQLITE_DEFAULT_PAGE_SIZE=1024 /DSQLITE_DEFAULT_CACHE_SIZE=2000 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)..\..\..\common</AdditionalIncludeDirectories>
+      <AdditionalOptions>/DSQLITE_TEMP_STORE=3 /DNDEBUG /DSQLITE_THREADSAFE=1 /DSQLITE_DEFAULT_MEMSTATUS=0 /DSQLITE_OMIT_DECLTYPE /DSQLITE_OMIT_PROGRESS_CALLBACK /DSQLITE_OMIT_SHARED_CACHE /DSQLITE_OMIT_LOAD_EXTENSION /DSQLITE_ENABLE_FTS3 /DSQLITE_ENABLE_FTS3_PARENTHESIS /DSQLITE_ENABLE_FTS4 /DSQLITE_ENABLE_RTREE /DSQLITE_OS_WINRT /DSQLITE_ENABLE_FTS5 /DSQLITE_ENABLE_JSON1 /DSQLITE_DEFAULT_PAGE_SIZE=1024 /DSQLITE_DEFAULT_CACHE_SIZE=2000 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -19,8 +19,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Database.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Statement.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\common\sqlite3.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\aes_tab.c" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\sha224.c" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
   </ItemGroup>
   <ItemGroup>
@@ -28,84 +26,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Database.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Statement.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\common\sqlite3.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\cbc_encrypt.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\cbc_decrypt.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\cbc_start.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\cbc_done.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\crypt_find_cipher.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\crypt_find_hash.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\crypt_register_hash.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\crypt_register_cipher.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\crypt_register_prng.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\crypt_argchk.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\crypt_cipher_is_valid.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\crypt_cipher_descriptor.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\crypt_prng_descriptor.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\crypt_hash_is_valid.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\crypt_hash_descriptor.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\hash_memory.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\zeromem.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\pkcs_5_2.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\aes.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\sha1.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\hmac_init.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\hmac_memory.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\hmac_process.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\hmac_done.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\fortuna.c">
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libTomCrypt\sha256.c">
       <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">

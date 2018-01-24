@@ -42,7 +42,11 @@ module.exports = {
 
 			var db = new SQLite3JS.Database(opendbname);
 			if (!!options.key && options.key.length !== 0) {
+				// XXX FAIL EXPLICITLY SINCE THERE IS NO CRYPTO PROVIDER FOR WINDOWS:
+				fail("OPEN ERROR: NO CRYPTO PROVIDER for Windows");
+				/* XXX CURRENTLY NOT SUPPORTED:
 				db.key(options.key)
+				// XXX */
 				// ignore result if following access test does not throw.
 			}
 

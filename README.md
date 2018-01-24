@@ -29,7 +29,7 @@ Plugin version with SQLCipher included
 
 **IMPORTANT EXPORT REQUIREMENTS** described at: <https://discuss.zetetic.net/t/export-requirements-for-applications-using-sqlcipher/47>
 
-**WINDOWS ENCRYPTION WARNING NOTICE:** libTomCrypt may have inferior entropy (randomness) for encryption. It is desired to replace libTomCrypt with a recent build of the OpenSSL crypto library ref: [litehelpers/Cordova-sqlcipher-adapter#30](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/30) _(Windows platform version no longer supported by this plugin version)_
+~~**WINDOWS ENCRYPTION WARNING NOTICE:** libTomCrypt may have inferior entropy (randomness) for encryption. It is desired to replace libTomCrypt with a recent build of the OpenSSL crypto library ref: [litehelpers/Cordova-sqlcipher-adapter#30](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/30)~~ _(Windows platform version no longer supported by this plugin version)_
 
 ### Multiple SQLite problem on Android
 
@@ -141,14 +141,14 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
   - `SQLITE_DEFAULT_PAGE_SIZE=1024` and `SQLITE_DEFAULT_CACHE_SIZE=2000` to avoid "potentially distruptive change(s)" from SQLite 3.12.0 in unencrypted databases ref: <http://sqlite.org/pgszchng2016.html>
   - with OpenSSL libcrypto for Android
   - using CommonCrypto framework for iOS/macOS
-  - with LibTomCrypt (1.17) embedded for Windows
+  - with ~~LibTomCrypt (1.17) embedded~~ _(NO ENCRYPTION ENABLED)_ for Windows
   - for future consideration: embed OpenSSL libcrypto for all target platforms
 - This plugin is NOT supported by PhoneGap Developer App or PhoneGap Desktop App.
 - This plugin will NOT work on `cordova-android@7` due to issue with JAR and NDK library files as discussed in [litehelpers / Cordova-sqlcipher-adapter/issues/64](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/64) and [litehelpers/Cordova-sqlite-storage#729](https://github.com/litehelpers/Cordova-sqlite-storage/issues/729).
 - A recent version of the Cordova CLI (such as `6.5.0` / `7.1.0`) is recommended. (Cordova CLI 8.x includes `cordova-android@7`, NOT supported by this plugin due to [litehelpers / Cordova-sqlcipher-adapter/issues/64](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/64) / [litehelpers/Cordova-sqlite-storage#729](https://github.com/litehelpers/Cordova-sqlite-storage/issues/729).) Cordova versions older than `6.0.0` are missing the `cordova-ios@4.0.0` security fixes. In addition it is *required* to use `cordova prepare` in case of cordova-ios older than `4.3.0` (Cordova CLI `6.4.0`).
 - _This plugin version will NOT work on `cordova-android@7` due to [litehelpers / Cordova-sqlcipher-adapter/issues/64](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/64) / [litehelpers/Cordova-sqlite-storage#729](https://github.com/litehelpers/Cordova-sqlite-storage/issues/729)._
 - SQLCipher build settings used:
-  - `SQLITE_HAS_CODEC`
+  - `SQLITE_HAS_CODEC` _(no longer enabled in Windows SQLite3 library build)_
   - `SQLITE_DEFAULT_JOURNAL_SIZE_LIMIT=1048576` (Android only)
   - `HAVE_USLEEP=1`
   - `SQLITE_TEMP_STORE=3`
@@ -170,20 +170,21 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
   - `SQLITE_ENABLE_JSON1`
   - `SQLITE_DEFAULT_PAGE_SIZE=1024` (all platforms) and `SQLITE_DEFAULT_CACHE_SIZE=2000` (iOS/macOS/Windows) to avoid "potentially distruptive change(s)" from SQLite 3.12.0 ref: <http://sqlite.org/pgszchng2016.html>
   - `SQLITE_OS_WINRT` (Windows only)
-  - `SQLCIPHER_CRYPTO_LIBTOMCRYPT` (Windows only)
+  - ~~`SQLCIPHER_CRYPTO_LIBTOMCRYPT` (Windows only)~~
   - `SQLCIPHER_CRYPTO_OPENSSL` (Android only)
 - The iOS database location is now mandatory, as documented below.
 - ~~Windows 8.1 and Windows Phone 8.1 are currently supported by this plugin version, now deprecated **and will be removed in the near future**.~~
 - Amazon Fire-OS is dropped due to lack of support by Cordova. Android version should be used to deploy to Fire-OS 5.0(+) devices. For reference: [cordova/cordova-discuss#32 (comment)](https://github.com/cordova/cordova-discuss/issues/32#issuecomment-167021676)
 - Windows platform version (using a customized version of the performant [doo / SQLite3-WinRT](https://github.com/doo/SQLite3-WinRT) C++ component) __is now disabled in this plugin version and may be removed in the near future__ ref: [litehelpers / Cordova-sqlcipher-adapter#63](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/63), has the following known limitations:
   - This plugin version branch has dependency on `v140` toolset libraries included by Visual Studio 2015 ref: [litehelpers/Cordova-sqlite-storage#580](https://github.com/litehelpers/Cordova-sqlite-storage/issues/580) (UNTESTED and UNSUPPORTED WORKAROUND for Visual Studio 2017 is described at: <https://developercommunity.visualstudio.com/content/problem/48806/cant-find-v140-in-visual-studio-2017.html>)
+  - _Encryption no longer enabled in Windows SQLite3 library build_
   - It is **not** possible to use this plugin with the default "Any CPU" target. A specific target CPU type **must** be specified when building an app with this plugin.
   - Truncation issue with UNICODE `\u0000` character (same as `\0`)
   - No background processing
   - INCORRECT error code (0) and INCONSISTENT error message (missing actual error info) in error callbacks ref: [litehelpers/Cordova-sqlite-storage#539](https://github.com/litehelpers/Cordova-sqlite-storage/issues/539)
   - Not possible to select BLOB column values
   - Windows platform version uses `UTF-16le` internal database encoding while the other platform versions use `UTF-8` internal encoding. (`UTF-8` internal encoding is preferred ref: [litehelpers/Cordova-sqlite-storage#652](https://github.com/litehelpers/Cordova-sqlite-storage/issues/652))
-  - **IMPORTANT WARNING NOTICE:** libTomCrypt may have inferior entropy (randomness) for encryption and may run much more slowly. It is desired to replace libTomCrypt with a recent build of the OpenSSL crypto library ref: [litehelpers/Cordova-sqlcipher-adapter#30](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/30)
+  - ~~**IMPORTANT WARNING NOTICE:** libTomCrypt may have inferior entropy (randomness) for encryption and may run much more slowly. It is desired to replace libTomCrypt with a recent build of the OpenSSL crypto library ref: [litehelpers/Cordova-sqlcipher-adapter#30](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/30)~~
 - The macOS platform version ("osx" platform) is not tested in a release build and should be considered pre-alpha.
 - Android platform version:
   - Android versions supported: 2.3.3 - 7.1.1 (API level 10 - 25), depending on Cordova version ref: <https://cordova.apache.org/docs/en/latest/guide/platforms/android/>
