@@ -139,7 +139,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
   - `SQLITE_LOCKING_STYLE=1` (iOS/macOS only)
   - `DSQLITE_DEFAULT_JOURNAL_SIZE_LIMIT=1048576` (Android only)
   - `NDEBUG` (`NDEBUG=1` on Android)
-  - `SQLITE_THREADSAFE=1` (`SQLITE_THREADSAFE=2` on iOS/macOS)
+  - `SQLITE_THREADSAFE=1`
   - `DSQLITE_ENABLE_MEMORY_MANAGEMENT=1` (Android only)
   - `SQLITE_DEFAULT_MEMSTATUS=0` (iOS/macOS/...)
   - `SQLITE_OMIT_DECLTYPE` (iOS/macOS/...)

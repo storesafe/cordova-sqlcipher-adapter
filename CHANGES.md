@@ -1,5 +1,9 @@
 # Changes
 
+## cordova-sqlcipher-adapter 0.1.12-rc2
+
+- cordova-sqlcipher-adapter with SQLITE_THREADSAFE=1 for iOS/macOS ref: litehelpers/Cordova-sqlite-storage#754 (<https://github.com/litehelpers/Cordova-sqlite-storage/issues/754>)
+
 ## cordova-sqlcipher-adapter 0.1.12-rc1
 
 - SQLCipher for Android 3.5.9 Gradle reference
