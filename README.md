@@ -1,4 +1,4 @@
-# Cordova/PhoneGap SQLCipher adapter plugin
+# Cordova/PhoneGap SQLCipher adapter plugin - maintenance only
 
 Native interface to sqlcipher in a Cordova/PhoneGap plugin for Android, iOS, macOS, ~~and Windows TBD,~~ with API similar to HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/).
 
@@ -13,6 +13,8 @@ License terms for iOS/macOS platform version: MIT only
 **WARNING:** Without the database password there is no proven way to recover the data.
 
 **IMPORTANT EXPORT REQUIREMENTS** described at: <https://discuss.zetetic.net/t/export-requirements-for-applications-using-sqlcipher/47>
+
+This project is under maintenance for security, data loss risk, and other critical issues at this point ([brodybits/cordova-sqlcipher-adapter#81](https://github.com/brodybits/cordova-sqlcipher-adapter/issues/81)). Active development may be resumed someday in the future, in case of sufficient interest from the user community. For priority feature requirements please contact <sales@litehelpers.net> for estimation and discussion.
 
 ### Multiple database problem on Android
 
