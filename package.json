@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/litehelpers/Cordova-sqlcipher-adapter.git"
+    "url": "https://github.com/brodybits/cordova-sqlcipher-adapter.git"
   },
   "keywords": [
     "sqlite",
@@ -27,9 +27,9 @@
   "author": "various",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues"
+    "url": "https://github.com/brodybits/cordova-sqlcipher-adapter/issues"
   },
-  "homepage": "https://github.com/litehelpers/Cordova-sqlcipher-adapter",
+  "homepage": "https://github.com/brodybits/cordova-sqlcipher-adapter",
   "scripts": {
     "start": "node scripts/prepareSpec.js"
   },
