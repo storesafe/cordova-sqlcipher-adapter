@@ -2,6 +2,21 @@
 
 ## cordova-sqlcipher-adapter 0.2.0-dev
 
+### cordova-sqlite-storage 2.2.1
+
+- Fix Android/iOS src copyright, perpetually
+
+### cordova-sqlite-storage 2.2.0
+
+- Fix SQLiteAndroidDatabase implementation for Turkish and other foreign locales
+
+### cordova-sqlite-storage 2.1.0
+
+Windows platform updates that are currently not supported in this plugin version:
+- Visual Studio 2017 updates for Windows UWP build
+- Fix Windows target platform version
+- Reference Windows platform toolset v141 to support Visual Studio 2017 (RC)
+
 ## cordova-sqlcipher-adapter 0.1.12-rc3
 
 - SQLCipher `3.4.2` with FTS3/FTS5 update from SQLite 3.26.0 (security update) for iOS/macOS from <https://github.com/brodybits/sqlcipher/tree/3.4.x%2Bfts-update> (`3.4.x+fts-update` branch)
@@ -37,7 +52,7 @@
 ###### cordova-sqlite-legacy-express-core 1.0.4
 
 - Cleaned up workaround solution to BUG 666: close db before opening (ignore close error)
-- android.database end transaction if active before closing
+- android.database end transaction if active before closing (needed for new BUG 666 workaround solution to pass selfTest in case of builtin android.database implementation)
 
 ##### cordova-sqlite-legacy-core 1.0.5
 

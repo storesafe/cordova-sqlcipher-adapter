@@ -348,8 +348,8 @@ var mytests = function() {
           });
         }, MYTIMEOUT);
 
-        it(suiteName + "INLINE CR-LF String test", function(done) {
-          var db = openDatabase("Inline-CR-LF-String-test.db", "1.0", "Demo", DEFAULT_SIZE);
+        it(suiteName + 'INLINE CR-LF String test', function(done) {
+          var db = openDatabase('INLINE-CR-LF-String-test.db');
           expect(db).toBeDefined();
 
           db.transaction(function(tx) {
@@ -402,8 +402,8 @@ var mytests = function() {
           });
         }, MYTIMEOUT);
 
-        it(suiteName + "INLINE string tab test", function(done) {
-          var db = openDatabase("Inline-string-tab-test.db", "1.0", "Demo", DEFAULT_SIZE);
+        it(suiteName + 'string tab test (inline vs argument parameter value)', function(done) {
+          var db = openDatabase('string-tab-test.db');
           expect(db).toBeDefined();
 
           db.transaction(function(tx) {
@@ -440,10 +440,10 @@ var mytests = function() {
           });
         }, MYTIMEOUT);
 
-        it(suiteName + "INLINE string vertical tab test", function(done) {
+        it(suiteName + 'string vertical tab test (inline vs argument parameter value)', function(done) {
           if (isWP8) pending('BROKEN on WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
 
-          var db = openDatabase("String-vertical-tab-test.db", "1.0", "Demo", DEFAULT_SIZE);
+          var db = openDatabase('String-vertical-tab-test.db');
           expect(db).toBeDefined();
 
           db.transaction(function(tx) {
@@ -480,10 +480,10 @@ var mytests = function() {
           });
         }, MYTIMEOUT);
 
-        it(suiteName + "INLINE string form feed test", function(done) {
+        it(suiteName + 'string form feed test (inline vs argument parameter value)', function(done) {
           if (isWP8) pending('BROKEN on WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
 
-          var db = openDatabase("String-form-feed-test.db", "1.0", "Demo", DEFAULT_SIZE);
+          var db = openDatabase('String-form-feed-test.db');
           expect(db).toBeDefined();
 
           db.transaction(function(tx) {
@@ -520,10 +520,10 @@ var mytests = function() {
           });
         }, MYTIMEOUT);
 
-        it(suiteName + "INLINE string backspace test", function(done) {
+        it(suiteName + 'string backspace test (inline vs argument parameter value)', function(done) {
           if (isWP8) pending('BROKEN on WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
 
-          var db = openDatabase("String-backspace-test.db", "1.0", "Demo", DEFAULT_SIZE);
+          var db = openDatabase('String-backspace-test.db');
           expect(db).toBeDefined();
 
           db.transaction(function(tx) {
@@ -674,7 +674,7 @@ var mytests = function() {
         // manipulation tests.
 
         it(suiteName + 'Inline emoji string manipulation test: SELECT UPPER("a\\uD83D\\uDE03.") [\\u1F603 SMILING FACE (MOUTH OPEN)]', function(done) {
-          var db = openDatabase("Inline-emoji-hex-test.db", "1.0", "Demo", DEFAULT_SIZE);
+          var db = openDatabase('Inline-emoji-hex-test-1.db');
           expect(db).toBeDefined();
 
           db.transaction(function(tx) {
@@ -698,8 +698,8 @@ var mytests = function() {
           });
         }, MYTIMEOUT);
 
-        it(suiteName + 'Inline emoji HEX test: SELECT HEX("@\\uD83D\\uDE03!") [\\u1F603 SMILING FACE (MOUTH OPEN)] [XXX TBD ???: HEX encoding BUG on Android-sqlite-connector]', function(done) {
-          var db = openDatabase("Inline-emoji-hex-test.db", "1.0", "Demo", DEFAULT_SIZE);
+        it(suiteName + 'Inline emoji HEX test: SELECT HEX("@\\uD83D\\uDE03!") [\\u1F603 SMILING FACE (MOUTH OPEN)] [XXX consistent encoding on Android in this plugin version]', function(done) {
+          var db = openDatabase('Inline-emoji-hex-test-2.db');
           expect(db).toBeDefined();
 
           db.transaction(function(tx) {
@@ -792,6 +792,7 @@ var mytests = function() {
         // - litehelpers/Cordova-sqlite-storage#147
         // - Apache Cordova CB-9435 (issue with cordova-ios, also affects macOS)
         // - cordova/cordova-discuss#57 (issue with cordova-android)
+
         it(suiteName + "UNICODE \\u2028 line separator string length", function(done) {
           if (isWP8) pending('BROKEN on WP(8)'); // [BUG #202] Certain UNICODE characters not working with WP(8)
 

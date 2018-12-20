@@ -840,7 +840,6 @@
 
       step3: (successcb, errorcb) ->
         SQLiteFactory.openDatabase {name: SelfTest.DBNAME, location: 'default'}, (db) ->
-          # FUTURE TBD TEST CRUD OPERATIONS (already fixed in a newer version branch)
           db.sqlBatch [
             'CREATE TABLE TestTable(id integer primary key autoincrement unique, data);'
             [ 'INSERT INTO TestTable (data) VALUES (?);', ['test-value'] ]

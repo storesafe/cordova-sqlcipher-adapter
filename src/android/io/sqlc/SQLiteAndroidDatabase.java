@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2018: Christopher J. Brody (aka Chris Brody)
+ * Copyright (c) 2012-present Christopher J. Brody (aka Chris Brody)
  * Copyright (c) 2005-2010, Nitobi Software Inc.
  * Copyright (c) 2010, IBM Corporation
  */
@@ -28,6 +28,8 @@ import java.io.File;
 
 import java.lang.IllegalArgumentException;
 import java.lang.Number;
+
+import java.util.Locale;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -450,7 +452,7 @@ class SQLiteAndroidDatabase
                 // (needed for SQLCipher version)
                 if (first.length() == 0) throw new RuntimeException("query not found");
 
-                return QueryType.valueOf(first.toLowerCase());
+                return QueryType.valueOf(first.toLowerCase(Locale.ENGLISH));
             } catch (IllegalArgumentException ignore) {
                 // unknown verb (NOT blank)
                 return QueryType.other;

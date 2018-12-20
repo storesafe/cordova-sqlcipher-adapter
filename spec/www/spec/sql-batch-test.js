@@ -28,7 +28,7 @@ var mytests = function() {
     // TBD QUICK TEST WORKAROUND for Android:
     if (!isWindows && isAndroid && i === 0) continue;
 
-    describe(pluginScenarioList[i] + ': BATCH SQL test(s)', function() {
+    describe(pluginScenarioList[i] + ': sqlBatch test(s)', function() {
       var scenarioName = pluginScenarioList[i];
       var suiteName = scenarioName + ': ';
       var isImpl2 = (i === 1);

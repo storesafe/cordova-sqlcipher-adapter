@@ -5,7 +5,7 @@ var MYTIMEOUT = 12000;
 var DEFAULT_SIZE = 5000000; // max to avoid popup in safari/ios
 
 var isWP8 = /IEMobile/.test(navigator.userAgent); // Matches WP(7/8/8.1)
-var isWindows = /Windows /.test(navigator.userAgent); // Windows [XXX]
+var isWindows = /Windows /.test(navigator.userAgent); // Windows 8.1/Windows Phone 8.1/Windows 10
 var isAndroid = !isWindows && /Android/.test(navigator.userAgent);
 var isMac = /Macintosh/.test(navigator.userAgent);
 var isWKWebView = !isWindows && !isAndroid && !isWP8 && !isMac && !!window.webkit && !!window.webkit.messageHandlers;
@@ -26,7 +26,7 @@ var mytests = function() {
 
   for (var i=0; i<scenarioCount; ++i) {
 
-    describe(scenarioList[i] + ': tx stored value bindings test(s)', function() {
+    describe(scenarioList[i] + ': tx value bindings (stored value bindings) test(s)', function() {
       var scenarioName = scenarioList[i];
       var suiteName = scenarioName + ': ';
       var isWebSql = (i === 1);
@@ -514,9 +514,10 @@ var mytests = function() {
           });
         }, MYTIMEOUT);
 
-        // NOTE: emojis and other 4-octet UTF-8 characters apparently not stored
-        // properly by Android-sqlite-connector ref: litehelpers/Cordova-sqlite-storage#564
-        it(suiteName + 'INSERT TEXT string with emoji [\\u1F603 SMILING FACE (MOUTH OPEN)], SELECT the data, check, and check HEX [UTF-16le on Windows]' , function(done) {
+        // XXX NOTE: emojis and other 4-octet UTF-8 characters are
+        // XXX evidently stored consistently by android-database-sqlcipher
+        // ref: litehelpers/Cordova-sqlite-storage#564
+        it(suiteName + 'INSERT TEXT string with emoji [\\u1F603 SMILING FACE (MOUTH OPEN)], SELECT the data, check, and check HEX [UTF-16le on Windows; XXX stored consistently by android-database-sqlcipher]' , function(done) {
           var db = openDatabase('INSERT-emoji-and-check.db', '1.0', 'Demo', DEFAULT_SIZE);
 
           db.transaction(function(tx) {
@@ -1304,7 +1305,7 @@ var mytests = function() {
           });
         }, MYTIMEOUT);
 
-        it(suiteName + ' returns [Unicode] string with \\u0000 (same as \\0) correctly [BROKEN: TRUNCATES on Windows]', function (done) {
+        it(suiteName + ' returns [Unicode] string with \\u0000 (same as \\0) correctly [XXX TRUNCATION REPRODUCED on Windows & iOS (WebKit) Web SQL]', function (done) {
           if (isWP8) pending('BROKEN on WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
 
           var db = openDatabase('UNICODE-retrieve-u0000-test.db');
@@ -1317,6 +1318,11 @@ var mytests = function() {
                     var name = rs.rows.item(0).name;
 
                     // XXX TBD ???:
+                    //
+                    // TRUNCATION BUG
+                    //
+                    // BUG on (WebKit) Web SQL:
+                    //
                     // There is a bug in WebKit and Chromium where strings are created
                     // using methods that rely on '\0' for termination instead of
                     // the specified byte length.
@@ -1326,14 +1332,16 @@ var mytests = function() {
                     // For now we expect this test to fail there, but when it is fixed
                     // we would like to know, so the test is coded to fail if it starts
                     // working there.
+                    //
+                    // UPDATE: SEEMS TO BE FIXED on newer versions of Android
+                    //
+                    // BUG on this plugin:
+                    //
+                    // TRUNCATION BUG REPRODUCED on Windows
 
-                    // XXX TBD [QUICK TEST WORKAROUND] ???:
-                    if (isWebSql && isAndroid) return done();
-
-                    if (isWebSql) {
-                      expect(name.length).toBe(1);
-                      expect(name).toBe('a');
-                    } else if (isWindows) {
+                    if ((isWebSql && isAndroid && (/Android [2-4]/.test(navigator.userAgent))) ||
+                        (isWebSql && !isAndroid) ||
+                        (!isWebSql && isWindows)) {
                       expect(name.length).toBe(1);
                       expect(name).toBe('a');
                     } else {

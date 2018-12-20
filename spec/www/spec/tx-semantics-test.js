@@ -389,7 +389,9 @@ var mytests = function() {
               expect(error).toBeDefined();
               expect(error.code).toBeDefined();
               expect(error.message).toBeDefined();
-              // error.hasOwnProperty('message') apparently NOT WORKING on WebKit Web SQL on Android 5.x/... or iOS 10.x/...:
+
+              // error.hasOwnProperty('message') apparently NOT WORKING on
+              // WebKit Web SQL on Android 5.x/... or iOS 10.x/...:
               if (!isWebSql || isWindows || (isAndroid && (/Android [1-4]/.test(navigator.userAgent))))
                 expect(error.hasOwnProperty('message')).toBe(true);
 
