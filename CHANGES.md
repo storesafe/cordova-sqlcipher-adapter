@@ -1,5 +1,7 @@
 # Changes
 
+## cordova-sqlcipher-adapter 0.2.0-dev
+
 ## cordova-sqlcipher-adapter 0.1.12-rc3
 
 - SQLCipher `3.4.2` with FTS3/FTS5 update from SQLite 3.26.0 (security update) for iOS/macOS from <https://github.com/brodybits/sqlcipher/tree/3.4.x%2Bfts-update> (`3.4.x+fts-update` branch)
