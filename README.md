@@ -130,7 +130,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
 - Windows platform support is now disabled in this plugin version, with CRYPTO provider (libTomCrypt) completely removed (ref: [litehelpers / Cordova-sqlcipher-adapter#63](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/63)). For future consideration: enable Windows build again with encryption using a recent build of the OpenSSL crypto library ref: [litehelpers/Cordova-sqlcipher-adapter#30](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/30)
 - Alpha version:
   - SQLCipher `3.4.2` with FTS3/FTS5 update from SQLite 3.26.0 (security update) for iOS/macOS from <https://github.com/brodybits/sqlcipher/tree/3.4.x%2Bfts-update> (`3.4.x+fts-update` branch)
-  - SQLCipher `3.5.9` for Android (Gradle reference)
+  - SQLCipher `3.5.9` for Android, with FTS3/FTS5 update from SQLite 3.26.0 (security update) in custom build from <https://github.com/brodybits/android-database-sqlcipher/tree/3.5.x%2Bfts-update-custom-jars> (`3.5.x+fts-update-custom-jars` branch)
   - `SQLITE_DEFAULT_PAGE_SIZE=1024` and `SQLITE_DEFAULT_CACHE_SIZE=2000` to avoid "potentially distruptive change(s)" from SQLite 3.12.0 in unencrypted databases ref: <http://sqlite.org/pgszchng2016.html>
   - with OpenSSL libcrypto for Android
   - using CommonCrypto framework for iOS/macOS
@@ -150,7 +150,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
   - `DSQLITE_DEFAULT_JOURNAL_SIZE_LIMIT=1048576` (Android only)
   - `NDEBUG` (`NDEBUG=1` on Android)
   - `SQLITE_THREADSAFE=1`
-  - `SQLITE_DEFAULT_SYNCHRONOUS=3`` - TBD iOS/macOS only
+  - `SQLITE_DEFAULT_SYNCHRONOUS=3`` - (Android/iOS/macOS)
   - `SQLITE_ENABLE_MEMORY_MANAGEMENT=1` (Android only)
   - `SQLITE_DEFAULT_MEMSTATUS=0` (iOS/macOS/Windows)
   - `SQLITE_OMIT_DECLTYPE` (iOS/macOS/Windows)

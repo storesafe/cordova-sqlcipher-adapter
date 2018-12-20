@@ -42,14 +42,18 @@
         <source-file src="node_modules/cordova-sqlite-storage-dependencies/libs/sqlite-connector.jar" target-dir="libs"/>
          ...
          -->
+        <lib-file src="src/android/libs/android-database-sqlcipher-classes.jar" />
+        <lib-file src="src/android/libs/android-database-sqlcipher-ndk.jar" />
 
+        <!-- [FUTURE TBD] consider using external aar again -->
         <!-- THANKS to @jcesarmobile for GUIDANCE in accepted answer:
              https://stackoverflow.com/questions/34115571/add-external-jar-library-to-build-cordova-plugin-ionic-framework/34129929#34129929
          -->
         <!-- SQLCipher distribution for Android
              [sqlcipher.jar & ndk objects in aar (modified reference for Buildr)] from:
-             https://mvnrepository.com/artifact/net.zetetic/android-database-sqlcipher/3.5.9 -->
+             https://mvnrepository.com/artifact/net.zetetic/android-database-sqlcipher/3.5.9
         <framework src="net.zetetic:android-database-sqlcipher:3.5.9" />
+        - -->
     </platform>
 
     <!-- iOS -->
