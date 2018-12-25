@@ -9,7 +9,7 @@ var DEFAULT_SIZE = 5000000; // max to avoid popup in safari/ios
 var isWindows = /Windows /.test(navigator.userAgent); // Windows (...)
 var isAndroid = !isWindows && /Android/.test(navigator.userAgent);
 
-describe('encryption test(s)', function() {
+describe('cipher (SQLCipher) encryption test(s)', function() {
     var suiteName = "sqlcipher: ";
 
     // XXX TODO fix tests instead.
