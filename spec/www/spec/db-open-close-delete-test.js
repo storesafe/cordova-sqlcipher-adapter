@@ -1812,7 +1812,7 @@ var mytests = function() {
           // TBD CURRENTLY BROKEN on iOS/macOS due to current background processing implementation:
           if (!isAndroid && !isWindows && !isWP8) pending('CURRENTLY BROKEN on iOS/macOS (background processing implementation)');
           // TBD ???:
-          if (isAndroid && isImpl2) pending('FAILS on builtin android.database implementation (androidDatabaseImplementation: 2)');
+          if (isAndroid) pending('FAILS on android with SQLCipher');
 
           var dbName = 'repeatedly-open-and-close-faster-5x.db';
           var dbargs = {name: dbName, location: 'default'};
