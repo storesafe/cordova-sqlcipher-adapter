@@ -2,6 +2,8 @@
 
 ## cordova-sqlcipher-adapter 0.2.0-dev
 
+- Remove default page/cache size settings for unencrypted databases on iOS/macOS & unsupported Windows platforms (already gone for Android)
+
 ### cordova-sqlite-storage 2.2.1
 
 - Fix Android/iOS src copyright, perpetually
