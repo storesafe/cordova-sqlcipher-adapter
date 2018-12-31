@@ -135,7 +135,6 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
 - Alpha version:
   - SQLCipher `3.4.2` with FTS3/FTS5 update from SQLite 3.26.0 (security update) for iOS/macOS from <https://github.com/brodybits/sqlcipher/tree/3.4.x%2Bfts-update> (`3.4.x+fts-update` branch)
   - SQLCipher `3.5.9` for Android, with FTS3/FTS5 update from SQLite 3.26.0 (security update) in custom build from <https://github.com/brodybits/android-database-sqlcipher/tree/3.5.x%2Bfts-update-custom-jars> (`3.5.x+fts-update-custom-jars` branch)
-  - `SQLITE_DEFAULT_PAGE_SIZE=1024` and `SQLITE_DEFAULT_CACHE_SIZE=2000` to avoid "potentially distruptive change(s)" from SQLite 3.12.0 in unencrypted databases ref: <http://sqlite.org/pgszchng2016.html> - iOS/macOS, ~~Windows~~ only
   - with OpenSSL libcrypto for Android
   - using CommonCrypto framework for iOS/macOS
   - NO ENCRYPTION ENABLED (completely removed) for Windows
