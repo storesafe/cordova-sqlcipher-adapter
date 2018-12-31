@@ -1,5 +1,9 @@
 # Changes
 
+## cordova-sqlcipher-adapter 0.2.1
+
+- SQLITE_OMIT_DEPRECATED for iOS/macOS
+
 ## cordova-sqlcipher-adapter 0.2.0
 
 - Remove default page/cache size settings for unencrypted databases on iOS/macOS & unsupported Windows platforms (already gone for Android)

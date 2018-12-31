@@ -157,7 +157,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
   - `SQLITE_ENABLE_MEMORY_MANAGEMENT=1` (Android only)
   - `SQLITE_DEFAULT_MEMSTATUS=0`
   - `SQLITE_OMIT_DECLTYPE` (iOS/macOS/Windows)
-  - ~~`SQLITE_OMIT_DEPRECATED`~~ (FOR FUTURE CONSIDERATION)
+  - `SQLITE_OMIT_DEPRECATED` - iOS/macOS (FUTURE TBD: Android)
   - `SQLITE_OMIT_PROGRESS_CALLBACK` (iOS/macOS/Windows)
   - `SQLITE_OMIT_SHARED_CACHE` (iOS/macOS/Windows)
   - `SQLITE_ENABLE_LOAD_EXTENSION` (Android only)

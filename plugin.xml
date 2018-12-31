@@ -2,7 +2,7 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-sqlcipher-adapter"
-    version="0.2.0">
+    version="0.2.1">
 
     <name>Cordova sqlcipher adapter</name>
 
@@ -81,6 +81,7 @@
                                      -DSQLITE_THREADSAFE=1
                                      -DSQLITE_DEFAULT_SYNCHRONOUS=3
                                      -DSQLITE_DEFAULT_MEMSTATUS=0 -DSQLITE_OMIT_DECLTYPE
+                                     -DSQLITE_OMIT_DEPRECATED
                                      -DSQLITE_OMIT_PROGRESS_CALLBACK -DSQLITE_OMIT_SHARED_CACHE -DSQLITE_OMIT_LOAD_EXTENSION
                                      -DSQLITE_ENABLE_FTS3 -DSQLITE_ENABLE_FTS3_PARENTHESIS -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_RTREE
                                      -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_JSON1
@@ -116,6 +117,7 @@
                                      -DSQLITE_THREADSAFE=1
                                      -DSQLITE_DEFAULT_SYNCHRONOUS=3
                                      -DSQLITE_DEFAULT_MEMSTATUS=0 -DSQLITE_OMIT_DECLTYPE
+                                     -DSQLITE_OMIT_DEPRECATED
                                      -DSQLITE_OMIT_PROGRESS_CALLBACK -DSQLITE_OMIT_SHARED_CACHE -DSQLITE_OMIT_LOAD_EXTENSION
                                      -DSQLITE_ENABLE_FTS3 -DSQLITE_ENABLE_FTS3_PARENTHESIS -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_RTREE
                                      -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_JSON1
