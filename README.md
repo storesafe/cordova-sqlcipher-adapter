@@ -140,7 +140,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
   - NO ENCRYPTION ENABLED (completely removed) for Windows
   - for future consideration: embed OpenSSL libcrypto for all target platforms
 - This plugin is NOT supported by PhoneGap Developer App or PhoneGap Desktop App.
-- A recent version of the Cordova CLI (such as `6.5.0` / `7.1.0` / `8.0.0`) is recommended. Cordova versions older than `6.0.0` are missing the `cordova-ios@4.0.0` security fixes. In addition it may be needed to use `cordova prepare` in case of cordova-ios older than `4.3.0` (Cordova CLI `6.4.0`).
+- A recent version of the Cordova CLI (such as `6.5.0` / `7.1.0` / `8.1.x`) is recommended. Cordova versions older than `6.0.0` are missing the `cordova-ios@4.0.0` security fixes. In addition it may be needed to use `cordova prepare` in case of cordova-ios older than `4.3.0` (Cordova CLI `6.4.0`).
 - SQLCipher build settings used:
   - `SQLITE_HAS_CODEC` (no longer enabled in Windows SQLite3 library build)
   - `SQLITE_SOUNDEX` (Android only)
@@ -174,7 +174,6 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
   - `SQLITE_ENABLE_JSON1`
   - `SQLITE_OS_WINRT` (Windows only)
   - `SQLCIPHER_CRYPTO_OPENSSL` (Android only)
-  - ~~`NDEBUG` on Windows (Release build only)~~ - FUTURE TBD
 - The iOS database location is now mandatory, as documented below.
 - Amazon Fire-OS is dropped due to lack of support by Cordova. Android version should be used to deploy to Fire-OS 5.0(+) devices. For reference: [cordova/cordova-discuss#32 (comment)](https://github.com/cordova/cordova-discuss/issues/32#issuecomment-167021676)
 - Windows platform version (using a customized version of the performant [doo / SQLite3-WinRT](https://github.com/doo/SQLite3-WinRT) C++ component) is now disabled in this plugin version (with CRYPTO provider completely removed) ref: [litehelpers / Cordova-sqlcipher-adapter#63](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/63), has the following known limitations:
