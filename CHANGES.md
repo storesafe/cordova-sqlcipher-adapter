@@ -1,6 +1,6 @@
 # Changes
 
-## cordova-sqlcipher-adapter 0.3.0-pre1
+## cordova-sqlcipher-adapter 0.3.0
 
 - SQLCipher 4.0.1 update, with SQLITE_OMIT_SHARED_CACHE build flag now used on Android
 
