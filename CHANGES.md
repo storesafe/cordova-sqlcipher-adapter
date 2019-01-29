@@ -2,7 +2,7 @@
 
 ## cordova-sqlcipher-adapter 0.3.1-dev
 
-TBD
+- `SQLITE_DEFAULT_SYNCHRONOUS=3` (EXTRA DURABLE) compile-time setting on the disabled Windows platform
 
 ## cordova-sqlcipher-adapter 0.3.0
 

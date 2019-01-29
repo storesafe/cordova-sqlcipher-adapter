@@ -153,7 +153,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
   - `DSQLITE_DEFAULT_JOURNAL_SIZE_LIMIT=1048576` (Android only)
   - `NDEBUG` (`NDEBUG=1` on Android)
   - `SQLITE_THREADSAFE=1`
-  - `SQLITE_DEFAULT_SYNCHRONOUS=3` (Android/iOS/macOS)
+  - `SQLITE_DEFAULT_SYNCHRONOUS=3` (Android/iOS/macOS/Windows)
   - `SQLITE_ENABLE_MEMORY_MANAGEMENT=1` (Android only)
   - `SQLITE_DEFAULT_MEMSTATUS=0`
   - `SQLITE_OMIT_DECLTYPE` (iOS/macOS/Windows)
