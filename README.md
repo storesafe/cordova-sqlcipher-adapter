@@ -6,6 +6,10 @@ License terms for Android and DISABLED (unsupported) Windows platform versions: 
 
 License terms for iOS/macOS platform version: MIT only
 
+## About this plugin version branch
+
+TBD
+
 <!-- END About this plugin version branch -->
 
 ## IMPORTANT WARNING NOTICES
@@ -172,10 +176,17 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
   - `SQLITE_ENABLE_JSON1`
   - `SQLITE_OS_WINRT` (Windows only)
   - `SQLCIPHER_CRYPTO_OPENSSL` (Android only)
+- `SQLITE_DBCONFIG_DEFENSIVE` flag is used for extra SQL safety on iOS/macOS/Windows (TBD NOT USED on Android in this plugin version branch) ref:
+  - <https://www.sqlite.org/c3ref/c_dbconfig_defensive.html>
+  - <https://www.sqlite.org/releaselog/3_26_0.html>
 - The iOS database location is now mandatory, as documented below.
-- Amazon Fire-OS is dropped due to lack of support by Cordova. Android version should be used to deploy to Fire-OS 5.0(+) devices. For reference: [cordova/cordova-discuss#32 (comment)](https://github.com/cordova/cordova-discuss/issues/32#issuecomment-167021676)
+- The following features are available in [litehelpers / cordova-sqlite-ext](https://github.com/litehelpers/cordova-sqlite-ext) _WITHOUT SQLCIPHER_:
+  - REGEXP (Android/iOS/macOS)
+  - SELECT BLOB data in Base64 format (all platforms Android/iOS/macOS/Windows)
+  - Pre-populated database (Android/iOS/macOS/Windows)
+- Amazon Fire-OS is dropped due to lack of support by Cordova. Android platform version should be used to deploy to Fire-OS 5.0(+) devices. For reference: [cordova/cordova-discuss#32 (comment)](https://github.com/cordova/cordova-discuss/issues/32#issuecomment-167021676)
 - Windows platform version (using a customized version of the performant [doo / SQLite3-WinRT](https://github.com/doo/SQLite3-WinRT) C++ component) is now disabled in this plugin version (with CRYPTO provider completely removed) ref: [litehelpers / Cordova-sqlcipher-adapter#63](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/63), has the following known limitations:
-  - ~~This plugin version branch has dependency on `v140` toolset libraries included by Visual Studio 2015 ref: [litehelpers/Cordova-sqlite-storage#580](https://github.com/litehelpers/Cordova-sqlite-storage/issues/580) (UNTESTED and UNSUPPORTED WORKAROUND for Visual Studio 2017 is described at: <https://developercommunity.visualstudio.com/content/problem/48806/cant-find-v140-in-visual-studio-2017.html>)~~
+  - This plugin version branch has dependency on platform toolset libraries included by Visual Studio 2017 ref: [litehelpers/Cordova-sqlite-storage#580](https://github.com/litehelpers/Cordova-sqlite-storage/issues/580). Visual Studio 2015 is now supported by [litehelpers / cordova-sqlite-legacy](https://github.com/litehelpers/cordova-sqlite-legacy) (permissive license terms, no performance enhancements for Android) and [litehelpers / Cordova-sqlite-evcore-common-free](https://github.com/litehelpers/Cordova-sqlite-evcore-common-free) (GPL or commercial license terms, with performance enhancements for Android). UNTESTED workaround for Visual Studio 2015: it *may* be possible to support this plugin version on Visual Studio 2015 Update 3 by installing platform toolset v141.)
   - Encryption no longer enabled in Windows SQLite3 library build. For future consideration: enable Windows build again with encryption using a recent build of the OpenSSL crypto library ref: [litehelpers/Cordova-sqlcipher-adapter#30](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/30)
   - It is **not** possible to use this plugin with the default "Any CPU" target. A specific target CPU type **must** be specified when building an app with this plugin.
   - Truncation issue with UNICODE `\u0000` character (same as `\0`)

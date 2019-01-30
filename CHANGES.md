@@ -2,8 +2,19 @@
 
 ## cordova-sqlcipher-adapter 0.3.1-dev
 
-- Cleanup SQLiteAndroidDatabase.java in this plugin version (remove workaround solutions for pre-Honeycomb, etc. not needed in this plugin version)
+- Cleanup SQLiteAndroidDatabase.java in this plugin version (no workaround needed for pre-Honeycomb in this plugin version)
 - `SQLITE_DEFAULT_SYNCHRONOUS=3` (EXTRA DURABLE) compile-time setting on the disabled Windows platform
+
+###### cordova-sqlite-storage-ext-core-common 2.0.0
+
+- SQLITE_DBCONFIG_DEFENSIVE flag - iOS/macOS/Windows (POTENTIALLY BREAKING CHANGE)
+- remove internal qid usage from JavaScript (not needed)
+- non-static Android database runner map (POTENTIALLY BREAKING CHANGE)
+- Completely remove old Android SuppressLint (android.annotation.SuppressLint) - POSSIBLY BREAKING CHANGE
+- drop workaround for pre-Honeycomb Android API (BREAKING CHANGE)
+- no extra @synchronized block per batch (iOS/macOS) - should be considered a POSSIBLY BREAKING change
+- remove backgroundExecuteSql method not needed (iOS/macOS)
+- Completely remove iOS/macOS MRC (Manual Reference Counting) support - should be considered a POSSIBLY BREAKING change
 
 ## cordova-sqlcipher-adapter 0.3.0
 
