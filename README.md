@@ -1,6 +1,6 @@
 # Cordova/PhoneGap SQLCipher adapter plugin - maintenance only
 
-Native interface to **SQLCipher version 4** in a Cordova/PhoneGap plugin for Android, iOS, and macOS (Windows platform is disabled, not supported by this plugin version) with API similar to HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/). Plugin version `0.2.x` is required for SQLCipher 3 support. FUTURE TODO: support migration between SQLCipher 3 and SQLCipher 4 ([brodybits/cordova-sqlcipher-adapter#83](https://github.com/brodybits/cordova-sqlcipher-adapter/issues/83)). Note that this project is currently not under active development ([brodybits/cordova-sqlcipher-adapter#81](https://github.com/brodybits/cordova-sqlcipher-adapter/issues/81)).
+Native interface to **SQLCipher version 4** in a Cordova/PhoneGap plugin for Android, iOS, and macOS (Windows platform is disabled, not supported by this plugin version) with API similar to HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/). Plugin version `0.2.x` (with known security issues) is required for SQLCipher 3 support. FUTURE TODO: support migration between SQLCipher 3 and SQLCipher 4 ([brodybits/cordova-sqlcipher-adapter#83](https://github.com/brodybits/cordova-sqlcipher-adapter/issues/83)). Note that this project is currently not under active development ([brodybits/cordova-sqlcipher-adapter#81](https://github.com/brodybits/cordova-sqlcipher-adapter/issues/81)).
 
 License terms for Android and DISABLED (unsupported) Windows platform versions: MIT or Apache 2.0
 
