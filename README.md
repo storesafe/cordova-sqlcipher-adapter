@@ -176,7 +176,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
   - `SQLITE_ENABLE_JSON1`
   - `SQLITE_OS_WINRT` (Windows only)
   - `SQLCIPHER_CRYPTO_OPENSSL` (Android only)
-- `SQLITE_DBCONFIG_DEFENSIVE` flag is used for extra SQL safety on iOS/macOS/Windows (TBD NOT USED on Android in this plugin version branch) ref:
+- `SQLITE_DBCONFIG_DEFENSIVE` flag is used for extra SQL safety on Android (custom build) as well as iOS/macOS/Windows ref:
   - <https://www.sqlite.org/c3ref/c_dbconfig_defensive.html>
   - <https://www.sqlite.org/releaselog/3_26_0.html>
 - The iOS database location is now mandatory, as documented below.
