@@ -2,6 +2,7 @@
 
 ## cordova-sqlcipher-adapter 0.3.1-dev
 
+- Cleanup SQLiteAndroidDatabase.java in this plugin version (remove workaround solutions for pre-Honeycomb, etc. not needed in this plugin version)
 - `SQLITE_DEFAULT_SYNCHRONOUS=3` (EXTRA DURABLE) compile-time setting on the disabled Windows platform
 
 ## cordova-sqlcipher-adapter 0.3.0

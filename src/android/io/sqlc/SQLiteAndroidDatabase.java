@@ -6,12 +6,11 @@
 
 package io.sqlc;
 
-import android.annotation.SuppressLint;
-
 // SQLCipher version of database classes:
 import net.sqlcipher.*;
 import net.sqlcipher.database.*;
-/* **
+
+/* ** NOT USED in this plugin version:
 import android.database.Cursor;
 import android.database.CursorWindow;
 
@@ -58,10 +57,6 @@ class SQLiteAndroidDatabase
 
     private static final Pattern DELETE_TABLE_NAME = Pattern.compile("^\\s*DELETE\\s+FROM\\s+(\\S+)",
             Pattern.CASE_INSENSITIVE);
-
-    private static final boolean isPostHoneycomb = android.os.Build.VERSION.SDK_INT >= 11;
-
-    File dbFile;
 
     SQLiteDatabase mydb;
 
@@ -131,7 +126,6 @@ class SQLiteAndroidDatabase
         cbc.success(batchResults);
     }
 
-    @SuppressLint("NewApi")
     private void executeSqlBatchStatement(String query, JSONArray json_params, JSONArray batchResults) {
 
         if (mydb == null) {
@@ -417,7 +411,7 @@ class SQLiteAndroidDatabase
     }
 
     /**
-     * bindPostHoneycomb - always valid for SQLCipher for Android
+     * bindPostHoneycomb - always valid for this plugin version (SQLCipher for Android)
      *
      */
     private void bindPostHoneycomb(JSONObject row, String key, Cursor cur, int i) throws JSONException {
