@@ -1,6 +1,6 @@
 # Changes
 
-## cordova-sqlcipher-adapter 0.3.1-dev
+## cordova-sqlcipher-adapter 0.4.0
 
 - SQLITE_DBCONFIG_DEFENSIVE flag for Android (custom build) in addition to iOS/macOS/Windows (POTENTIALLY BREAKING CHANGE)
 - Cleanup SQLiteAndroidDatabase.java in this plugin version (no workaround needed for pre-Honeycomb in this plugin version)
