@@ -135,8 +135,8 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
 
 - Windows platform support is now disabled in this plugin version, with CRYPTO provider (libTomCrypt) completely removed (ref: [litehelpers / Cordova-sqlcipher-adapter#63](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/63)). For future consideration: enable Windows build again with encryption using a recent build of the OpenSSL crypto library ref: [litehelpers/Cordova-sqlcipher-adapter#30](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/30)
 - Alpha version:
-  - SQLCipher `4.0.1` (major update) for iOS/macOS
-  - SQLCipher `4.0.1` for Android, in custom build from <https://github.com/brodybits/android-database-sqlcipher/tree/4.0.x%2Bcustom-jar-build> (`4.0.x+custom-jar-build` branch)
+  - SQLCipher `4.2.0` (major update) for iOS/macOS
+  - SQLCipher `4.2.0` for Android, in custom build from <https://github.com/brodybits/android-database-sqlcipher/tree/4.2.x%2Bcustom-jar-build> (`4.2.x+custom-jar-build` branch)
   - with OpenSSL libcrypto for Android
   - using CommonCrypto framework for iOS/macOS
   - NO ENCRYPTION ENABLED (completely removed) for Windows
@@ -216,7 +216,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
 
 ## Announcements
 
-- Using recent version of SQLCipher (`4.0.1`) with functions and security updates
+- Using recent version of SQLCipher (`4.2.0`) with functions and security updates
 - Using `SQLITE_DEFAULT_SYNCHRONOUS=3` (EXTRA DURABLE) build setting on all platforms to be extra robust against possible database corruption ref: [litehelpers/Cordova-sqlite-storage#736](https://github.com/litehelpers/Cordova-sqlite-storage/issues/736)
 - Nice overview of cordova-sqlite-storage and other alternatives for storing local data (without SQLCipher) at: <https://www.sitepoint.com/storing-local-data-in-a-cordova-app/>
 - New alternative solution for small data storage (without SQLCipher): [TheCocoaProject/ cordova-plugin-nativestorage](https://github.com/TheCocoaProject/cordova-plugin-nativestorage) - simpler "native storage of variables" for Android/iOS/Windows

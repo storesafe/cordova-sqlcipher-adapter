@@ -1,5 +1,9 @@
 # Changes
 
+## cordova-sqlcipher-adapter 0.4.1
+
+- SQLCipher 4.2.0 update
+
 ## cordova-sqlcipher-adapter 0.4.0
 
 - SQLITE_DBCONFIG_DEFENSIVE flag for Android (custom build) in addition to iOS/macOS/Windows (POTENTIALLY BREAKING CHANGE)
