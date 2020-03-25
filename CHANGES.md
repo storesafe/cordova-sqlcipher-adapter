@@ -1,5 +1,9 @@
 # Changes
 
+## cordova-sqlcipher-adapter 0.5.0-dev
+
+TBD
+
 ## cordova-sqlcipher-adapter 0.4.1
 
 - SQLCipher 4.2.0 update
