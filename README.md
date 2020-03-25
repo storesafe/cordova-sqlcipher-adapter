@@ -495,6 +495,7 @@ See **Security of sensitive data** in the [Security](#security) section above.
 - In case of ignored INSERT OR IGNORE statement WebKit Web SQL (Android/iOS) reports insertId with an old INSERT row id value while the plugin reports insertId: undefined.
 - In case of a SQL error handler that does not recover the transaction, WebKit Web SQL (Android/iOS) would incorrectly report error code 0 while the plugin would report the same error code as in the SQL error handler. (In case of an error with no SQL error handler then Android/iOS WebKit Web SQL would report the same error code that would have been reported in the SQL error hander.)
 - In case a transaction function throws an exception, the message and code if present are reported by the plugin but *not* by (WebKit) Web SQL.
+- Inconsistent error message formatting on Android (using custom build of [`sqlcipher/android-database-sqlcipher`](https://github.com/sqlcipher/android-database-sqlcipher)) ([brodybits/cordova-sqlcipher-adapter#95](https://github.com/brodybits/cordova-sqlcipher-adapter/issues/95)), for example: `incomplete input: , while compiling: INSERT INTO test_table .data. VALUES`
 - SQL error messages are inconsistent on Windows.
 - There are some other differences in the SQL error messages reported by WebKit Web SQL and this plugin. NOTE that unlike the android.database.sqlite implementation on Android 4.x(+) SQLCipher for Android does not seem to include the error code in most of the error message.
 

@@ -27,11 +27,7 @@ var mytests = function() {
     // TBD QUICK TEST WORKAROUND for Android:
     if (!isWindows && isAndroid && i === 0) continue;
 
-    // GENERAL: SKIP ALL on WP8 for now
-    describe(scenarioList[i] + ': db tx error mapping test(s)' +
-             ((isWindows && !isWP8) ?
-              ' [Windows version with INCORRECT error code (0) & INCONSISTENT error message (missing actual error info)]' :
-               ''), function() {
+    describe(scenarioList[i] + ': db tx error mapping test(s) [TBD INCORRECT & INCONSISTENT error message on Windows - missing actual error info ref: litehelpers/Cordova-sqlite-storage#539]', function() {
       var scenarioName = scenarioList[i];
       var suiteName = scenarioName + ': ';
       var isWebSql = (i === 1);
@@ -84,9 +80,7 @@ var mytests = function() {
 
         // GENERAL NOTE: ERROR MESSAGES are subject to improvements and other possible changes.
 
-        it(suiteName + 'syntax error: command with misspelling', function(done) {
-          if (isWP8) pending('SKIP for WP(8)'); // SKIP for now
-
+        it(suiteName + 'syntax error: command with misspelling [INCONSISTENT error message formatting on Android (android-database-sqlcipher)]', function(done) {
           var db = openDatabase("Syntax-error-test.db", "1.0", "Demo", DEFAULT_SIZE);
           expect(db).toBeDefined();
 
@@ -119,12 +113,9 @@ var mytests = function() {
                 expect(error.message).toMatch(/could not prepare statement.*1 near \"SLCT\": syntax error/);
               else if (isWindows)
                 expect(error.message).toMatch(/Error preparing an SQLite statement/);
-              else if (isAndroid && !isImpl2)
-                expect(error.message).toMatch(/sqlite3_prepare_v2 failure:.*near \"SLCT\": syntax error/);
-              /* ** TBD QUICK TEST WORKAROUND for Android [SQLCipher for Android error message missing error code]:
-              else if (isAndroid && isImpl2)
-                expect(error.message).toMatch(/near \"SLCT\": syntax error.*code 1.*while compiling: SLCT 1/);
-              // TBD END of QUICK TEST WORKAROUND */
+              else if (isAndroid) // (android-database-sqlcipher)
+                // INCONSISTENT error message formatting on Android (...)
+                expect(error.message).toMatch(/near .SLCT.: syntax error: , while compiling: SLCT 1/);
               else
                 expect(error.message).toMatch(/near \"SLCT\": syntax error/);
 
@@ -163,9 +154,7 @@ var mytests = function() {
           });
         }, MYTIMEOUT);
 
-        it(suiteName + 'INSERT syntax error [VALUES in the wrong place] with a trailing space [XXX TBD ...]', function(done) {
-          // if (isWP8) pending('...') TBD GONE (not needed)
-
+        it(suiteName + 'INSERT with VALUES in the wrong place (and with a trailing space) [INCONSISTENT error message formatting on Android (android-database-sqlcipher); TBD "incomplete input" vs "syntax error" message IGNORED on (WebKit) Web SQL on Android 7.0(+) & iOS 12.0(+)]', function(done) {
           var db = openDatabase("INSERT-Syntax-error-test.db", "1.0", "Demo", DEFAULT_SIZE);
           expect(db).toBeDefined();
 
@@ -201,6 +190,9 @@ var mytests = function() {
                 expect(error.message).toMatch(/could not prepare statement.*/); // XXX TBD (...)
               else if (isWindows)
                 expect(error.message).toMatch(/Error preparing an SQLite statement/);
+              else if (isAndroid) // (android-database-sqlcipher)
+                // TBD INCONSISTENT ERROR MESSAGE:
+                expect(error.message).toMatch(/incomplete input: , while compiling: INSERT INTO test_table .data. VALUES/);
               else
                 expect(error.message).toMatch(/incomplete input/); // XXX TBD (...)
 
@@ -227,6 +219,9 @@ var mytests = function() {
               expect(error.message).toMatch(/callback raised an exception.*or.*error callback did not return false/);
             else if (isWindows)
               expect(error.message).toMatch(/error callback did not return false.*Error preparing an SQLite statement/);
+            else if (isAndroid) // (android-database-sqlcipher)
+              // TBD INCONSISTENT ERROR MESSAGE:
+              expect(error.message).toMatch(/error callback did not return false: incomplete input: , while compiling: INSERT/);
             //* else // XXX TBD (...)
             //*  expect(error.message).toMatch(...)
 
@@ -290,10 +285,8 @@ var mytests = function() {
                 expect(error.message).toMatch(/SQLite3 step error result code: 1/);
               else if (isAndroid && !isImpl2)
                 expect(error.message).toMatch(/sqlite3_step failure: UNIQUE constraint failed: test_table\.data/);
-              /* ** TBD QUICK TEST WORKAROUND for Android [SQLCipher for Android error message missing error code]:
-              else if (isAndroid && isImpl2)
-                expect(error.message).toMatch(/constraint failure/);
-              // TBD END of QUICK TEST WORKAROUND */
+              else if (isAndroid) // (android-database-sqlcipher)
+                expect(error.message).toMatch(/constraint failure: error code 19: UNIQUE constraint failed: test_table.data/);
               else
                 expect(error.message).toMatch(/UNIQUE constraint failed: test_table\.data/);
 
@@ -332,7 +325,7 @@ var mytests = function() {
           });
         }, MYTIMEOUT);
 
-        it(suiteName + 'SELECT uper("Test") (misspelled function name) [INCORRECT error code WebKit Web SQL & plugin]', function(done) {
+        it(suiteName + 'SELECT uper("Test") (misspelled function name) [INCONSISTENT error message formatting on Android (android-database-sqlcipher); INCORRECT error code WebKit Web SQL & plugin]', function(done) {
           if (isWP8) pending('SKIP for WP(8)'); // FUTURE TBD
 
           var db = openDatabase("Misspelled-function-name-error-test.db", "1.0", "Demo", DEFAULT_SIZE);
@@ -368,12 +361,9 @@ var mytests = function() {
                 expect(error.message).toMatch(/could not prepare statement.*1 no such function: uper/);
               else if (isWindows)
                 expect(error.message).toMatch(/Error preparing an SQLite statement/);
-              else if (isAndroid && !isImpl2)
-                expect(error.message).toMatch(/sqlite3_prepare_v2 failure:.*no such function: uper/);
-              /* ** TBD QUICK TEST WORKAROUND for Android [SQLCipher for Android error message missing error code]:
-              else if (isAndroid && isImpl2)
-                expect(error.message).toMatch(/no such function: uper.*code 1/);
-              // TBD END of QUICK TEST WORKAROUND */
+              else if (isAndroid) // (android-database-sqlcipher)
+                // INCONSISTENT error message formatting on Android (...)
+                expect(error.message).toMatch(/no such function: uper: , while compiling: SELECT uper..Test/);
               else
                 expect(error.message).toMatch(/no such function: uper/);
 
@@ -412,9 +402,7 @@ var mytests = function() {
           });
         }, MYTIMEOUT);
 
-        it(suiteName + 'SELECT FROM bogus table (other database error) [INCORRECT error code WebKit Web SQL & plugin]', function(done) {
-          if (isWP8) pending('SKIP for WP(8)'); // FUTURE TBD
-
+        it(suiteName + 'SELECT FROM bogus table (other database error) [INCONSISTENT error message formatting on Android (android-database-sqlcipher); INCORRECT error code WebKit Web SQL & plugin]', function(done) {
           var db = openDatabase("SELECT-FROM-bogus-table-error-test.db", "1.0", "Demo", DEFAULT_SIZE);
           expect(db).toBeDefined();
 
@@ -448,12 +436,9 @@ var mytests = function() {
                 expect(error.message).toMatch(/could not prepare statement.*1 no such table: BogusTable/);
               else if (isWindows)
                 expect(error.message).toMatch(/Error preparing an SQLite statement/);
-              else if (isAndroid && !isImpl2)
-                expect(error.message).toMatch(/sqlite3_prepare_v2 failure:.*no such table: BogusTable/);
-              /* ** TBD QUICK TEST WORKAROUND for Android [SQLCipher for Android error message missing error code]:
-              else if (isAndroid && isImpl2)
-                expect(error.message).toMatch(/no such table: BogusTable.*code 1/);
-              // TBD END of QUICK TEST WORKAROUND */
+              else if (isAndroid) // (android-database-sqlcipher)
+                // TBD INCONSISTENT ERROR MESSAGE:
+                expect(error.message).toMatch(/no such table: BogusTable: , while compiling: SELECT . FROM BogusTable/);
               else
                 expect(error.message).toMatch(/no such table: BogusTable/);
 
@@ -491,9 +476,7 @@ var mytests = function() {
           });
         }, MYTIMEOUT);
 
-        it(suiteName + 'INSERT missing column [INCORRECT error code WebKit Web SQL & plugin]', function(done) {
-          if (isWP8) pending('SKIP for WP(8)'); // FUTURE TBD
-
+        it(suiteName + 'INSERT missing column [INCONSISTENT error message formatting on Android (android-database-sqlcipher); INCORRECT error code WebKit Web SQL & plugin]', function(done) {
           var db = openDatabase("INSERT-missing-column-test.db", "1.0", "Demo", DEFAULT_SIZE);
           expect(db).toBeDefined();
 
@@ -528,12 +511,9 @@ var mytests = function() {
                 expect(error.message).toMatch(/could not prepare statement.*1 table test_table has 2 columns but 1 values were supplied/);
               else if (isWindows)
                 expect(error.message).toMatch(/Error preparing an SQLite statement/);
-              else if (isAndroid && !isImpl2)
-                expect(error.message).toMatch(/sqlite3_prepare_v2 failure:.*table test_table has 2 columns but 1 values were supplied/);
-              /* ** TBD QUICK TEST WORKAROUND for Android [SQLCipher for Android error message missing error code]:
-              else if (isAndroid && isImpl2)
-                expect(error.message).toMatch(/table test_table has 2 columns but 1 values were supplied.*code 1.*while compiling: INSERT INTO test_table/);
-              // TBD END of QUICK TEST WORKAROUND */
+              else if (isAndroid) // (android-database-sqlcipher)
+                // INCONSISTENT error message formatting on Android (...)
+                expect(error.message).toMatch(/table test_table has 2 columns but 1 values were supplied: , while compiling: INSERT INTO test_table/);
               else
                 expect(error.message).toMatch(/table test_table has 2 columns but 1 values were supplied/);
 
@@ -572,9 +552,7 @@ var mytests = function() {
           });
         }, MYTIMEOUT);
 
-        it(suiteName + 'INSERT wrong column name [INCORRECT error code WebKit Web SQL & plugin]', function(done) {
-          if (isWP8) pending('SKIP for WP(8)'); // FUTURE TBD
-
+        it(suiteName + 'INSERT wrong column name [INCONSISTENT error message formatting on Android (android-database-sqlcipher); INCORRECT error code WebKit Web SQL & plugin]', function(done) {
           var db = openDatabase("INSERT-wrong-column-name-test.db", "1.0", "Demo", DEFAULT_SIZE);
           expect(db).toBeDefined();
 
@@ -609,12 +587,9 @@ var mytests = function() {
                 expect(error.message).toMatch(/could not prepare statement.*1 table test_table has no column named wrong_column/);
               else if (isWindows)
                 expect(error.message).toMatch(/Error preparing an SQLite statement/);
-              else if (isAndroid && !isImpl2)
-                expect(error.message).toMatch(/sqlite3_prepare_v2 failure:.*table test_table has no column named wrong_column/);
-              /* ** TBD QUICK TEST WORKAROUND for Android [SQLCipher for Android error message missing error code]:
-              else if (isAndroid && isImpl2)
-                expect(error.message).toMatch(/table test_table has no column named wrong_column.*code 1.*while compiling: INSERT INTO test_table/);
-              // TBD END of QUICK TEST WORKAROUND */
+              else if (isAndroid) // (android-database-sqlcipher)
+                // INCONSISTENT error message formatting on Android (...)
+                expect(error.message).toMatch(/table test_table has no column named wrong_column: , while compiling: INSERT INTO test_table/);
               else
                 expect(error.message).toMatch(/table test_table has no column named wrong_column/);
 
@@ -694,8 +669,6 @@ var mytests = function() {
                 expect(error.message).toMatch(/could not prepare statement.*1 not authorized/);
               else if (isWindows)
                 expect(error.message).toMatch(/SQLite3 step error result code: 1/);
-              else if (isAndroid && !isImpl2)
-                expect(error.message).toMatch(/sqlite3_step failure: no such module: bogus/);
               /* ** TBD QUICK TEST WORKAROUND for Android [SQLCipher for Android error message missing error code]:
               else if (isAndroid && isImpl2)
                 expect(error.message).toMatch(/no such module: bogus.*code 1/);
@@ -739,9 +712,7 @@ var mytests = function() {
 
         // TESTS with no SQL error handler:
 
-        it(suiteName + 'transaction.executeSql syntax error (command with misspelling) with no SQL error handler', function(done) {
-          if (isWP8) pending('SKIP for WP(8)'); // FUTURE TBD
-
+        it(suiteName + 'transaction.executeSql syntax error (command with misspelling) with no SQL error handler [INCONSISTENT error message formatting on Android (android-database-sqlcipher)]', function(done) {
           db = openDatabase('tx-sql-syntax-error-with-no-sql-error-handler-test.db');
           db.transaction(function(transaction) {
             transaction.executeSql('SLCT 1');
@@ -765,12 +736,9 @@ var mytests = function() {
               expect(error.message).toMatch(/could not prepare statement.*1 near \"SLCT\": syntax error/);
             else if (isWindows)
               expect(error.message).toMatch(/a statement with no error handler failed: Error preparing an SQLite statement/);
-            else if (isAndroid && !isImpl2)
-              expect(error.message).toMatch(/sqlite3_prepare_v2 failure:.*near \"SLCT\": syntax error/);
-            /* ** TBD QUICK TEST WORKAROUND for Android [SQLCipher for Android error message missing error code]:
-            else if (isAndroid && isImpl2)
-              expect(error.message).toMatch(/a statement with no error handler failed: near \"SLCT\": syntax error.*code 1.*while compiling: SLCT 1/);
-            // TBD END of QUICK TEST WORKAROUND */
+            else if (isAndroid) // (android-database-sqlcipher)
+              // INCONSISTENT error message formatting on Android (...)
+              expect(error.message).toMatch(/a statement with no error handler failed: near .SLCT.: syntax error: , while compiling: SLCT 1/);
             else
               expect(error.message).toMatch(/a statement with no error handler failed.*near \"SLCT\": syntax error/);
 
