@@ -215,7 +215,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
 
 ## Announcements
 
-- Using recent version of SQLCipher (`4.2.0`) with functions and security updates
+- Using recent version of SQLCipher (see above) with functions and security updates
 - Using `SQLITE_DEFAULT_SYNCHRONOUS=3` (EXTRA DURABLE) build setting on all platforms to be extra robust against possible database corruption ref: [litehelpers/Cordova-sqlite-storage#736](https://github.com/litehelpers/Cordova-sqlite-storage/issues/736)
 - Nice overview of cordova-sqlite-storage and other alternatives for storing local data (without SQLCipher) at: <https://www.sitepoint.com/storing-local-data-in-a-cordova-app/>
 - New alternative solution for small data storage (without SQLCipher): [TheCocoaProject/ cordova-plugin-nativestorage](https://github.com/TheCocoaProject/cordova-plugin-nativestorage) - simpler "native storage of variables" for Android/iOS/Windows
