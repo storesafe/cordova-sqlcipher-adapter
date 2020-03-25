@@ -162,6 +162,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
   - `SQLITE_OMIT_DEPRECATED` - iOS/macOS (FUTURE TBD: Android ref: [brodybits/cordova-sqlcipher-adapter#82](https://github.com/brodybits/cordova-sqlcipher-adapter/issues/82))
   - `SQLITE_OMIT_PROGRESS_CALLBACK` (iOS/macOS/Windows)
   - `SQLITE_OMIT_SHARED_CACHE`
+  - `SQLITE_ENABLE_DBSTAT_VTAB` - Android only
   - `SQLITE_ENABLE_LOAD_EXTENSION` (Android only)
   - `SQLITE_OMIT_LOAD_EXTENSION` (iOS/macOS/Windows)
   - `SQLITE_ENABLE_COLUMN_METADATA` (Android only)
@@ -204,9 +205,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
   - REGEXP is no longer supported for iOS.
 - The macOS platform version ("osx" platform) is not tested in a release build and should be considered pre-alpha.
 - FTS3, FTS4, and R-Tree are fully tested and supported for all target platforms in this version branch.
-- Default `PRAGMA journal_mode` setting (*tested*):
-  - Android with builtin android.database implementation (as selected using the `androidDatabaseImplementation` option in `window.sqlitePlugin.openDatabase`): `persist` (pre-8.x) / `truncate` (Android 8+)
-  - otherwise: `delete`
+- Default `PRAGMA journal_mode` setting - __tested__: `delete` on all platforms in this plugin version
 - AUTO-VACUUM is not enabled by default. If no form of `VACUUM` or `PRAGMA auto_vacuum` is used then sqlite will automatically reuse deleted data space for new data but the database file will never shrink. For reference: <http://www.sqlite.org/pragma.html#pragma_auto_vacuum> and [litehelpers/Cordova-sqlite-storage#646](https://github.com/litehelpers/Cordova-sqlite-storage/issues/646)
 - In case of memory issues please use smaller transactions (evcore enhancements may be supported with SQLCipher in case of sufficient demand).
 - Pre-populatd DB is NOT supported by this version.
