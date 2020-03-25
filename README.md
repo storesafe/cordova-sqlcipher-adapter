@@ -6,6 +6,8 @@ License terms for Android and DISABLED (unsupported) Windows platform versions: 
 
 License terms for iOS/macOS platform version: MIT only
 
+**NOTICE:** Extra-old `armeabi` CPU for Android pre-5.0 is no longer supported by this plugin version.
+
 ## About this plugin version branch
 
 TBD
@@ -135,8 +137,8 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
 
 - Windows platform support is now disabled in this plugin version, with CRYPTO provider (libTomCrypt) completely removed (ref: [litehelpers / Cordova-sqlcipher-adapter#63](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/63)). For future consideration: enable Windows build again with encryption using a recent build of the OpenSSL crypto library ref: [litehelpers/Cordova-sqlcipher-adapter#30](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/30)
 - Alpha version:
+  - SQLCipher `4.3.0` for Android - in custom build from <https://github.com/brodybits/android-database-sqlcipher/tree/v4.3.x-defensive-jar-build> (`v4.3.x-defensive-jar-build` branch), now using `androidx.sqlite:sqlite:2.1.0` framework reference
   - SQLCipher `4.3.0` for iOS/macOS
-  - SQLCipher `4.2.0` for Android, in custom build from <https://github.com/brodybits/android-database-sqlcipher/tree/4.2.x%2Bcustom-jar-build> (`4.2.x+custom-jar-build` branch)
   - with OpenSSL libcrypto for Android
   - using CommonCrypto framework for iOS/macOS
   - NO ENCRYPTION ENABLED (completely removed) for Windows
@@ -161,7 +163,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
   - `SQLITE_OMIT_DECLTYPE` (iOS/macOS/Windows)
   - `SQLITE_OMIT_DEPRECATED` - iOS/macOS (FUTURE TBD: Android ref: [brodybits/cordova-sqlcipher-adapter#82](https://github.com/brodybits/cordova-sqlcipher-adapter/issues/82))
   - `SQLITE_OMIT_PROGRESS_CALLBACK` (iOS/macOS/Windows)
-  - `SQLITE_OMIT_SHARED_CACHE`
+  - `SQLITE_OMIT_SHARED_CACHE` - iOS/macOS/Windows
   - `SQLITE_ENABLE_DBSTAT_VTAB` - Android only
   - `SQLITE_ENABLE_LOAD_EXTENSION` (Android only)
   - `SQLITE_OMIT_LOAD_EXTENSION` (iOS/macOS/Windows)

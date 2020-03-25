@@ -73,7 +73,7 @@ var mytests = function() {
 
               // Check specific SQLCipher version on plugin
               if (isAndroid) // (android-database-sqlcipher)
-                expect(rs.rows.item(0).myResult).toBe('3.28.0');
+                expect(rs.rows.item(0).myResult).toBe('3.30.1');
               else // SQLCipher for iOS/macOS/...
                 expect(rs.rows.item(0).myResult).toBe('3.30.1');
 

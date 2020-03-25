@@ -44,6 +44,8 @@
          -->
         <lib-file src="src/android/libs/android-database-sqlcipher-classes.jar" />
         <lib-file src="src/android/libs/android-database-sqlcipher-ndk.jar" />
+        <!-- androidx.sqlite now required -->
+        <framework src="androidx.sqlite:sqlite:2.1.0" />
 
         <!-- [FUTURE TBD] consider using external aar again -->
         <!-- THANKS to @jcesarmobile for GUIDANCE in accepted answer:
@@ -51,8 +53,8 @@
          -->
         <!-- SQLCipher distribution for Android
              [sqlcipher.jar & ndk objects in aar (modified reference for Buildr)] from:
-             https://mvnrepository.com/artifact/net.zetetic/android-database-sqlcipher/3.5.9
-        <framework src="net.zetetic:android-database-sqlcipher:3.5.9" />
+             https://mvnrepository.com/artifact/net.zetetic/android-database-sqlcipher/4.3.0
+        <framework src="net.zetetic:android-database-sqlcipher:4.3.0" />
         - -->
     </platform>
 
