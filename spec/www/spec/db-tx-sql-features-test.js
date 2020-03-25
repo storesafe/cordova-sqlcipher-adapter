@@ -2,11 +2,23 @@
 
 var MYTIMEOUT = 20000;
 
-var DEFAULT_SIZE = 5000000; // max to avoid popup in safari/ios
+// NOTE: DEFAULT_SIZE wanted depends on type of browser
 
-var isWP8 = /IEMobile/.test(navigator.userAgent); // Matches WP(7/8/8.1)
-var isWindows = /Windows /.test(navigator.userAgent); // Windows
+var isWindows = /MSAppHost/.test(navigator.userAgent);
 var isAndroid = !isWindows && /Android/.test(navigator.userAgent);
+var isFirefox = /Firefox/.test(navigator.userAgent);
+var isWebKitBrowser = !isWindows && !isAndroid && /Safari/.test(navigator.userAgent);
+var isBrowser = isWebKitBrowser || isFirefox;
+var isEdgeBrowser = isBrowser && (/Edge/.test(navigator.userAgent));
+var isChromeBrowser = isBrowser && !isEdgeBrowser && (/Chrome/.test(navigator.userAgent));
+var isSafariBrowser = isWebKitBrowser && !isEdgeBrowser && !isChromeBrowser;
+var isMac = !isBrowser && /Macintosh/.test(navigator.userAgent);
+var isAppleMobileOS = /iPhone/.test(navigator.userAgent) ||
+      /iPad/.test(navigator.userAgent) || /iPod/.test(navigator.userAgent);
+
+// should avoid popups (Safari seems to count 2x)
+var DEFAULT_SIZE = isSafariBrowser ? 2000000 : 5000000;
+// FUTURE TBD: 50MB should be OK on Chrome and some other test browsers.
 
 // NOTE: While in certain version branches there is no difference between
 // the default Android implementation and implementation #2,
@@ -18,11 +30,14 @@ var scenarioList = [
   'Plugin-implementation-2'
 ];
 
-var scenarioCount = (!!window.hasWebKitBrowser) ? (isAndroid ? 3 : 2) : 1;
+var scenarioCount = (!!window.hasWebKitWebSQL) ? (isAndroid ? 3 : 2) : 1;
 
 var mytests = function() {
 
   for (var i=0; i<scenarioCount; ++i) {
+    // TBD skip plugin test on browser platform (not yet supported):
+    if (isBrowser && (i === 0)) continue;
+
     describe(scenarioList[i] + ': db tx sql features test(s)', function() {
       var scenarioName = scenarioList[i];
       var suiteName = scenarioName + ': ';
@@ -52,8 +67,7 @@ var mytests = function() {
         // - Android (SQLCipher for Android)
         // - iOS & Windows (with newer sqlite3 build)
         it(suiteName + 'db readTransaction with a WITH clause', function(done) {
-          if (isWP8) pending('NOT IMPLEMENTED for WP(8)');
-          if (isWebSql) pending('SKIP for Web SQL'); // NOT WORKING on all versions (Android/iOS)
+          if (isWebSql && !isBrowser) pending('SKIP for Android/iOS (WebKit) Web SQL'); // XXX TBD NOT WORKING on all Android/iOS versions
           // if (isAndroid && isImpl2) pending('SKIP for android.database implementation'); // NOT WORKING on all versions
 
           var db = openDatabase('tx-with-a-with-clause-test.db', '1.0', 'Test', DEFAULT_SIZE);
@@ -79,9 +93,9 @@ var mytests = function() {
 
         /* THANKS to @calebeaires: */
         it(suiteName + 'create virtual table using FTS3', function(done) {
-          if (isWP8) pending('NOT IMPLEMENTED for WP(8)'); // NOT IMPLEMENTED in CSharp-SQLite
+          if (isWebSql && isSafariBrowser) pending('SKIP for (WebKit) Web SQL on Safari browser');
           if (isWebSql && isAndroid) pending('SKIP for Android Web SQL');
-          if (isWebSql && !isAndroid && (/OS 1[1-9]/.test(navigator.userAgent))) pending('SKIP (WebKit) Web SQL on iOS 11(+)');
+          if (isWebSql && isAppleMobileOS && (/OS 1[1-9]/.test(navigator.userAgent))) pending('SKIP (WebKit) Web SQL on iOS 11(+)');
 
           var db = openDatabase('virtual-table-using-fts3.db', '1.0', 'Test', DEFAULT_SIZE);
 
@@ -126,7 +140,6 @@ var mytests = function() {
         // FTS4 seems to be working as well!
         // (thanks again to @calebeaires for this scenario)
         it(suiteName + 'create virtual table using FTS4', function(done) {
-          if (isWP8) pending('NOT IMPLEMENTED for WP(8)'); // NOT IMPLEMENTED in CSharp-SQLite
           if (isWebSql) pending('SKIP for Web SQL');
 
           var db = openDatabase('virtual-table-using-fts4.db', '1.0', 'Test', DEFAULT_SIZE);
@@ -272,7 +285,6 @@ var mytests = function() {
 
         it(suiteName + 'create virtual table using R-Tree', function(done) {
           if (isWebSql) pending('SKIP for Web SQL');
-          if (isWP8) pending('NOT IMPLEMENTED for WP(8)'); // NOT IMPLEMENTED in CSharp-SQLite
           if (isAndroid && isImpl2) pending('NOT IMPLEMENTED for all versions of android.database'); // NOT IMPLEMENTED for all versions of Android database (failed in Circle CI)
 
           var db = openDatabase('virtual-table-using-r-tree.db', '1.0', 'Test', DEFAULT_SIZE);
@@ -318,11 +330,10 @@ var mytests = function() {
         // SQLITE_ENABLE_UPDATE_DELETE_LIMIT defined
         // for this feature to work.
         xit(suiteName + 'DELETE LIMIT', function(done) {
-          if (isWP8) pending('NOT IMPLEMENTED for WP(8)');
           if (isWebSql) pending('SKIP for Web SQL (NOT IMPLEMENTED)');
           if (isWindows) pending('NOT IMPLEMENTED for Windows');
           if (isAndroid && !isWebSql) pending('SKIP for Android plugin'); // FUTURE TBD test with newer versions (android.database)
-          if (!(isAndroid || isWindows || isWP8)) pending('SKIP for iOS'); // NOT WORKING on any versions of iOS (plugin or Web SQL)
+          if (isAppleMobileOS || isMac) pending('SKIP for iOS/macOS'); // NOT WORKING on any versions of iOS/macOS (plugin or Web SQL)
 
           var db = openDatabase('delete-limit-test.db', '1.0', 'Test', DEFAULT_SIZE);
           expect(db).toBeDefined();

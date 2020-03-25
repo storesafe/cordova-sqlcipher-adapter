@@ -2,14 +2,20 @@
 
 var MYTIMEOUT = 12000;
 
-var DEFAULT_SIZE = 5000000; // max to avoid popup in safari/ios
+// NOTE: DEFAULT_SIZE wanted depends on type of browser
 
-// FUTURE TODO replace in test(s):
-function ok(test, desc) { expect(test).toBe(true); }
-
-var isWP8 = /IEMobile/.test(navigator.userAgent); // Matches WP(7/8/8.1)
-var isWindows = /Windows /.test(navigator.userAgent); // Windows 8.1/Windows Phone 8.1/Windows 10
+var isWindows = /MSAppHost/.test(navigator.userAgent);
 var isAndroid = !isWindows && /Android/.test(navigator.userAgent);
+var isFirefox = /Firefox/.test(navigator.userAgent);
+var isWebKitBrowser = !isWindows && !isAndroid && /Safari/.test(navigator.userAgent);
+var isBrowser = isWebKitBrowser || isFirefox;
+var isEdgeBrowser = isBrowser && (/Edge/.test(navigator.userAgent));
+var isChromeBrowser = isBrowser && !isEdgeBrowser && (/Chrome/.test(navigator.userAgent));
+var isSafariBrowser = isWebKitBrowser && !isEdgeBrowser && !isChromeBrowser;
+
+// should avoid popups (Safari seems to count 2x)
+var DEFAULT_SIZE = isSafariBrowser ? 2000000 : 5000000;
+// FUTURE TBD: 50MB should be OK on Chrome and some other test browsers.
 
 // NOTE: While in certain version branches there is no difference between
 // the default Android implementation and implementation #2,
@@ -21,11 +27,13 @@ var scenarioList = [
   'Plugin-implementation-2'
 ];
 
-var scenarioCount = (!!window.hasWebKitBrowser) ? (isAndroid ? 3 : 2) : 1;
+var scenarioCount = (!!window.hasWebKitWebSQL) ? (isAndroid ? 3 : 2) : 1;
 
 var mytests = function() {
 
   for (var i=0; i<scenarioCount; ++i) {
+    // TBD skip plugin test on browser platform (not yet supported):
+    if (isBrowser && (i === 0)) continue;
 
     describe(scenarioList[i] + ': ext tx blob test(s)', function() {
       var scenarioName = scenarioList[i];
@@ -53,30 +61,27 @@ var mytests = function() {
         }
       }
 
-      //describe(scenarioList[i] + ': tx blob test(s)', function() {
+      describe(scenarioList[i] + ': Blob object test(s)', function() {
 
-        // XXX ENABLED for iOS ONLY (for now):
         // This test shows that the plugin does not throw an error when trying to serialize
         // a non-standard parameter type. Blob becomes an empty dictionary on iOS, for example,
         // and so this verifies the type is converted to a string and continues. Web SQL does
         // the same but on the JavaScript side and converts to a string like `[object Blob]`.
         it(suiteName + "INSERT Blob from ArrayBuffer (non-standard parameter type)", function(done) {
-          if (isWindows) pending('BROKEN for Windows'); // XXX (??)
-          if (isWP8) pending('BROKEN for WP(8)'); // (???)
-          if (typeof Blob === "undefined") pending('Blob type does not exist');
-          if (/Android [1-4]/.test(navigator.userAgent)) pending('BROKEN for Android [version 1.x-4.x]');
-          if (isAndroid) pending('SKIP for Android'); // (for now)
+          if (/Android 4.[1-3]/.test(navigator.userAgent)) pending('SKIP for Android 4.1-4.3');
 
-          // abort the test if ArrayBuffer is undefined
+          // IMPORTANT:
+          if (typeof Blob === "undefined") pending('Blob type does not exist');
+
+          // SKIP this test if ArrayBuffer is undefined
           // TODO: consider trying this for multiple non-standard parameter types instead
           if (typeof ArrayBuffer === "undefined") pending('ArrayBuffer type does not exist');
 
-
-          var db = openDatabase("Blob-test.db", "1.0", "Demo", DEFAULT_SIZE);
-          ok(!!db, "db object");
+          var db = openDatabase('Blob-object-from-ArrayBuffer-test.db');
+          expect(db).toBeDefined();
 
           db.transaction(function(tx) {
-            ok(!!tx, "tx object");
+            expect(tx).toBeDefined();
 
             var buffer = new ArrayBuffer(5);
             var view   = new Uint8Array(buffer);
@@ -89,21 +94,25 @@ var mytests = function() {
 
             tx.executeSql('DROP TABLE IF EXISTS test_table');
             tx.executeSql('CREATE TABLE IF NOT EXISTS test_table (foo blob)');
-            tx.executeSql('INSERT INTO test_table VALUES (?)', [blob], function(tx, res) {
-              ok(true, "INSERT blob OK");
+            tx.executeSql('INSERT INTO test_table VALUES (?)', [blob], function(txIgnored, rs) {
+              // EXPECTED RESULT:
+              expect(rs).toBeDefined();
               done();
             }, function(tx, error) {
-              ok(false, "INSERT blob FAILED");
+              // NOT EXPECTED:
+              expect(false).toBe(true);
+              expect(error.message).toBe('--');
               done();
             });
-          }, function(err) { 
-            ok(false, "transaction failure with message: " + err.message);
+          }, function(err) {
+            // NOT EXPECTED:
+            expect(false).toBe(true);
+            expect(err.message).toBe('--');
             done();
           });
         });
 
-      //});
-
+      });
 
     });
   }

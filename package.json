@@ -31,9 +31,13 @@
   },
   "homepage": "https://github.com/brodybits/cordova-sqlcipher-adapter",
   "scripts": {
-    "start": "node scripts/prepareSpec.js"
+    "clean-spec": "rm -rf spec/[mnp]* && git cl spec/config.xml && git status --ignored",
+    "prepare-js": "coffee -p SQLitePlugin.coffee.md > www/SQLitePlugin.js",
+    "prepare-spec": "node scripts/prepareSpec.js"
   },
   "devDependencies": {
-    "shelljs": "^0.7.4"
+    "coffeescript": "1",
+    "cross-spawn": "^6.0.5",
+    "fs-extra": "^8.1.0"
   }
 }

@@ -2,12 +2,23 @@
 
 var MYTIMEOUT = 12000;
 
-var DEFAULT_SIZE = 5000000; // max to avoid popup in safari/ios
+// NOTE: DEFAULT_SIZE wanted depends on type of browser
 
-var isWP8 = /IEMobile/.test(navigator.userAgent); // Matches WP(7/8/8.1)
-var isWindows = /Windows /.test(navigator.userAgent); // Windows
+var isWindows = /MSAppHost/.test(navigator.userAgent);
 var isAndroid = !isWindows && /Android/.test(navigator.userAgent);
-var isMac = /Macintosh/.test(navigator.userAgent);
+var isFirefox = /Firefox/.test(navigator.userAgent);
+var isWebKitBrowser = !isWindows && !isAndroid && /Safari/.test(navigator.userAgent);
+var isBrowser = isWebKitBrowser || isFirefox;
+var isEdgeBrowser = isBrowser && (/Edge/.test(navigator.userAgent));
+var isChromeBrowser = isBrowser && !isEdgeBrowser && (/Chrome/.test(navigator.userAgent));
+var isSafariBrowser = isWebKitBrowser && !isEdgeBrowser && !isChromeBrowser;
+var isMac = !isBrowser && /Macintosh/.test(navigator.userAgent);
+var isAppleMobileOS = /iPhone/.test(navigator.userAgent) ||
+      /iPad/.test(navigator.userAgent) || /iPod/.test(navigator.userAgent);
+
+// should avoid popups (Safari seems to count 2x)
+var DEFAULT_SIZE = isSafariBrowser ? 2000000 : 5000000;
+// FUTURE TBD: 50MB should be OK on Chrome and some other test browsers.
 
 // NOTE: While in certain version branches there is no difference between
 // the default Android implementation and implementation #2,
@@ -19,13 +30,15 @@ var scenarioList = [
   'Plugin-implementation-2'
 ];
 
-var scenarioCount = (!!window.hasWebKitBrowser) ? (isAndroid ? 3 : 2) : 1;
+var scenarioCount = (!!window.hasWebKitWebSQL) ? (isAndroid ? 3 : 2) : 1;
 
 // FUTURE TBD SPLIT SCRIPT THIS EVEN FURTHER
 
 var mytests = function() {
 
   for (var i=0; i<scenarioCount; ++i) {
+    // TBD skip plugin test on browser platform (not yet supported):
+    if (isBrowser && (i === 0)) continue;
 
     // TBD QUICK TEST WORKAROUND for Android:
     if (!isWindows && isAndroid && i === 0) continue;
@@ -181,6 +194,8 @@ var mytests = function() {
         }, MYTIMEOUT);
 
         it(suiteName + 'db transaction result object lifetime', function(done) {
+          if (isWebSql && /Android 5.1/.test(navigator.userAgent)) pending('SKIP on (WebKit) Web SQL on Android 5.1'); // XXX TBD INCONSISTENT RESULT on (WebKit) Web SQL on Android 5.1(.1) x86 emulator vs Samsung test device
+
           var db = openDatabase('db-tx-result-lifetime-test.db', '1.0', 'Test', DEFAULT_SIZE);
 
           expect(db).toBeDefined();
@@ -321,8 +336,9 @@ var mytests = function() {
                     // (WebKit) Web SQL:
                     // 1. [TBD] this is a native object that is NOT affected by the change
                     //    on Android pre-5.x & iOS pre-11.x
-                    if ((!isAndroid && !(/OS 1[1-9]/.test(navigator.userAgent))) ||
-                        (/Android [2-4]/.test(navigator.userAgent)))
+                    if ((isAppleMobileOS && !(/OS 1[1-9]/.test(navigator.userAgent))) ||
+                        (/Android 4/.test(navigator.userAgent)) ||
+                        (/Android 5.0/.test(navigator.userAgent)))
                       expect(temp1.data).toBe('test');
                     else
                       expect(temp1.data).toBe('another');
@@ -386,8 +402,6 @@ var mytests = function() {
         }, MYTIMEOUT);
 
         it(suiteName + 'tx sql starting with extra space results test', function(done) {
-          if (isWP8) pending('BROKEN for WP8');
-
           var db = openDatabase('tx-sql-starting-with-extra-space-results-test.db', '1.0', 'Test', DEFAULT_SIZE);
 
           expect(db).toBeDefined();
@@ -488,8 +502,6 @@ var mytests = function() {
         }, MYTIMEOUT);
 
         it(suiteName + 'tx sql starting with extra semicolon results test', function(done) {
-          if (isWP8) pending('BROKEN for WP8');
-
           var db = openDatabase('tx-sql-starting-with-extra-semicolon-results-test.db', '1.0', 'Test', DEFAULT_SIZE);
 
           expect(db).toBeDefined();
@@ -595,7 +607,6 @@ var mytests = function() {
            ((!isWebSql && isAndroid && isImpl2) ?
             ' [SQLResultSet.rowsAffected BROKEN for androidDatabaseImplementation: 2 (built-in android.database)]' :
              ''), function(done) {
-          if (isWP8) pending('SKIP: NOT SUPPORTED for WP8');
           if (isWebSql && isAndroid) pending('SKIP for Android Web SQL'); // FUTURE TBD (??)
 
           var db = openDatabase('Multi-row-INSERT-with-parameters-test.db', '1.0', 'Test', DEFAULT_SIZE);
@@ -659,8 +670,10 @@ var mytests = function() {
 
             expect(error.code).toBe(5); // (SQLError.SYNTAX_ERR)
 
-            // WebKit Web SQL error message (apparenly with SQLite error code)
-            if (isWebSql)
+            // WebKit Web SQL error message
+            // (with SQLite error code on iOS & Android post-4.3)
+            expect(error.message).toMatch(/not an error/);
+            if (isWebSql && !(/Android 4.[1-3]/.test(navigator.userAgent)))
               expect(error.message).toMatch(/could not prepare statement.*1 not an error/);
 
             // Close (plugin only) & finish:
@@ -725,8 +738,10 @@ var mytests = function() {
 
               expect(error.code).toBe(5); // (SQLError.SYNTAX_ERR)
 
-              // WebKit Web SQL error message (apparenly with SQLite error code)
-              if (isWebSql)
+              // WebKit Web SQL error message
+              // (with SQLite error code on iOS & Android post-4.3)
+              expect(error.message).toMatch(/not an error/);
+              if (isWebSql && !(/Android 4.[1-3]/.test(navigator.userAgent)))
                 expect(error.message).toMatch(/could not prepare statement.*1 not an error/);
 
               // Close (plugin only), return false, and finish:
@@ -831,9 +846,7 @@ var mytests = function() {
           });
         }, MYTIMEOUT);
 
-        it(suiteName + 'INSERT with TRIGGER & check results [rowsAffected INCORRECT with androidDatabaseImplementation: 2 (built-in android.database) setting]', function(done) {
-          if (isWP8) pending('SKIP (NOT SUPPORTED) for WP8'); // NOT SUPPORTED for WP8
-
+        it(suiteName + 'INSERT with TRIGGER & check results [rowsAffected INCORRECT with Android 4.1-4.3 (WebKit) Web SQL & androidDatabaseImplementation: 2 (built-in android.database) setting]', function(done) {
           var db = openDatabase('INSERT-with-TRIGGER-test.db', '1.0', 'Test', DEFAULT_SIZE);
 
           db.transaction(function(tx) {
@@ -858,9 +871,11 @@ var mytests = function() {
               expect(rs1.insertId).toBe(1);
               // [INCORRECT rowsAffected with androidDatabaseImplementation: 2 (built-in android.database) setting]
               if (!(isAndroid && isImpl2))
-                expect(rs1.rowsAffected).toBe(2);
-              else
+              if (isWebSql && /Android 4.[1-3]/.test(navigator.userAgent) ||
+                  (isAndroid && isImpl2))
                 expect(rs1.rowsAffected).toBe(1);
+              else
+                expect(rs1.rowsAffected).toBe(2);
 
               tx.executeSql('SELECT COUNT(*) AS count1 FROM tt1', [], function(ignored, rs2) {
                 // EXPECTED: CORRECT RESULT:
@@ -975,8 +990,6 @@ var mytests = function() {
               addColumnTest();
             } else {
               createdb.close(addColumnTest, function(e) {
-                // XXX TBD IGNORE close error on Windows:
-                if (isWindows) return addColumnTest();
                 // ERROR RESULT (NOT EXPECTED):
                 expect(false).toBe(true);
                 expect(e).toBeDefined();
@@ -1035,8 +1048,6 @@ var mytests = function() {
               tableRenameTest();
             } else {
               createdb.close(tableRenameTest, function(e) {
-                // XXX TBD IGNORE close error on Windows:
-                if (isWindows) return tableRenameTest();
                 // ERROR RESULT (NOT EXPECTED):
                 expect(false).toBe(true);
                 expect(e).toBeDefined();
@@ -1069,6 +1080,45 @@ var mytests = function() {
               (isWebSql) ? done() : db.close(done, done);
             });
           }
+        }, MYTIMEOUT);
+
+        // TBD December 2019 SQLite crash report ref:
+        // - http://sqlite.1065341.n5.nabble.com/Crash-Bug-Report-tc109903.html
+        // - https://github.com/xpbrew/cordova-sqlite-storage/issues/904
+        xit(suiteName + 'RENAME table with view test [SQLite crash bug report December 2019]', function(done) {
+          if (isWebSql) pending('[TBD] NOT WORKING on (WebKit) Web SQL');
+          if (!isWebSql && isAndroid && isImpl2) pending('[TBD] NOT WORKING on Android system android.database provider');
+
+          var dbname = 'RENAME-table-with-view-test.db';
+          var db = openDatabase(dbname);
+
+          db.transaction(function(tx) {
+            tx.executeSql('DROP TABLE IF EXISTS v0;');
+            tx.executeSql('DROP TABLE IF EXISTS v2;');
+            tx.executeSql('DROP TABLE IF EXISTS t3;');
+            tx.executeSql('DROP VIEW IF EXISTS v4;');
+            tx.executeSql('DROP TRIGGER IF EXISTS x;');
+            tx.executeSql('CREATE TABLE v0 ( v1 ) ;');
+            tx.executeSql('CREATE TABLE v2 ( v3 ) ;');
+            tx.executeSql('CREATE VIEW v4 AS WITH x AS ( SELECT x () OVER( ) FROM v4 ) SELECT v3 AS x FROM v2 ;');
+            tx.executeSql('ALTER TABLE v2 RENAME TO t3;');
+            tx.executeSql('SELECT COUNT(x) AS cnt FROM v4;', null, function(tx, rs) {
+              expect(rs).toBeDefined();
+              expect(rs.rows.length).toBe(1);
+              expect(rs.rows.item(0).cnt).toBe(0);
+
+              // Close (plugin only) & finish:
+              (isWebSql) ? done() : db.close(done, done);
+            });
+          }, function(e) {
+            // ERROR RESULT (NOT EXPECTED):
+            expect(false).toBe(true);
+            expect(e).toBeDefined();
+            expect(e.message).toBe('--');
+
+            // Close (plugin only) & finish:
+            (isWebSql) ? done() : db.close(done, done);
+          });
         }, MYTIMEOUT);
 
       });

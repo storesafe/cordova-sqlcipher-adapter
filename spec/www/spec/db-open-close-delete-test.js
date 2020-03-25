@@ -2,7 +2,7 @@
 
 var MYTIMEOUT = 12000;
 
-var DEFAULT_SIZE = 5000000; // max to avoid popup in safari/ios
+// NOTE: DEFAULT_SIZE wanted depends on type of browser
 
 // FUTURE TODO replace in test(s):
 function ok(test, desc) { expect(test).toBe(true); }
@@ -30,9 +30,18 @@ function start(n) {
   if (wait == 0) test_it_done();
 }
 
-var isWP8 = /IEMobile/.test(navigator.userAgent); // Matches WP(7/8/8.1)
-var isWindows = /Windows /.test(navigator.userAgent);
+var isWindows = /MSAppHost/.test(navigator.userAgent);
 var isAndroid = !isWindows && /Android/.test(navigator.userAgent);
+var isFirefox = /Firefox/.test(navigator.userAgent);
+var isWebKitBrowser = !isWindows && !isAndroid && /Safari/.test(navigator.userAgent);
+var isBrowser = isWebKitBrowser || isFirefox;
+var isEdgeBrowser = isBrowser && (/Edge/.test(navigator.userAgent));
+var isChromeBrowser = isBrowser && !isEdgeBrowser && (/Chrome/.test(navigator.userAgent));
+var isSafariBrowser = isWebKitBrowser && !isEdgeBrowser && !isChromeBrowser;
+
+// should avoid popups (Safari seems to count 2x)
+var DEFAULT_SIZE = isSafariBrowser ? 2000000 : 5000000;
+// FUTURE TBD: 50MB should be OK on Chrome and some other test browsers.
 
 // NOTE: While in certain version branches there is no difference between
 // the default Android implementation and implementation #2,
@@ -48,6 +57,8 @@ var pluginScenarioCount = isAndroid ? 2 : 1;
 var mytests = function() {
 
   describe('Open database parameter test(s)', function() {
+    // TBD skip plugin test on browser platform (not yet supported):
+    if (isBrowser) return;
 
     for (var i=0; i<pluginScenarioCount; ++i) {
 
@@ -84,7 +95,7 @@ var mytests = function() {
           return window.sqlitePlugin.openDatabase(dbopts, okcb, errorcb);
         }
 
-        it(suiteName + 'Open database with normal US-ASCII characters (no slash) & check database file name', function(done) {
+        it(suiteName + 'Open database with normal US-ASCII characters (no slash) & check internal database file name', function(done) {
           var dbName = "Test!123-456$789.db";
 
           try {
@@ -98,7 +109,7 @@ var mytests = function() {
                 expect(rs.rows.length).toBe(1);
                 expect(rs.rows.item(0).name).toBe('main');
                 expect(rs.rows.item(0).file).toBeDefined();
-                expect(rs.rows.item(0).file.indexOf(dbName)).not.toBe(-1);
+                expect(rs.rows.item(0).file.indexOf(dbName) !== -1).toBe(true);
 
                 // Close & finish:
                 db.close(done, done);
@@ -122,7 +133,7 @@ var mytests = function() {
           }
         }, MYTIMEOUT);
 
-        it(suiteName + 'Open database with EXTRA US-ASCII characters WITHOUT SLASH & check database file name - WORKING on Android/iOS/macOS/Windows', function(done) {
+        it(suiteName + 'Open database with EXTRA US-ASCII characters WITHOUT SLASH & check internal database file name - WORKING on Android/iOS/macOS/Windows', function(done) {
           var dbName = "Test @#$%^&(), '1' [] {} _-+=:;.db";
 
           try {
@@ -136,7 +147,7 @@ var mytests = function() {
                 expect(rs.rows.length).toBe(1);
                 expect(rs.rows.item(0).name).toBe('main');
                 expect(rs.rows.item(0).file).toBeDefined();
-                expect(rs.rows.item(0).file.indexOf(dbName)).not.toBe(-1);
+                expect(rs.rows.item(0).file.indexOf(dbName) !== -1).toBe(true);
 
                 // Close & finish:
                 db.close(done, done);
@@ -200,7 +211,7 @@ var mytests = function() {
                 expect(rs.rows.length).toBe(1);
                 expect(rs.rows.item(0).name).toBe('main');
                 expect(rs.rows.item(0).file).toBeDefined();
-                expect(rs.rows.item(0).file.indexOf(dbName)).not.toBe(-1);
+                expect(rs.rows.item(0).file.indexOf(dbName) !== -1).toBe(true);
 
                 // Close & finish:
                 db.close(done, done);
@@ -228,8 +239,8 @@ var mytests = function() {
           }
         }, MYTIMEOUT);
 
-        it(suiteName + 'Open database with u2028 & check database file name - Windows ONLY [Cordova BROKEN Android/iOS/macOS]', function(done) {
-          if (!isWindows) pending('SKIP for Android/macOS/iOS due to Cordova BUG');
+        it(suiteName + 'Open database with u2028 & check internal database file name on Windows ONLY [KNOWN ISSUE on Cordova for Android/iOS/...]', function(done) {
+          if (isAndroid || isAppleMobileOS || isMac) pending('SKIP for Android/macOS/iOS due to KNOWN CORDOVA ISSUE');
 
           var dbName = 'first\u2028second.db';
 
@@ -244,7 +255,7 @@ var mytests = function() {
                 expect(rs.rows.length).toBe(1);
                 expect(rs.rows.item(0).name).toBe('main');
                 expect(rs.rows.item(0).file).toBeDefined();
-                expect(rs.rows.item(0).file.indexOf(dbName)).not.toBe(-1);
+                expect(rs.rows.item(0).file.indexOf(dbName) !== -1).toBe(true);
 
                 // Close & finish:
                 db.close(done, done);
@@ -268,8 +279,8 @@ var mytests = function() {
           }
         }, MYTIMEOUT);
 
-        it(suiteName + 'Open database with u2029 & check database file name - Windows ONLY [BROKEN: Cordova BUG Android/iOS/macOS]', function(done) {
-          if (!isWindows) pending('SKIP for Android/macOS/iOS due to Cordova BUG');
+        it(suiteName + 'Open database with u2029 & check internal database file name on Windows ONLY [KNOWN ISSUE on Cordova for Android/iOS/...]', function(done) {
+          if (isAndroid || isAppleMobileOS || isMac) pending('SKIP for Android/macOS/iOS due to KNOWN CORDOVA ISSUE');
 
           var dbName = 'first\u2029second.db';
 
@@ -284,7 +295,7 @@ var mytests = function() {
                 expect(rs.rows.length).toBe(1);
                 expect(rs.rows.item(0).name).toBe('main');
                 expect(rs.rows.item(0).file).toBeDefined();
-                expect(rs.rows.item(0).file.indexOf(dbName)).not.toBe(-1);
+                expect(rs.rows.item(0).file.indexOf(dbName) !== -1).toBe(true);
 
                 // Close & finish:
                 db.close(done, done);
@@ -308,11 +319,8 @@ var mytests = function() {
           }
         }, MYTIMEOUT);
 
-        // TBD emoji (UTF-8 4 octets) [NOT RECOMMENDED]:
-        it(suiteName + 'Open database with emoji \uD83D\uDE03 (UTF-8 4 octets) & check database file name [NOT RECOMMENDED]', function(done) {
-          if (!isWindows && isAndroid) pending('SKIP: TBD BROKEN on Android'); // XXX TBD ???
-
-          var dbName = 'a\uD83D\uDE03';
+        it(suiteName + 'Open database with U+0801 (3-byte Samaritan character Bit) & check internal database file name', function(done) {
+          var dbName = 'a\u0801.db';
 
           try {
             openDatabase({name: dbName, location: 'default'}, function(db) {
@@ -325,7 +333,45 @@ var mytests = function() {
                 expect(rs.rows.length).toBe(1);
                 expect(rs.rows.item(0).name).toBe('main');
                 expect(rs.rows.item(0).file).toBeDefined();
-                expect(rs.rows.item(0).file.indexOf(dbName)).not.toBe(-1);
+                expect(rs.rows.item(0).file.indexOf(dbName) !== -1).toBe(true);
+
+                // Close & finish:
+                db.close(done, done);
+              }, function(error) {
+                // NOT EXPECTED:
+                expect(false).toBe(true);
+                expect(error.message).toBe('--');
+                done();
+              });
+            }, function(error) {
+              // NOT EXPECTED:
+              expect(false).toBe(true);
+              expect(error.message).toBe('--');
+              done();
+            });
+          } catch (e) {
+            // NOT EXPECTED:
+            expect(false).toBe(true);
+            expect(e.message).toBe('--');
+            done();
+          }
+        }, MYTIMEOUT);
+
+        it(suiteName + 'Open database with emoji \uD83D\uDE03 (UTF-8 4 bytes) & check internal database file name', function(done) {
+          var dbName = 'a\uD83D\uDE03.db';
+
+          try {
+            openDatabase({name: dbName, location: 'default'}, function(db) {
+              // EXPECTED RESULT:
+              expect(db).toBeDefined();
+              db.executeSql('PRAGMA database_list', [], function(rs) {
+                // EXPECTED RESULT:
+                expect(rs).toBeDefined();
+                expect(rs.rows).toBeDefined();
+                expect(rs.rows.length).toBe(1);
+                expect(rs.rows.item(0).name).toBe('main');
+                expect(rs.rows.item(0).file).toBeDefined();
+                expect(rs.rows.item(0).file.indexOf(dbName) !== -1).toBe(true);
 
                 // Close & finish:
                 db.close(done, done);
@@ -368,13 +414,15 @@ var mytests = function() {
           {label: ':', dbName: 'first:second.db'},
           {label: ';', dbName: 'first;second.db'},
           {label: "'1'", dbName: "'1'.db"},
-          // UTF-8 multiple octets:
-          {label: 'é (UTF-8 2 octets)', dbName: 'aé.db'},
-          {label: '€ (UTF-8 3 octets)', dbName: 'a€.db'},
+          // UTF-8 multiple bytes:
+          {label: '¢ (UTF-8 2 bytes)', dbName: 'a¢.db'},
+          {label: 'é (UTF-8 2 bytes)', dbName: 'aé.db'},
+          {label: '€ (UTF-8 3 bytes)', dbName: 'a€.db'},
+          // FUTURE TBD more emojis and other 4-byte UTF-8 characters
         ];
 
         additionalDatabaseNameScenarios.forEach(function(mytest) {
-          it(suiteName + 'Open database & check database file name with ' + mytest.label, function(done) {
+          it(suiteName + 'Open database & check internal database file name with ' + mytest.label, function(done) {
             var dbName = mytest.dbName;
 
             try {
@@ -388,7 +436,7 @@ var mytests = function() {
                   expect(rs.rows.length).toBe(1);
                   expect(rs.rows.item(0).name).toBe('main');
                   expect(rs.rows.item(0).file).toBeDefined();
-                  expect(rs.rows.item(0).file.indexOf(dbName)).not.toBe(-1);
+                  expect(rs.rows.item(0).file.indexOf(dbName) !== -1).toBe(true);
 
                   // Close & finish:
                   db.close(done, done);
@@ -432,7 +480,7 @@ var mytests = function() {
         ];
 
         unsupportedDatabaseNameScenariosWithFailureOnWindows.forEach(function(mytest) {
-          it(suiteName + 'Open database & check database file name with ' + mytest.label + ' [NOT SUPPORTED, NOT WORKING on Windows]', function(done) {
+          it(suiteName + 'Open database & check internal database file name with ' + mytest.label + ' [NOT SUPPORTED, NOT WORKING on Windows]', function(done) {
             var dbName = mytest.dbName;
 
             try {
@@ -448,7 +496,7 @@ var mytests = function() {
                   expect(rs.rows.length).toBe(1);
                   expect(rs.rows.item(0).name).toBe('main');
                   expect(rs.rows.item(0).file).toBeDefined();
-                  expect(rs.rows.item(0).file.indexOf(dbName)).not.toBe(-1);
+                  expect(rs.rows.item(0).file.indexOf(dbName) !== -1).toBe(true);
 
                   // Close & finish:
                   db.close(done, done);
@@ -483,6 +531,9 @@ var mytests = function() {
       });
     }
 
+    describe('Web SQL vs plugin openDatabase test(s)', function() {
+
+      if (true) {
 
         it('Open plugin database with Web SQL parameters (REJECTED with exception)', function(done) {
           try {
@@ -527,7 +578,10 @@ var mytests = function() {
           }
         }, MYTIMEOUT);
 
-      if (window.hasWebKitBrowser)
+      }
+
+      if (window.hasWebKitWebSQL) {
+
         it('Web SQL check that db name is really a string', function(done) {
           var p1 = { name: 'my.db.name', location: 'default' };
           try {
@@ -548,9 +602,13 @@ var mytests = function() {
           }
         }, MYTIMEOUT);
 
-    for (var i=0; i<pluginScenarioCount; ++i) {
+      }
 
-      describe(pluginScenarioList[i] + ': open database location parameter test(s)', function() {
+    });
+
+    describe('Plugin: open database location parameter test(s)', function() {
+
+      if (true) {
 
         var suiteName = 'Plugin: ';
 
@@ -843,16 +901,75 @@ var mytests = function() {
           }
         }, MYTIMEOUT);
 
-      });
+        it(suiteName + 'open with androidDatabaseProvider: "bogus" - REJECTED with exception', function(done) {
+          try {
+            window.sqlitePlugin.openDatabase({
+              name: 'open-with-androidDatabaseProvider-bogus.db',
+              androidDatabaseProvider: 'bogus',
+              location: 'default'
+            }, function(db) {
+              // NOT EXPECTED:
+              expect(false).toBe(true);
 
-    }
+              // Close (plugin) & finish:
+              db.close(done, done);
+            }, function(error) {
+              // OK but NOT EXPECTED:
+              expect('Behavior changed, please update this test').toBe('--');
+
+              done();
+            });
+          } catch (e) {
+            // EXPECTED RESULT: stopped by the implementation
+            expect(e).toBeDefined();
+
+            done();
+          }
+        }, MYTIMEOUT);
+
+        it(suiteName + 'open with both androidDatabaseProvider and androidDatabaseImplementation - REJECTED with exception', function(done) {
+          try {
+            window.sqlitePlugin.openDatabase({
+              name: 'open-with-androidDatabaseProvider-and-androidDatabaseImplementation.db',
+              androidDatabaseProvider: 'system',
+              androidDatabaseImplementation: 2,
+              location: 'default'
+            }, function(db) {
+              // NOT EXPECTED:
+              expect(false).toBe(true);
+
+              // Close (plugin) & finish:
+              db.close(done, done);
+            }, function(error) {
+              // OK but NOT EXPECTED:
+              expect('Behavior changed, please update this test').toBe('--');
+
+              done();
+            });
+          } catch (e) {
+            // EXPECTED RESULT: stopped by the implementation
+            expect(e).toBeDefined();
+
+            done();
+          }
+        }, MYTIMEOUT);
+
+      }
+
+    });
 
   });
 
 
   describe('Plugin - basic sqlitePlugin.deleteDatabase parameter check test(s)', function() {
+    // TBD skip plugin test on browser platform (not yet supported):
+    if (isBrowser) return;
+
+    if (true) {
 
       var suiteName = 'plugin: ';
+
+      if (true) {
 
         it(suiteName + 'check that sqlitePlugin.deleteDatabase db name is really a string', function(done) {
           var p1 = { name: 'my.db.name', location: 1 };
@@ -1077,9 +1194,15 @@ var mytests = function() {
           }
         }, MYTIMEOUT);
 
+      }
+
+    }
+
   });
 
-  describe('Plugin: db open-close-delete test(s)', function() {
+  describe('Plugin: db open-close-delete operation behavior test(s)', function() {
+    // TBD skip plugin test on browser platform (not yet supported):
+    if (isBrowser) return;
 
     for (var i=0; i<pluginScenarioCount; ++i) {
 
@@ -1327,7 +1450,7 @@ var mytests = function() {
 
         test_it(suiteName + ' database.close (immediately after open) calls its success callback', function () {
           // TBD POSSIBLY BROKEN on iOS/macOS due to current background processing implementation:
-          if (!isAndroid && !isWindows && !isWP8) pending('CURRENTLY BROKEN on iOS/macOS (background processing implementation)');
+          if (isAppleMobileOS || isMac) pending('TBD POSSIBLY BROKEN on iOS/macOS (background processing implementation)');
 
           // asynch test coming up
           stop(1);
@@ -1530,7 +1653,7 @@ var mytests = function() {
           window.sqlitePlugin.deleteDatabase(first, second, third);
         }
 
-        // Needed to support some large-scale applications:
+        // (Was needed to test support for an enterprise application)
         test_it(suiteName + ' open same database twice in [same] specified location works', function () {
           // XXX TODO [BROKEN]: same db name, different location should be different db!
           stop(2);
@@ -1568,7 +1691,7 @@ var mytests = function() {
           });
         });
 
-        // Needed to support some large-scale applications:
+        // (Was needed to test support for an enterprise application)
         test_it(suiteName + ' close then re-open (2x) allows subsequent queries to run', function () {
           // asynch test coming up
           stop(1);
@@ -1619,7 +1742,7 @@ var mytests = function() {
           });
         });
 
-        // Needed to support some large-scale applications:
+        // (Was needed to test support for an enterprise application)
         test_it(suiteName + " delete then re-open (location: 'default') allows subsequent queries to run", function () {
           var dbName = "test-database-delete-and-reopen.db";
           var dbargs = {name: dbName, iosDatabaseLocation: 'default'};
@@ -1661,9 +1784,9 @@ var mytests = function() {
         });
 
         // XXX SEE BELOW: repeat scenario but wait for open callback before close/delete/reopen
-        // Needed to support some large-scale applications:
+        // (Was needed to test support for an enterprise application)
         test_it(suiteName + ' immediate close, then delete then re-open allows subsequent queries to run', function () {
-          if (!isAndroid && !isWindows && !isWP8) pending('CURRENTLY BROKEN on iOS/macOS (background processing implementation)');
+          if (isAppleMobileOS || isMac) pending('CURRENTLY BROKEN on iOS/macOS (background processing implementation)');
 
           var dbName = "Immediate-close-delete-Reopen.db";
           var dbargs = {name: dbName, location: 'default'};
@@ -1810,7 +1933,7 @@ var mytests = function() {
 
         test_it(suiteName + ' repeatedly open and close database faster (5x)', function () {
           // TBD CURRENTLY BROKEN on iOS/macOS due to current background processing implementation:
-          if (!isAndroid && !isWindows && !isWP8) pending('CURRENTLY BROKEN on iOS/macOS (background processing implementation)');
+          if (isAppleMobileOS || isMac) pending('CURRENTLY BROKEN on iOS/macOS (background processing implementation)');
           // TBD ???:
           if (isAndroid) pending('FAILS on android with SQLCipher');
 
@@ -1868,7 +1991,7 @@ var mytests = function() {
           });
         });
 
-        // Needed to support some large-scale applications:
+        // (Was needed to test support for an enterprise application)
         test_it(suiteName + ' repeatedly open and delete database (4x)', function () {
           var dbName = 'test-repeatedly-open-and-delete-4x.db';
           var dbargs = {name: dbName, iosDatabaseLocation: 'Documents'};
@@ -1931,10 +2054,10 @@ var mytests = function() {
           });
         });
 
-        // Needed to support some large-scale applications:
+        // (Was needed to test support for an enterprise application)
         test_it(suiteName + ' repeatedly open and delete database faster (5x)', function () {
           // TBD POSSIBLY BROKEN on iOS/macOS ...
-          // if (!isAndroid && !isWindows && !isWP8) pending(...);
+          // if (!isAndroid && !isWindows) pending(...);
           // TBD CURRENTLY BROKEN DUE TO BUG 666 WORKAROUND SOLUTION
           pending('CURRENTLY BROKEN DUE TO BUG 666 WORKAROUND SOLUTION');
 

@@ -137,7 +137,7 @@ public class SQLitePlugin extends CordovaPlugin {
                 JSONArray txargs = allargs.getJSONArray("executes");
 
                 if (txargs.isNull(0)) {
-                    cbc.error("missing executes list");
+                    cbc.error("INTERNAL PLUGIN ERROR: missing executes list");
                 } else {
                     int len = txargs.length();
                     String[] queries = new String[len];
@@ -157,10 +157,10 @@ public class SQLitePlugin extends CordovaPlugin {
                             r.q.put(q);
                         } catch(Exception e) {
                             Log.e(SQLitePlugin.class.getSimpleName(), "couldn't add to queue", e);
-                            cbc.error("couldn't add to queue");
+                            cbc.error("INTERNAL PLUGIN ERROR: couldn't add to queue");
                         }
                     } else {
-                        cbc.error("database not open");
+                        cbc.error("INTERNAL PLUGIN ERROR: database not open");
                     }
                 }
                 break;
@@ -184,7 +184,7 @@ public class SQLitePlugin extends CordovaPlugin {
                 // stop the db runner thread:
                 r.q.put(new DBQuery());
             } catch(Exception e) {
-                Log.e(SQLitePlugin.class.getSimpleName(), "couldn't stop db thread", e);
+                Log.e(SQLitePlugin.class.getSimpleName(), "INTERNAL PLUGIN CLEANUP ERROR: could not stop db thread due to exception", e);
             }
             dbrmap.remove(dbname);
         }
@@ -389,7 +389,7 @@ public class SQLitePlugin extends CordovaPlugin {
                             Log.e(SQLitePlugin.class.getSimpleName(), "couldn't delete database", e);
                             dbq.cbc.error("couldn't delete database: " + e);
                         }
-                    }                    
+                    }
                 } catch (Exception e) {
                     Log.e(SQLitePlugin.class.getSimpleName(), "couldn't close database", e);
                     if (dbq.cbc != null) {

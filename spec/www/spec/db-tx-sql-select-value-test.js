@@ -2,13 +2,23 @@
 
 var MYTIMEOUT = 12000;
 
-var DEFAULT_SIZE = 5000000; // max to avoid popup in safari/ios
+// NOTE: DEFAULT_SIZE wanted depends on type of browser
 
-var isWP8 = /IEMobile/.test(navigator.userAgent); // Matches WP(7/8/8.1)
-var isWindows = /Windows /.test(navigator.userAgent); // Windows
+var isWindows = /MSAppHost/.test(navigator.userAgent);
 var isAndroid = !isWindows && /Android/.test(navigator.userAgent);
-var isMac = /Macintosh/.test(navigator.userAgent);
-var isWKWebView = !isWindows && !isAndroid && !isWP8 && !isMac && !!window.webkit && !!window.webkit.messageHandlers;
+var isFirefox = /Firefox/.test(navigator.userAgent);
+var isWebKitBrowser = !isWindows && !isAndroid && /Safari/.test(navigator.userAgent);
+var isBrowser = isWebKitBrowser || isFirefox;
+var isEdgeBrowser = isBrowser && (/Edge/.test(navigator.userAgent));
+var isSafariBrowser = isWebKitBrowser && !isEdgeBrowser && !isChromeBrowser;
+var isMac = !isBrowser && /Macintosh/.test(navigator.userAgent);
+var isAppleMobileOS = /iPhone/.test(navigator.userAgent) ||
+      /iPad/.test(navigator.userAgent) || /iPod/.test(navigator.userAgent);
+var hasMobileWKWebView = isAppleMobileOS && !!window.webkit && !!window.webkit.messageHandlers;
+
+// should avoid popups (Safari seems to count 2x)
+var DEFAULT_SIZE = isSafariBrowser ? 2000000 : 5000000;
+// FUTURE TBD: 50MB should be OK on Chrome and some other test browsers.
 
 // The following openDatabase settings are used for Plugin-implementation-2
 // on Android:
@@ -20,11 +30,13 @@ var scenarioList = [
   'Plugin-implementation-2'
 ];
 
-var scenarioCount = (!!window.hasWebKitBrowser) ? (isAndroid ? 3 : 2) : 1;
+var scenarioCount = (!!window.hasWebKitWebSQL) ? (isAndroid ? 3 : 2) : 1;
 
 var mytests = function() {
 
   for (var i=0; i<scenarioCount; ++i) {
+    // TBD skip plugin test on browser platform (not yet supported):
+    if (isBrowser && (i === 0)) continue;
 
     // TBD QUICK TEST WORKAROUND for Android:
     if (!isWindows && isAndroid && i === 0) continue;
@@ -34,6 +46,8 @@ var mytests = function() {
       var suiteName = scenarioName + ': ';
       var isWebSql = (i === 1);
       var isImpl2 = (i === 2);
+      // TBD WORKAROUND SOLUTION for (WebKit) Web SQL on Safari browser:
+      var recycleWebDatabase = null;
 
       // NOTE 1: MUST be defined in proper describe function scope, NOT outer scope.
       // NOTE 2: Using same database name in this script to avoid issue with
@@ -41,6 +55,8 @@ var mytests = function() {
       //         (FUTURE TBD NEEDS INVESTIGATION)
       var openDatabase = function(name_ignored, ignored1, ignored2, ignored3) {
         var name = 'select-value-test.db';
+        if (isWebSql && isSafariBrowser && !!recycleWebDatabase)
+          return recycleWebDatabase;
         if (isImpl2) {
           return window.sqlitePlugin.openDatabase({
             // prevent reuse of database from default db implementation:
@@ -51,7 +67,8 @@ var mytests = function() {
           });
         }
         if (isWebSql) {
-          return window.openDatabase(name, '1.0', 'Test', DEFAULT_SIZE);
+          return recycleWebDatabase =
+            window.openDatabase(name, '1.0', 'Test', DEFAULT_SIZE);
         } else {
           return window.sqlitePlugin.openDatabase({name: name, location: 0});
         }
@@ -82,7 +99,7 @@ var mytests = function() {
       // 2. Cordova-sqlcipher-adapter version of this plugin
       if (isAndroid)
         it(suiteName + 'Android ICU-UNICODE string manipulation test', function(done) {
-          if (isWebSql && /Android [1-4]/.test(navigator.userAgent)) pending('SKIP for Android versions 1.x-4.x Web SQL');
+          if (isWebSql && /Android 4.[1-3]/.test(navigator.userAgent)) pending('SKIP for (WebKit) Web SQL on Android 4.1-4.3'); // XXX TBD
           if (!isWebSql) pending('SKIP for plugin');
 
           var db = openDatabase('ICU-UNICODE-string-manipulation-results-test.db', '1.0', 'Test', DEFAULT_SIZE);
@@ -241,7 +258,8 @@ var mytests = function() {
               expect(rs).toBeDefined();
               expect(rs.rows).toBeDefined();
               expect(rs.rows.length).toBe(1);
-              if ((isWebSql && isAndroid) || (!isWebSql && isAndroid && isImpl2))
+              if ((isWebSql && (isAndroid || isChromeBrowser)) ||
+                  (!isWebSql && isAndroid && isImpl2))
                 expect(rs.rows.item(0).myresult).toBe('text');
               else
                 expect(rs.rows.item(0).myresult).toBe('null');
@@ -264,7 +282,7 @@ var mytests = function() {
               expect(rs).toBeDefined();
               expect(rs.rows).toBeDefined();
               expect(rs.rows.length).toBe(1);
-              if (isWebSql && isAndroid)
+              if (isWebSql && (isAndroid || isChromeBrowser))
                 expect(rs.rows.item(0).myresult).toBe('undefined');
               else if (!isWebSql && isAndroid && isImpl2)
                 expect(rs.rows.item(0).myresult).toBe('');
@@ -411,7 +429,7 @@ var mytests = function() {
               expect(rs).toBeDefined();
               expect(rs.rows).toBeDefined();
               expect(rs.rows.length).toBe(1);
-              if (isWebSql || isMac || isWKWebView)
+              if (isWebSql || isMac || hasMobileWKWebView)
                 expect(rs.rows.item(0).myresult).toBe('real');
               else if (!isWebSql && isAndroid && isImpl2)
                 expect(rs.rows.item(0).myresult).toBe('text');
@@ -476,7 +494,7 @@ var mytests = function() {
               expect(rs).toBeDefined();
               expect(rs.rows).toBeDefined();
               expect(rs.rows.length).toBe(1);
-              if (isWebSql || isMac || isWKWebView)
+              if (isWebSql || isMac || hasMobileWKWebView)
                 expect(rs.rows.item(0).myresult).toBe('real');
               else if (!isWebSql && isAndroid && isImpl2)
                 expect(rs.rows.item(0).myresult).toBe('text');
@@ -667,7 +685,7 @@ var mytests = function() {
               expect(rs).toBeDefined();
               expect(rs.rows).toBeDefined();
               expect(rs.rows.length).toBe(1);
-              if (isWebSql || isMac || isWKWebView)
+              if (isWebSql || isBrowser || isMac || hasMobileWKWebView)
                 expect(rs.rows.item(0).myresult).toBe('real');
               else if (!isWebSql && isAndroid && isImpl2)
                 expect(rs.rows.item(0).myresult).toBe('text');
@@ -732,7 +750,7 @@ var mytests = function() {
               expect(rs).toBeDefined();
               expect(rs.rows).toBeDefined();
               expect(rs.rows.length).toBe(1);
-              if (isWebSql || isMac || isWKWebView)
+              if (isWebSql || isBrowser || isMac || hasMobileWKWebView)
                 expect(rs.rows.item(0).myresult).toBe('real');
               else if (!isWebSql && isAndroid && isImpl2)
                 expect(rs.rows.item(0).myresult).toBe('text');
@@ -926,7 +944,7 @@ var mytests = function() {
               expect(rs).toBeDefined();
               expect(rs.rows).toBeDefined();
               expect(rs.rows.length).toBe(1);
-              if (isWebSql || isMac || isWKWebView)
+              if (isWebSql || isMac || hasMobileWKWebView)
                 expect(rs.rows.item(0).myresult).toBe('real');
               else if (!isWebSql && isAndroid && isImpl2)
                 expect(rs.rows.item(0).myresult).toBe('text');
@@ -991,7 +1009,7 @@ var mytests = function() {
               expect(rs).toBeDefined();
               expect(rs.rows).toBeDefined();
               expect(rs.rows.length).toBe(1);
-              if (isWebSql || isMac || isWKWebView)
+              if (isWebSql || isMac || hasMobileWKWebView)
                 expect(rs.rows.item(0).myresult).toBe('real');
               else if (!isWebSql && isAndroid && isImpl2)
                 expect(rs.rows.item(0).myresult).toBe('text');
@@ -1054,8 +1072,7 @@ var mytests = function() {
         // - Android version returns result with missing row
         it(suiteName + "SELECT ABS(?) with '9e999' (Infinity) parameter argument" +
            ((!isWebSql && isAndroid) ? ' [Android PLUGIN BROKEN: result with missing row]' : ''), function(done) {
-          if (isWP8) pending('SKIP for WP8'); // (no callback received)
-          if (!isWebSql && !isAndroid && !isWindows && !isWP8) pending('SKIP for iOS/macOS plugin due to CRASH');
+          if (!isWebSql && (isAppleMobileOS || isMac)) pending('KNOWN CRASH on iOS/macOS'); // XXX (litehelpers/Cordova-sqlite-storage#405)
 
           var db = openDatabase('SELECT-ABS-Infinite-parameter-results-test.db', '1.0', 'Test', DEFAULT_SIZE);
 
@@ -1089,8 +1106,7 @@ var mytests = function() {
 
         it(suiteName + "SELECT -ABS(?) with '9e999' (Infinity) parameter argument" +
            ((!isWebSql && isAndroid) ? ' [Android PLUGIN BROKEN: missing result]' : ''), function(done) {
-          if (isWP8) pending('SKIP for WP8'); // (no callback received)
-          if (!isWebSql && !isAndroid && !isWindows && !isWP8) pending('SKIP for iOS/macOS plugin due to CRASH');
+          if (!isWebSql && (isAppleMobileOS || isMac)) pending('KNOWN CRASH on iOS/macOS'); // XXX (litehelpers/Cordova-sqlite-storage#405)
 
           var db = openDatabase('SELECT-ABS-minus-Infinite-parameter-results-test.db', '1.0', 'Test', DEFAULT_SIZE);
 
@@ -1175,8 +1191,6 @@ var mytests = function() {
         }, MYTIMEOUT);
 
         it(suiteName + 'SELECT LOWER(?) with [Infinity] parameter argument [Android/iOS Plugin BROKEN: result with null value]', function(done) {
-          if (isWP8) pending('SKIP for WP8'); // SKIP for now
-
           var db = openDatabase('SELECT-LOWER-Infinite-parameter-results-test.db', '1.0', 'Test', DEFAULT_SIZE);
 
           db.transaction(function(tx) {
@@ -1191,7 +1205,7 @@ var mytests = function() {
               // Android/iOS plugin issue
               if (!isWebSql && isAndroid && isImpl2)
                 expect(rs.rows.item(0).myresult).toBe('');
-              else if (!isWebSql && !isWindows && !isMac)
+              else if (!isWebSql && (isAndroid || isAppleMobileOS))
                 expect(rs.rows.item(0).myresult).toBe(null);
               else
                 expect(rs.rows.item(0).myresult).toBe('inf');
@@ -1210,8 +1224,6 @@ var mytests = function() {
         }, MYTIMEOUT);
 
         it(suiteName + 'SELECT UPPER(?) with [-Infinity] parameter argument [Android/iOS Plugin BROKEN: result with null value]', function(done) {
-          if (isWP8) pending('SKIP for WP8'); // SKIP for now
-
           var db = openDatabase('SELECT-UPPER-minus-Infinite-parameter-results-test.db', '1.0', 'Test', DEFAULT_SIZE);
 
           db.transaction(function(tx) {
@@ -1226,7 +1238,7 @@ var mytests = function() {
               // Android/iOS plugin issue
               if (!isWebSql && isAndroid && isImpl2)
                 expect(rs.rows.item(0).myresult).toBe('');
-              else if (!isWebSql && !isWindows && !isMac)
+              else if (!isWebSql && (isAndroid || isAppleMobileOS))
                 expect(rs.rows.item(0).myresult).toBe(null);
               else
                 expect(rs.rows.item(0).myresult).toBe('-INF');
@@ -1245,8 +1257,6 @@ var mytests = function() {
         }, MYTIMEOUT);
 
         it(suiteName + 'SELECT TYPEOF(?) with [Infinity] parameter argument [Android/iOS Plugin BROKEN: reports null type]', function(done) {
-          if (isWP8) pending('SKIP for WP8'); // SKIP for now
-
           var db = openDatabase('SELECT-TYPEOF-Infinite-parameter-results-test.db', '1.0', 'Test', DEFAULT_SIZE);
 
           db.transaction(function(tx) {
@@ -1261,7 +1271,7 @@ var mytests = function() {
               // Android/iOS plugin issue
               if (!isWebSql && isAndroid && isImpl2)
                 expect(rs.rows.item(0).myresult).toBe('text');
-              else if (!isWebSql && !isWindows && !isMac)
+              else if (!isWebSql && (isAndroid || isAppleMobileOS))
                 expect(rs.rows.item(0).myresult).toBe('null');
               else
                 expect(rs.rows.item(0).myresult).toBe('real');
@@ -1280,8 +1290,6 @@ var mytests = function() {
         }, MYTIMEOUT);
 
         it(suiteName + 'SELECT TYPEOF(?) with -Infinity parameter argument [Android/iOS Plugin BROKEN: reports null type]', function(done) {
-          if (isWP8) pending('SKIP for WP8'); // SKIP for now
-
           var db = openDatabase('SELECT-TYPEOF-minus-Infinite-parameter-results-test.db', '1.0', 'Test', DEFAULT_SIZE);
 
           db.transaction(function(tx) {
@@ -1296,7 +1304,7 @@ var mytests = function() {
               // Android/iOS plugin issue
               if (!isWebSql && isAndroid && isImpl2)
                 expect(rs.rows.item(0).myresult).toBe('text');
-              else if (!isWebSql && !isWindows && !isMac)
+              else if (!isWebSql && (isAndroid || isAppleMobileOS))
                 expect(rs.rows.item(0).myresult).toBe('null');
               else
                 expect(rs.rows.item(0).myresult).toBe('real');
@@ -1315,7 +1323,6 @@ var mytests = function() {
         }, MYTIMEOUT);
 
         it(suiteName + 'SELECT (?) with Infinity parameter argument [Android/iOS Plugin BROKEN: result with null value; CRASH on macOS]', function(done) {
-          if (isWP8) pending('SKIP for WP8'); // SKIP for now
           if (isMac) pending('SKIP for macOS [CRASH]'); // FUTURE TBD
 
           var db = openDatabase('SELECT-Infinite-parameter-results-test.db', '1.0', 'Test', DEFAULT_SIZE);
@@ -1331,7 +1338,7 @@ var mytests = function() {
               // Android/iOS plugin issue
               if (!isWebSql && isAndroid && isImpl2)
                 expect(rs.rows.item(0).myresult).toBe('');
-              else if (!isWebSql && !isWindows)
+              else if (!isWebSql && (isAndroid || isAppleMobileOS || isMac))
                 expect(rs.rows.item(0).myresult).toBe(null);
               else
                 expect(rs.rows.item(0).myresult).toBe(Infinity);
@@ -1350,7 +1357,6 @@ var mytests = function() {
         }, MYTIMEOUT);
 
         it(suiteName + 'SELECT (?) with -Infinity parameter argument [Android/iOS Plugin BROKEN: result with null value; CRASH on macOS]', function(done) {
-          if (isWP8) pending('SKIP for WP8'); // SKIP for now
           if (isMac) pending('SKIP for macOS [CRASH]'); // FUTURE TBD
 
           var db = openDatabase('SELECT-minus-Infinite-parameter-results-test.db', '1.0', 'Test', DEFAULT_SIZE);
@@ -1363,10 +1369,10 @@ var mytests = function() {
               expect(rs.rows).toBeDefined();
               expect(rs.rows.length).toBe(1);
 
-              // Android/iOS plugin issue
+              // Android/iOS/macOS plugin issue
               if (!isWebSql && isAndroid && isImpl2)
                 expect(rs.rows.item(0).myresult).toBe('');
-              else if (!isWebSql && !isWindows)
+              else if (!isWebSql && (isAndroid || isAppleMobileOS || isMac))
                 expect(rs.rows.item(0).myresult).toBe(null);
               else
                 expect(rs.rows.item(0).myresult).toBe(-Infinity);
@@ -1768,60 +1774,60 @@ var mytests = function() {
 
       describe(suiteName + 'Inline BLOB value SELECT result tests', function() {
 
-        it(suiteName + "SELECT LOWER(X'40414243')", function(done) {
-          if (isWindows) pending('SKIP: BROKEN for Windows');
-
-          var db = openDatabase("Inline-BLOB-lower-result-test.db", "1.0", "Demo", DEFAULT_SIZE);
+        it(suiteName + "SELECT LOWER(X'40414243') [follows default sqlite encoding: UTF-16le on Android 4.1-4.4 (WebKit) Web SQL, UTF-8 otherwise]", function(done) {
+          var db = openDatabase('INLINE-BLOB-SELECT-LOWER-40414243-test.db');
 
           db.transaction(function(tx) {
-
             tx.executeSql("SELECT LOWER(X'40414243') AS myresult", [], function(ignored, rs) {
               expect(rs).toBeDefined();
               expect(rs.rows).toBeDefined();
               expect(rs.rows.length).toBe(1);
-              expect(rs.rows.item(0).myresult).toBe('@abc');
+              if (isWindows || (isWebSql && isAndroid && /Android 4.[1-3]/.test(navigator.userAgent)))
+                expect(rs.rows.item(0).myresult).toBe('䅀䍂');
+              else
+                expect(rs.rows.item(0).myresult).toBe('@abc');
 
               // Close (plugin only) & finish:
               (isWebSql) ? done() : db.close(done, done);
             });
           }, function(error) {
             // NOT EXPECTED:
-            expect(false).toBe(true);
             expect(error.message).toBe('---');
-            // Close (plugin only) & finish:
-            (isWebSql) ? done() : db.close(done, done);
+            done.fail();
           });
         }, MYTIMEOUT);
 
-        it(suiteName + "SELECT X'40414243' [TBD BROKEN androidDatabaseImplementation: 2 & Windows]", function(done) {
-          if (isWP8) pending('SKIP for WP8'); // [BROKEN]
-
-          var db = openDatabase("Inline-BLOB-SELECT-result-40414243-test.db", "1.0", "Demo", DEFAULT_SIZE);
+        it(suiteName + "SELECT X'40414243' [ERROR REPRODUCED on androidDatabaseProvider: 'system' & Windows; follows default sqlite encoding: UTF-16le on Android 4.1-4.4 (WebKit) Web SQL, UTF-8 otherwise]", function(done) {
+          var db = openDatabase('INLINE-BLOB-SELECT-40414243-test.db');
 
           db.transaction(function(tx) {
-
             tx.executeSql("SELECT X'40414243' AS myresult", [], function(ignored, rs) {
-              if (isWindows || (!isWebSql && isAndroid && isImpl2)) expect('Behavior changed please update this test').toBe('--');
+              if (!isWebSql && isAndroid && isImpl2) expect("BEHAVIOR CHANGED on Android with androidDatabaseProvider: 'system' PLEASE UPDATE THIS TEST").toBe('--');
+              if (isWindows) expect('BEHAVIOR CHANGED on Windows PLEASE UPDATE THIS TEST').toBe('--');
               expect(rs).toBeDefined();
               expect(rs.rows).toBeDefined();
               expect(rs.rows.length).toBe(1);
-              expect(rs.rows.item(0).myresult).toBe('@ABC');
+              if (isWebSql && isAndroid && /Android 4.[1-3]/.test(navigator.userAgent))
+                expect(rs.rows.item(0).myresult).toBe('䅀䍂');
+              else
+                expect(rs.rows.item(0).myresult).toBe('@ABC');
 
               // Close (plugin only) & finish:
               (isWebSql) ? done() : db.close(done, done);
             }, function(ignored, error) {
               if (isWindows || (!isWebSql && isAndroid && isImpl2)) {
+                // ERROR EXPECTED on androidDatabaseProvider: 'system' & Windows only:
                 expect(error).toBeDefined();
                 expect(error.code).toBeDefined();
                 expect(error.message).toBeDefined();
 
-                // TBD wrong error code
+                // TBD non-standard error code
                 expect(error.code).toBe(0);
-                // TBD error message
+                // FUTURE TBD error message
               } else {
-                // NOT EXPECTED:
-                expect(false).toBe(true);
+                // NOT EXPECTED on (WebKit) Web SQL or plugin on other platforms:
                 expect(error.message).toBe('---');
+                done.fail();
               }
 
               // Close (plugin only) & finish:
@@ -1830,8 +1836,13 @@ var mytests = function() {
           });
         }, MYTIMEOUT);
 
+        /* ** XXX TBD ???:
         it(suiteName + "SELECT X'FFD1FFD2' [TBD BROKEN: ERROR on Android (SQLCipher plugin version) & Windows; missing result value on iOS/macOS]", function(done) {
           if (isWP8) pending('SKIP for WP8');
+        // ** } ** */
+        it(suiteName + "SELECT X'FFD1FFD2' [ERROR REPRODUCED on androidDatabaseImplementation: 2 & Windows; MISSING result data column on iOS/macOS; actual result value is IGNORED on (WebKit) Web SQL & plugin on other platforms]", function(done) {
+          // XXX TBD ???:
+          // if (!isWebSql && !isWindows && isAndroid && !isImpl2) pending('BROKEN: CRASH on Android 5.x (default sqlite-connector version)');
 
           var db = openDatabase("Inline-SELECT-BLOB-FFD1FFD2-result-test.db", "1.0", "Demo", DEFAULT_SIZE);
 
@@ -1842,11 +1853,10 @@ var mytests = function() {
               expect(rs).toBeDefined();
               expect(rs.rows).toBeDefined();
               expect(rs.rows.length).toBe(1);
-              if (!isWebSql && !isAndroid && !isWindows && !isWP8)
-                expect(rs.rows.item(0).myresult).not.toBeDefined(); // not defined iOS/macOS
+              if (!isWebSql && (isAppleMobileOS || isMac))
+                expect(rs.rows.item(0).myresult).not.toBeDefined(); // not defined iOS/macOS plugin
               else
                 expect(rs.rows.item(0).myresult).toBeDefined();
-              // TBD actual value (???)
 
               // Close (plugin only) & finish:
               (isWebSql) ? done() : db.close(done, done);
@@ -1858,15 +1868,13 @@ var mytests = function() {
 
                 // TBD wrong error code
                 expect(error.code).toBe(0);
-                // TBD error message
+                // FUTURE TBD check error message
+                done();
               } else {
                 // NOT EXPECTED:
-                expect(false).toBe(true);
                 expect(error.message).toBe('---');
+                done.fail();
               }
-
-              // Close (plugin only) & finish:
-              (isWebSql) ? done() : db.close(done, done);
             });
           });
         }, MYTIMEOUT);

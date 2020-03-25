@@ -2,17 +2,21 @@
 
 var MYTIMEOUT = 12000;
 
-var isWP8 = /IEMobile/.test(navigator.userAgent); // Matches WP(7/8/8.1)
-var isWindows = /Windows /.test(navigator.userAgent); // Windows 8.1/Windows Phone 8.1/Windows 10
+var isWindows = /MSAppHost/.test(navigator.userAgent);
 var isAndroid = !isWindows && /Android/.test(navigator.userAgent);
-var isMac = /Macintosh/.test(navigator.userAgent);
+var isFirefox = /Firefox/.test(navigator.userAgent);
+var isWebKitBrowser = !isWindows && !isAndroid && /Safari/.test(navigator.userAgent);
+var isBrowser = isWebKitBrowser || isFirefox;
+var isEdgeBrowser = isBrowser && (/Edge/.test(navigator.userAgent));
+var isMac = !isBrowser && /Macintosh/.test(navigator.userAgent);
+var isAppleMobileOS = /iPhone/.test(navigator.userAgent) ||
+      /iPad/.test(navigator.userAgent) || /iPod/.test(navigator.userAgent);
+var hasMobileWKWebView = isAppleMobileOS && !!window.webkit && !!window.webkit.messageHandlers;
 
 window.hasBrowser = true;
-// XXX FUTURE TODO rename to something like window.hasWebKitWebSQL here
-// and in actual test scripts
-window.hasWebKitBrowser = (!isWindows && !isWP8 && !isMac && (isAndroid || !(window.webkit && window.webkit.messageHandlers)));
+window.hasWebKitWebSQL = isAndroid || (isAppleMobileOS && !hasMobileWKWebView) || (isWebKitBrowser && !isEdgeBrowser);
 
-describe('check startup', function() {
+describe('Check startup for navigator.userAgent: ' + navigator.userAgent, function() {
   it('receives deviceready event', function(done) {
     expect(true).toBe(true);
     document.addEventListener("deviceready", function() {
@@ -21,7 +25,7 @@ describe('check startup', function() {
   }, MYTIMEOUT);
 
   it('has openDatabase', function() {
-    if (window.hasWebKitBrowser) expect(window.openDatabase).toBeDefined();
+    if (window.hasWebKitWebSQL) expect(window.openDatabase).toBeDefined();
     expect(window.sqlitePlugin).toBeDefined();
     expect(window.sqlitePlugin.openDatabase).toBeDefined();
   });
