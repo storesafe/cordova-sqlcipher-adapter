@@ -1,6 +1,6 @@
 # Changes
 
-## cordova-sqlcipher-adapter 0.5.0-dev
+## cordova-sqlcipher-adapter 0.5.0
 
 - SQLCipher 4.3.0 update for Android in custom build, as documented, now using `androidx.sqlite:sqlite:2.1.0` framework reference
 - SQLCipher 4.3.0 update for iOS/macOS
