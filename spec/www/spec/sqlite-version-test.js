@@ -122,6 +122,37 @@ var mytests = function() {
           });
         }, MYTIMEOUT);
 
+        it(suiteName + 'PRAGMA cipher_version', function(done) {
+          if (isWebSql) pending('SKIP: NOT SUPPORTED for (WebKit) Web SQL');
+
+          var db = openDatabase('pragma-cipher-version.db');
+          expect(db).toBeDefined();
+
+          db.transaction(function(tx) {
+            expect(tx).toBeDefined();
+
+            tx.executeSql('PRAGMA cipher_version', [], function(tx_ignored, rs) {
+              expect(rs).toBeDefined();
+              expect(rs.rows).toBeDefined();
+              expect(rs.rows.length).toBe(1);
+
+              // Check specific SQLCipher version on plugin
+              if (isAndroid) // (android-database-sqlcipher)
+                expect(rs.rows.item(0).cipher_version).toBe('4.4.0 community');
+              else // SQLCipher for iOS/macOS/...
+                expect(rs.rows.item(0).cipher_version).toBe('4.4.0 community');
+
+              // Close (plugin only) & finish:
+              (isWebSql) ? done() : db.close(done, done);
+            });
+          }, function(error) {
+            // NOT EXPECTED:
+            expect(false).toBe(true);
+            expect(error.message).toBe('--');
+            done();
+          });
+        }, MYTIMEOUT);
+
       });
 
       describe(suiteName + 'sqlite encoding test(s)', function() {
