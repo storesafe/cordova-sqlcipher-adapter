@@ -1,6 +1,6 @@
 # Changes
 
-## cordova-sqlcipher-adapter 0.5.1-dev
+## cordova-sqlcipher-adapter 0.5.1
 
 - SQLCipher 4.4.0 (community) update for Android in custom build, as documented
 - SQLCipher 4.4.0 (community) update for iOS & macOS ("osx")
