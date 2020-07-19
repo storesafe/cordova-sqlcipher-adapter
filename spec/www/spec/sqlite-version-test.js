@@ -109,7 +109,7 @@ var mytests = function() {
               if (isAndroid) // (android-database-sqlcipher)
                 expect(rs.rows.item(0).myResult).toBe('3.30.1');
               else // SQLCipher for iOS/macOS/...
-                expect(rs.rows.item(0).myResult).toBe('3.30.1');
+                expect(rs.rows.item(0).myResult).toBe('3.31.0');
 
               // Close (plugin only) & finish:
               (isWebSql) ? done() : db.close(done, done);
