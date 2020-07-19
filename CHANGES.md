@@ -5,6 +5,12 @@
 - SQLCipher 4.4.0 (community) update for Android in custom build, as documented
 - SQLCipher 4.4.0 (community) update for iOS & macOS ("osx")
 
+#### cordova-sqlite-storage 5.0.1
+
+- enable RENAME table with view test - from December 2019 SQLite crash report, fixed in 2020 ref:
+  - http://sqlite.1065341.n5.nabble.com/Crash-Bug-Report-tc109903.html
+  - https://github.com/xpbrew/cordova-sqlite-storage/issues/904
+
 ## cordova-sqlcipher-adapter 0.5.0
 
 - SQLCipher 4.3.0 update for Android in custom build, as documented
@@ -22,7 +28,7 @@
 
 #### cordova-sqlite-storage 3.4.1
 
-- SQLite 3.31.1 update from cordova-sqlite-storage-dependencies@2.1.1
+- SQLite 3.30.1 update from cordova-sqlite-storage-dependencies@2.1.1
 
 #### cordova-sqlite-storage 3.4.0
 
