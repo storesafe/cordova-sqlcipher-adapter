@@ -272,6 +272,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
 - Android platform version:
   - Android versions supported: _minimum is 4.4 (API level 19), see also:_ <https://cordova.apache.org/docs/en/latest/guide/platforms/android/>
   - SQLCipher for Android build uses the OpenSSL crypto library for encryption
+  - Uses `androidx.sqlite` framework, requires AndroidX support to be enabled starting with cordova-android@9 ref: <https://cordova.apache.org/announcements/2020/06/29/cordova-android-9.0.0.html>
   - ICU case-insensitive matching and other Unicode string manipulations is no longer supported for Android.
 - iOS platform version:
   - iOS versions supported: 8.x / 9.x / 10.x / 11.x / 12.x (see [deviations section](#deviations) below for differences in case of WKWebView)
