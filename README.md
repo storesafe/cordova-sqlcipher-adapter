@@ -203,7 +203,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
 - Windows platform support is now disabled in this plugin version, with CRYPTO provider (libTomCrypt) completely removed (ref: [litehelpers / Cordova-sqlcipher-adapter#63](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/63)). For future consideration: enable Windows build again with encryption using a recent build of the OpenSSL crypto library ref: [litehelpers/Cordova-sqlcipher-adapter#30](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/30)
 - SQLCipher version information:
   - SQLCipher `4.4.3` community for Android - in custom build from <https://github.com/brodybits/android-database-sqlcipher/tree/v4.3.x-defensive-jar-build> (`v4.3.x-defensive-jar-build` branch)
-  - SQLCipher `4.4.2` community for iOS/macOS
+  - SQLCipher `4.4.3` community for iOS/macOS
   - with OpenSSL libcrypto for Android
   - using CommonCrypto framework for iOS/macOS
   - NO ENCRYPTION ENABLED (completely removed) for Windows

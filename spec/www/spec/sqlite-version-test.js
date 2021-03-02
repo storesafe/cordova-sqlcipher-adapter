@@ -109,7 +109,7 @@ var mytests = function() {
               if (isAndroid) // (android-database-sqlcipher)
                 expect(rs.rows.item(0).myResult).toBe('3.34.1');
               else // SQLCipher for iOS/macOS/...
-                expect(rs.rows.item(0).myResult).toBe('3.33.0');
+                expect(rs.rows.item(0).myResult).toBe('3.34.1');
 
               // Close (plugin only) & finish:
               (isWebSql) ? done() : db.close(done, done);
@@ -140,7 +140,7 @@ var mytests = function() {
               if (isAndroid) // (android-database-sqlcipher)
                 expect(rs.rows.item(0).cipher_version).toBe('4.4.3 community');
               else // SQLCipher for iOS/macOS/...
-                expect(rs.rows.item(0).cipher_version).toBe('4.4.2 community');
+                expect(rs.rows.item(0).cipher_version).toBe('4.4.3 community');
 
               // Close (plugin only) & finish:
               (isWebSql) ? done() : db.close(done, done);
