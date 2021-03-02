@@ -2,6 +2,8 @@
 
 ## cordova-sqlcipher-adapter 0.5.3-dev
 
+- fix: SQLCipher 4.4.3 (community) update for Android (in custom build, as documented)
+
 ### cordova-sqlite-storage-commoncore 2.0.0
 
 - refactor: clean up imports for Android
