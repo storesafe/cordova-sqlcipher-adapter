@@ -2,6 +2,12 @@
 
 ## cordova-sqlcipher-adapter 0.5.3-dev
 
+### cordova-sqlite-storage-commoncore 2.0.0
+
+- refactor: clean up imports for Android
+- Fix plugin param name for macOS ("osx") - *tested* with Cordova 9 and cordova-osx@5
+- Drop support for __disabled__ Windows on ARM (Windows Mobile)
+
 ## cordova-sqlcipher-adapter 0.5.2
 
 - SQLCipher 4.4.2 (community) update for iOS & macOS ("osx")
