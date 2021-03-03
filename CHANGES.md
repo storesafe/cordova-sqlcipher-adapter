@@ -3,7 +3,7 @@
 ## cordova-sqlcipher-adapter 0.5.3
 
 - fix: SQLCipher 4.4.3 (community) update for iOS & macOS
-- fix: SQLCipher 4.4.3 (community) update for Android (in custom build, as documented)
+- fix: SQLCipher 4.4.3 (community) update for Android with OpenSSL 1.1.1j (in custom build, as documented)
 
 ### cordova-sqlite-storage-commoncore 2.0.0
 
