@@ -64,7 +64,7 @@ This project is under maintenance for security, data loss risk, and other critic
 
 ### Multiple database problem on Android
 
-This plugin uses SQLCipher for Android which is a non-standard SQLite implementation on Android ([`sqlcipher/android-database-sqlcipher`](https://github.com/sqlcipher/android-database-sqlcipher)). In case an application access the __same__ database using multiple plugins there is a risk of data corruption (see [xpbrew/cordova-sqlite-storage#626](https://github.com/xpbrew/cordova-sqlite-storage/issues/626)), as described in <http://ericsink.com/entries/multiple_sqlite_problem.html> and <https://www.sqlite.org/howtocorrupt.html>.)
+This plugin uses SQLCipher for Android which is a non-standard SQLite implementation on Android (a fork of [`sqlcipher/android-database-sqlcipher`](https://github.com/sqlcipher/android-database-sqlcipher)). In case an application access the __same__ database using multiple plugins there is a risk of data corruption (see [xpbrew/cordova-sqlite-storage#626](https://github.com/xpbrew/cordova-sqlite-storage/issues/626)), as described in <http://ericsink.com/entries/multiple_sqlite_problem.html> and <https://www.sqlite.org/howtocorrupt.html>.)
 
 <!-- DOES NOT APPLY for this plugin version:
 The workaround is to use the `androidDatabaseProvider: 'system'` setting as described in the [Android database provider](#android-database-provider) section below:
@@ -202,7 +202,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
 
 - Windows platform support is now disabled in this plugin version, with CRYPTO provider (libTomCrypt) completely removed (ref: [litehelpers / Cordova-sqlcipher-adapter#63](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/63)). For future consideration: enable Windows build again with encryption using a recent build of the OpenSSL crypto library ref: [litehelpers/Cordova-sqlcipher-adapter#30](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/30)
 - SQLCipher version information:
-  - SQLCipher `4.4.3` community for Android - in custom build from <https://github.com/brodybits/android-database-sqlcipher/tree/v4.3.x-defensive-jar-build> (`v4.3.x-defensive-jar-build` branch)
+  - SQLCipher `4.4.3` community for Android - in custom build from <https://github.com/brodybits/android-database-sqlcipher/tree/v4.x-defensive-jar-build> (`v4.x-defensive-jar-build` branch)
   - SQLCipher `4.4.3` community for iOS/macOS
   - with OpenSSL libcrypto for Android
   - using CommonCrypto framework for iOS/macOS
