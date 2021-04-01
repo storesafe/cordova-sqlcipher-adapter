@@ -1,6 +1,6 @@
 {
   "name": "cordova-sqlcipher-adapter",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "SQLCipher database adapter for PhoneGap/Cordova, based on cordova-sqlite-storage",
   "cordova": {
     "id": "cordova-sqlcipher-adapter",
