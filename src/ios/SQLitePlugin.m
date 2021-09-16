@@ -272,7 +272,7 @@
         
         if (sqlite3_finalize(statement) != SQLITE_OK) {
             [self logSqlError:db message:@"Unable to finalize cipher migrate statement: "];
-            return NO;
+            return NULL;
         }
 
         db = [self reopenDatabase:db name:name options:options];
