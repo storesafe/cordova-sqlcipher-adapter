@@ -42,8 +42,7 @@
         <source-file src="node_modules/cordova-sqlite-storage-dependencies/libs/sqlite-connector.jar" target-dir="libs"/>
          ...
          -->
-        <lib-file src="src/android/libs/android-database-sqlcipher-classes.jar" />
-        <lib-file src="src/android/libs/android-database-sqlcipher-ndk.jar" />
+        <lib-file src="src/android/libs/android-database-sqlcipher.jar" />
         <!-- androidx.sqlite now required -->
         <framework src="androidx.sqlite:sqlite:2.1.0" />
 
