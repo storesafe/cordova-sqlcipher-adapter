@@ -202,7 +202,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
 
 - Windows platform support is now disabled in this plugin version, with CRYPTO provider (libTomCrypt) completely removed (ref: [litehelpers / Cordova-sqlcipher-adapter#63](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/63)). For future consideration: enable Windows build again with encryption using a recent build of the OpenSSL crypto library ref: [litehelpers/Cordova-sqlcipher-adapter#30](https://github.com/litehelpers/Cordova-sqlcipher-adapter/issues/30)
 - SQLCipher version information:
-  - SQLCipher `4.4.3` community for Android with OpenSSL 1.1.1k - in custom build from <https://github.com/brodybits/android-database-sqlcipher/tree/v4.4.x-defensive-jar-build> (`v4.4.x-defensive-jar-build` branch)
+  - SQLCipher `4.5.3` community for Android with OpenSSL 1.1.1s - in custom build from <https://github.com/brodybits/android-database-sqlcipher/tree/v4.5.x-defensive-jar-build> (`v4.5.x-defensive-jar-build` branch)
   - SQLCipher `4.5.3` community for iOS/macOS
   - with OpenSSL libcrypto for Android
   - using CommonCrypto framework for iOS/macOS
@@ -217,17 +217,17 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
 - SQLCipher build settings used:
   - `SQLITE_HAS_CODEC` (no longer enabled in Windows SQLite3 library build)
   - `SQLITE_SOUNDEX` (Android only)
-  - `SQLITE_MAX_VARIABLE_NUMBER=99999` (Android only)
-  - `SQLITE_DEFAULT_JOURNAL_SIZE_LIMIT=1048576` (Android only)
+  - ~~`SQLITE_MAX_VARIABLE_NUMBER=99999` (Android only)~~
+  - ~~`SQLITE_DEFAULT_JOURNAL_SIZE_LIMIT=1048576` (Android only)~~
   - `HAVE_USLEEP=1`
   - `SQLITE_TEMP_STORE=3`
   - `SQLCIPHER_CRYPTO_CC` (iOS/macOS only)
   - `SQLITE_LOCKING_STYLE=1` (iOS/macOS only)
-  - `DSQLITE_DEFAULT_JOURNAL_SIZE_LIMIT=1048576` (Android only)
-  - `NDEBUG` (`NDEBUG=1` on Android)
+  - ~~`DSQLITE_DEFAULT_JOURNAL_SIZE_LIMIT=1048576` (Android only)~~
+  - `NDEBUG` ~~(`NDEBUG=1` on Android)~~
   - `SQLITE_THREADSAFE=1`
   - `SQLITE_DEFAULT_SYNCHRONOUS=3` (EXTRA DURABLE build setting) on all platforms (Android/iOS/macOS/~~Windows~~) ref: [xpbrew/cordova-sqlite-storage#736](https://github.com/xpbrew/cordova-sqlite-storage/issues/736)
-  - `SQLITE_ENABLE_MEMORY_MANAGEMENT=1` (Android only)
+  - ~~`SQLITE_ENABLE_MEMORY_MANAGEMENT=1` (Android only)~~
   - `SQLITE_DEFAULT_MEMSTATUS=0`
   - `SQLITE_OMIT_DECLTYPE` (iOS/macOS/Windows)
   - `SQLITE_OMIT_DEPRECATED` - iOS/macOS (FUTURE TBD: Android ref: [brodybits/cordova-sqlcipher-adapter#82](https://github.com/brodybits/cordova-sqlcipher-adapter/issues/82))
@@ -246,7 +246,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
   - `SQLITE_ENABLE_STAT4` for Android only
   - `SQLITE_ENABLE_FTS5`
   - `SQLITE_ENABLE_JSON1`
-  - `SQLITE_ENABLE_MATH_FUNCTIONS` - iOS/macO
+  - `SQLITE_ENABLE_MATH_FUNCTIONS` - Android/macOS/iOS
   - `SQLITE_OS_WINRT` (Windows only)
   - `SQLCIPHER_CRYPTO_OPENSSL` (Android only)
 - `SQLITE_DBCONFIG_DEFENSIVE` flag is used for extra SQL safety on all platforms (Android/iOS/macOS/~~Windows~~) ref:

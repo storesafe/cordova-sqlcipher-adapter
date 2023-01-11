@@ -2,6 +2,7 @@
 
 ## cordova-sqlcipher-adapter 0.6.0-dev
 
+- SQLCipher 4.5.3 (community) update for Android now with math functions
 - enable & test math functions for iOS & macOS
 - SQLCipher 4.5.3 (community) update for iOS & macOS
 
