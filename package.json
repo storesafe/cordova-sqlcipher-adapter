@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/brodybits/cordova-sqlcipher-adapter",
   "scripts": {
-    "clean-spec": "rm -rf spec/[mnp]* && git cl spec/config.xml spec/package.json && git status --ignored",
+    "clean-spec": "rm -rf spec/[mnp]* && git checkout -- spec/package.json && git status --ignored",
     "prepare-js": "coffee -p SQLitePlugin.coffee.md > www/SQLitePlugin.js",
     "prepare-spec": "node scripts/prepareSpec.js"
   },
