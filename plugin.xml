@@ -86,6 +86,7 @@
                                      -DSQLITE_OMIT_PROGRESS_CALLBACK -DSQLITE_OMIT_SHARED_CACHE -DSQLITE_OMIT_LOAD_EXTENSION
                                      -DSQLITE_ENABLE_FTS3 -DSQLITE_ENABLE_FTS3_PARENTHESIS -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_RTREE
                                      -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_JSON1
+                                     -DSQLITE_ENABLE_MATH_FUNCTIONS
                                     " />
 
         <framework src="Security.framework" />
@@ -121,6 +122,7 @@
                                      -DSQLITE_OMIT_PROGRESS_CALLBACK -DSQLITE_OMIT_SHARED_CACHE -DSQLITE_OMIT_LOAD_EXTENSION
                                      -DSQLITE_ENABLE_FTS3 -DSQLITE_ENABLE_FTS3_PARENTHESIS -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_RTREE
                                      -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_JSON1
+                                     -DSQLITE_ENABLE_MATH_FUNCTIONS
                                     " />
 
         <framework src="Security.framework" />

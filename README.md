@@ -246,6 +246,7 @@ See the [Sample section](#sample) for a sample with a more detailed explanation 
   - `SQLITE_ENABLE_STAT4` for Android only
   - `SQLITE_ENABLE_FTS5`
   - `SQLITE_ENABLE_JSON1`
+  - `SQLITE_ENABLE_MATH_FUNCTIONS` - iOS/macO
   - `SQLITE_OS_WINRT` (Windows only)
   - `SQLCIPHER_CRYPTO_OPENSSL` (Android only)
 - `SQLITE_DBCONFIG_DEFENSIVE` flag is used for extra SQL safety on all platforms (Android/iOS/macOS/~~Windows~~) ref:
