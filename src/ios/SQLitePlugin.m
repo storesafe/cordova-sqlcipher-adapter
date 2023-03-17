@@ -178,34 +178,33 @@
             // NOTE: create DB from resource [pre-populated] NOT supported with sqlcipher.
 
             if (sqlite3_open(name, &db) != SQLITE_OK) {
+                [self logSqlError:db message:@"Unable to open DB"];
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Unable to open DB"];
                 [self.commandDelegate sendPluginResult:pluginResult callbackId: command.callbackId];
-                return;
             } else {
-                sqlite3_db_config(db, SQLITE_DBCONFIG_DEFENSIVE, 1, NULL);
-
-#if 0
-                sqlite3_create_function(db, "REGEXP", 2, SQLITE_ANY, NULL, &sqlite_regexp, NULL, NULL);
-#endif
-
-                // SQLCipher key:
-                NSString *dbkey = [options objectForKey:@"key"];
-                const char *key = NULL;
-                if (dbkey != NULL && dbkey.length != 0) key = [dbkey UTF8String];
-                NSLog((key != NULL) ? @"Open DB with encryption" : @"Open DB with NO encryption");
-                if (key != NULL) sqlite3_key(db, key, strlen(key));
-
+                [self prepareDatabase:db options:options];
                 // XXX Brody TODO check this in Javascript instead.
                 // Attempt to read the SQLite master table [to support SQLCipher version]:
-                if(sqlite3_exec(db, (const char*)"SELECT count(*) FROM sqlite_master;", NULL, NULL, NULL) == SQLITE_OK) {
-                    NSLog(@"DB open, check sqlite master table OK");
-                    dbPointer = [NSValue valueWithPointer:db];
-                    [openDBs setObject: dbPointer forKey: dbfilename];
+                
+                Boolean databaseCheck = NO;
+                if ([self checkDatabaseConnection: db dbfilename: dbfilename]) {
+                    databaseCheck = YES;
+                } else {
+                    NSString *sCipherMigrate = [options objectForKey:@"cipherMigrate"];
+                    Boolean cipherMigrate = sCipherMigrate ? [sCipherMigrate boolValue] : NO;
+                    
+                    if (cipherMigrate) {
+                        db = [self executeCipherMigration:db name:name options:options];
+                        if (db != NULL) {
+                            databaseCheck = [self checkDatabaseConnection: db dbfilename: dbfilename];
+                        }
+                    }
+                }
+                
+                if (databaseCheck) {
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Database opened"];
                 } else {
-                    NSLog(@"ERROR reading sqlite master table");
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Unable to open DB with key"];
-                    // XXX TODO: close the db handle & [perhaps] remove from openDBs!!
                 }
             }
         }
@@ -214,6 +213,97 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId: command.callbackId];
 
     // DLog(@"open cb finished ok");
+}
+
+-(Boolean) prepareDatabase: (sqlite3*) db options: (NSMutableDictionary*) options
+{
+    sqlite3_db_config(db, SQLITE_DBCONFIG_DEFENSIVE, 1, NULL);
+
+#if 0
+    sqlite3_create_function(db, "REGEXP", 2, SQLITE_ANY, NULL, &sqlite_regexp, NULL, NULL);
+#endif
+
+    // SQLCipher key:
+    NSString *dbkey = [options objectForKey:@"key"];
+    const char *key = NULL;
+    if (dbkey != NULL && dbkey.length != 0) key = [dbkey UTF8String];
+    NSLog((key != NULL) ? @"Open DB with encryption" : @"Open DB with NO encryption");
+    if (key != NULL) {
+        if (sqlite3_key(db, key, strlen(key)) != SQLITE_OK) {
+            [self logSqlError: db message: @"Error setting key: "];
+            return NO;
+        }
+    }
+    
+    return YES;
+}
+
+-(sqlite3*) reopenDatabase: (sqlite3*) db name: (const char *) name options: (NSMutableDictionary*) options
+{
+    sqlite3_close(db);
+    
+    sqlite3* newDb;
+    
+    if (sqlite3_open(name, &newDb) != SQLITE_OK) {
+        [self logSqlError:db message:@"Unable to open DB"];
+        return NULL;
+    } else {
+        [self prepareDatabase:newDb options:options];
+        return newDb;
+    }
+}
+
+-(sqlite3*) executeCipherMigration: (sqlite3*) db name: (const char *) name options: (NSMutableDictionary*) options
+{
+    db = [self reopenDatabase:db name:name options:options];
+    if (db == NULL) {
+        NSLog(@"%@", @"Unable to reopen database for cipher migration");
+        return NULL;
+    } else {
+        sqlite3_stmt *statement;
+
+        sqlite3_prepare_v2(db, "PRAGMA CIPHER_MIGRATE", -1, &statement, NULL);
+        
+        while (sqlite3_step(statement) == SQLITE_ROW) {
+            NSString *result = [[NSString alloc] initWithUTF8String:
+                            (const char *) sqlite3_column_text(statement, 0)];
+            NSLog(@"%@%@", @"Pragma migrate: ", result);
+        }
+        
+        if (sqlite3_finalize(statement) != SQLITE_OK) {
+            [self logSqlError:db message:@"Unable to finalize cipher migrate statement: "];
+            return NULL;
+        }
+
+        db = [self reopenDatabase:db name:name options:options];
+        if (db == NULL) {
+            NSLog(@"%@", @"Unable to reopen database after cipher migration");
+            return NULL;
+        } else {
+            return db;
+        }
+    }
+}
+
+-(void) logSqlError: (sqlite3*)db message:(NSString*) message
+{
+    const char *errmsg = sqlite3_errmsg(db);
+    NSLog(@"%@%@", message, [NSString stringWithUTF8String:errmsg]);
+}
+
+-(Boolean) checkDatabaseConnection: (sqlite3*)db dbfilename: (NSString*) dbfilename
+{
+    int checkResult = sqlite3_exec(db, (const char*)"SELECT count(*) FROM sqlite_master;", NULL, NULL, NULL);
+
+    if (checkResult == SQLITE_OK) {
+        NSLog(@"DB open, check sqlite master table OK");
+        NSValue *dbPointer = [NSValue valueWithPointer:db];
+        [openDBs setObject: dbPointer forKey: dbfilename];
+        return YES;
+    } else {
+        [self logSqlError: db message: @"Error checking connection: "];
+        return NO;
+    }
 }
 
 -(void) close: (CDVInvokedUrlCommand*)command

@@ -87,6 +87,34 @@ class SQLiteAndroidDatabase
     }
 
     /**
+     *
+     * Open a database.
+     *
+     * @param dbfile   The database File specification
+     */
+    void open(File dbfile, String key, boolean cipherMigrate) throws Exception {
+        try {
+            mydb = SQLiteDatabase.openOrCreateDatabase(dbfile, key, null);
+        } catch (RuntimeException e) {
+            if (cipherMigrate) {
+                mydb = SQLiteDatabase.openOrCreateDatabase(dbfile, key, null, new SQLiteDatabaseHook() {
+                    @Override
+                    public void preKey(SQLiteDatabase sqLiteDatabase) {
+
+                    }
+
+                    @Override
+                    public void postKey(SQLiteDatabase sqLiteDatabase) {
+                        sqLiteDatabase.query("PRAGMA cipher_migrate");
+                    }
+                });
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    /**
      * Close a database (in the current thread).
      */
     void closeDatabaseNow() {
